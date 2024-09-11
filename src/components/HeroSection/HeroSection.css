@@ -1,0 +1,25 @@
+.hero {
+    text-align: center;
+    padding: 120px 0;
+    background-image: url('https://exclusivelykoi.co.uk/themes/exclusively-koi/assets/img/index-hero-1.JPG');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .hero h1 {
+    font-size: 48px;
+    color: #fff;
+  }
+  
+  .hero p {
+    font-size: 24px;
+    color: #fff;
+  }
+  
+  .hero button {
+    padding: 15px 30px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
