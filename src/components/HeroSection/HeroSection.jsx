@@ -11,7 +11,10 @@ function Hero() {
         alt="Hero Image"
       /> */}
       <Title level={1}>Welcome to Exclusively Koi</Title>
-      <Paragraph style={{ fontSize: "24px", color: "#000" }}>
+      <Paragraph
+        className="east-sea-dokdo-regular"
+        style={{ fontSize: "32px", color: "#fff" }}
+      >
         Discover the beauty of koi fish
       </Paragraph>
       <Button type="primary" size="large">

@@ -11,11 +11,11 @@ function Header() {
         <img
           src="https://exclusivelykoi.co.uk/themes/exclusively-koi/assets/img/logo-black.svg"
           alt="Exclusively Koi"
-          style={{ width: "120px", paddingTop: "25px" }}
+          style={{ width: "120px" }}
         />
       </div>
       <Menu
-        style={{ backgroundColor: "#FFFFFF" }}
+        style={{ backgroundColor: "transparent" }}
         theme="dark"
         mode="horizontal"
         className="Menu"
