@@ -34,6 +34,9 @@ function Header() {
             <li>
               <a href="#">Contact</a>
             </li>
+            <li>
+              <a href="#">News</a>
+            </li>
           </ul>
         </nav>
       </Menu>
