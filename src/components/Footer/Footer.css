@@ -1,10 +1,57 @@
-.footer {
-    text-align: center;
-    padding: 20px 0;
-    height: 80px;
-    background-color: #f0f0f0;
-  }
-  
-  .footer p {
-    margin: 0;
-  }
+.footer-container {
+  background-color: #6f6f6f !important;
+  color: white;
+  padding: 20px 20px; /* Reduced padding */
+  text-align: left;
+}
+
+.footer-logo {
+  width: 150px; /* Reduced width */
+  height: auto;
+  margin-left: 20px; /* Reduced margin */
+}
+
+.footer-paragraph {
+  margin-top: 8px; /* Reduced margin */
+  margin-left: 20px; /* Reduced margin */
+  color: white !important;
+  font-size: 14px; /* Reduced font size */
+}
+
+.email-input {
+  margin-top: 8px; /* Reduced margin */
+  max-width: 250px; /* Reduced max-width */
+  background-color: #ffffff;
+  transition: background-color 0.3s;
+}
+
+.send-button {
+  background-color: #000000 !important;
+  border-color: #ffffff !important;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 14px; /* Reduced font size */
+}
+
+.footer-title {
+  color: #ffffff;
+  font-size: 16px; /* Reduced font size */
+}
+
+.footer-link {
+  color: white !important;
+  background-color: #3b7b7a;
+  transition: color 0.3s;
+  font-size: 14px; /* Reduced font size */
+}
+
+.social-icon {
+  font-size: 20px; /* Reduced font size */
+  color: white !important;
+  transition: transform 0.3s;
+}
+
+.footer-bottom {
+  margin-top: 10px; /* Reduced margin */
+  text-align: center;
+  font-size: 14px; /* Reduced font size */
+}

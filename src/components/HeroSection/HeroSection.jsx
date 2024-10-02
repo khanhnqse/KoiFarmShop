@@ -7,10 +7,10 @@ function Hero() {
   return (
     <section className="hero">
       {/* <img
-        src="https://png.pngtree.com/png-vector/20200424/ourmid/pngtree-hand-drawn-cartoon-koi-fish-ink-border-vector-illustration-png-image_2193167.jpg"
+        src={heroImg}
         alt="Hero Image"
       /> */}
-      <Title level={1}>Welcome to Exclusively Koi</Title>
+      <Title level={1}>Welcome to world of Koi</Title>
       <Paragraph
         className="east-sea-dokdo-regular"
         style={{ fontSize: "32px", color: "#fff" }}

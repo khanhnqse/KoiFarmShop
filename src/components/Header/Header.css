@@ -50,3 +50,7 @@ header {
   .cart i {
     font-size: 20px;
   }
+  .ant-menu-item-selected {
+    background-color: #ffffff !important; /* Change to desired color */
+    color: rgb(0, 0, 0); /* Change text color if needed */
+  }

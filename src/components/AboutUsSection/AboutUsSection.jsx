@@ -1,4 +1,5 @@
 import { Button, Row, Col, Typography } from "antd";
+import { Link } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 
@@ -25,9 +26,19 @@ const AboutUsSection = () => {
             We offer a wide selection of high-quality koi, expert advice, and
             exceptional customer service.
           </Paragraph>
-          <Button type="primary" size="large">
-            Browse Our Koi
-          </Button>
+          <Link to="/products">
+            <Button
+              style={{
+                backgroundColor: "black",
+                border: "1px solid white",
+                borderColor: "white",
+              }}
+              type="primary"
+              size="large"
+            >
+              Browse Our Koi
+            </Button>
+          </Link>
         </Col>
       </Row>
     </div>
