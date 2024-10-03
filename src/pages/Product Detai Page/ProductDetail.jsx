@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
-import { Button, Rate, Select } from "antd";
-
-const { Option } = Select;
+import { Button, Rate, Form, Input } from "antd";
+import { useState } from "react";
 
 const products = [
   {
@@ -18,7 +17,10 @@ const products = [
     additionalImages: [
       "https://askoi.vn/wp-content/uploads/2016/01/ca-koi-sanke1-1.jpg",
       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/ca-koi-san-ke2-600x800-1.jpg",
+      "https://daiphatkoifarm.vn/wp-content/uploads/2022/08/z3647025589657_1a7799fec49458a0942311208dd3b297.jpg",
+      "https://daiphatkoifarm.vn/wp-content/uploads/2022/08/z3647025600262_b4ec938528d089f790f03dc7bb263917.jpg",
     ],
+    reviews: [],
   },
   {
     id: "EXK-K2174",
@@ -35,6 +37,7 @@ const products = [
       "https://d2e07cbkdk0gwy.cloudfront.net/wp-content/uploads/2013/07/page/Yamatonishiki_03.18.2024-scaled.jpg",
       "https://bizweb.dktcdn.net/100/004/358/products/d476ad40-f39b-4719-a81c-024c960ad094-jpeg.jpg?v=1561289502147",
     ],
+    reviews: [],
   },
   {
     id: "EXK-K2173",
@@ -52,13 +55,30 @@ const products = [
       "https://daiphatkoifarm.vn/wp-content/uploads/2022/08/z3647025589657_1a7799fec49458a0942311208dd3b297.jpg",
       "https://daiphatkoifarm.vn/wp-content/uploads/2022/08/z3647025600262_b4ec938528d089f790f03dc7bb263917.jpg",
     ],
+    reviews: [],
   },
 ];
+
 const ProductDetailPage = () => {
   const { id } = useParams(); // Get the product ID from the URL
 
   // Find the product based on the ID
   const product = products.find((p) => p.id === id);
+  const [selectedImage, setSelectedImage] = useState(product.image);
+  const handleImageClick = (image) => {
+    setSelectedImage(image); // Update selected image on click
+  }; // State for the selected image
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+
+  const handleSubmit = () => {
+    if (rating > 0 && feedback) {
+      product.reviews.push({ rating, feedback });
+      setRating(0);
+      setFeedback("");
+      // Optionally, you can also trigger a state update or re-fetch the product to show the latest reviews
+    }
+  };
 
   if (!product) {
     return <p>Product not found</p>;
@@ -69,18 +89,23 @@ const ProductDetailPage = () => {
       <div className="flex">
         {/* Left Section: Image Gallery */}
         <div className="w-1/2 pr-10">
+          {/* Main Image Display */}
           <img
-            src={product.image}
+            src={selectedImage} // Use selected image for display
             alt={product.name}
             className="rounded-lg w-full mb-4 object-contain h-96"
           />
-          <div className="grid grid-cols-3 gap-4">
+
+          {/* Additional Images Gallery */}
+          <h3 className="text-xl font-semibold mb-4">More Images:</h3>
+          <div className="pl-[95px] grid grid-cols-5 gap-2">
             {product.additionalImages.map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`Product image ${index + 1}`}
-                className="h-24 object-cover rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                className="h-32 object-cover rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-200" // Adjusted height for better balance
+                onClick={() => handleImageClick(image)} // Update selected image on click
               />
             ))}
           </div>
@@ -117,11 +142,12 @@ const ProductDetailPage = () => {
           {/* Quantity Selection */}
           <div className="mb-6">
             <p className="font-semibold">Quantity:</p>
-            <Select title="Quantity" defaultValue="1" className="w-1/4">
+            <Input type="number" className="w-1/4" defaultValue={1} />
+            {/* <Select title="Quantity" defaultValue="1" className="w-1/4">
               <Option value="1">1</Option>
               <Option value="2">2</Option>
               <Option value="3">3</Option>
-            </Select>
+            </Select> */}
           </div>
 
           {/* Buy Now Button */}
@@ -142,6 +168,43 @@ const ProductDetailPage = () => {
           The Hi Utsuri variety is one of the most popular types of Koi due to
           its distinctive and vivid red and black pattern...
         </p>
+      </div>
+
+      {/* Rating and Feedback Section */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold mb-4">Rate and Review</h2>
+        <Form onFinish={handleSubmit}>
+          <Form.Item>
+            <Rate value={rating} onChange={setRating} />
+          </Form.Item>
+          <Form.Item>
+            <Input.TextArea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Write your feedback here..."
+              rows={4}
+              maxLength={200}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit Review
+            </Button>
+          </Form.Item>
+        </Form>
+
+        {/* Display Existing Reviews */}
+        <h3 className="text-xl font-semibold mt-6">Existing Reviews:</h3>
+        {product.reviews.length === 0 ? (
+          <p>No reviews yet.</p>
+        ) : (
+          product.reviews.map((review, index) => (
+            <div key={index} className="border-b border-gray-300 mb-4 pb-2">
+              <Rate value={review.rating} disabled allowHalf />
+              <p className="text-gray-600">{review.feedback}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

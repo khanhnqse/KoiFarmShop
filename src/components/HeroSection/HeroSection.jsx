@@ -1,5 +1,6 @@
 import { Button, Typography } from "antd";
 import "./HeroSection.css";
+import { Link } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 
@@ -17,9 +18,11 @@ function Hero() {
       >
         Discover the beauty of koi fish
       </Paragraph>
-      <Button type="primary" size="large">
-        Shop Now
-      </Button>
+      <Link to="/products">
+        <Button type="primary" size="large">
+          Shop Now
+        </Button>
+      </Link>
     </section>
   );
 }

@@ -1,52 +1,46 @@
-import { BiSupport } from "react-icons/bi";
-import { IoAccessibilityOutline, IoPricetagsOutline } from "react-icons/io5";
+import { IoPricetagsOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
-import { AimOutlined, ContactsFilled } from "@ant-design/icons";
+import { ContactsFilled } from "@ant-design/icons";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import { TbBookFilled } from "react-icons/tb";
+
+import { FcAbout } from "react-icons/fc";
+import { SiAnimalplanet } from "react-icons/si";
 
 const ServicesData = [
   {
     id: 1,
-    title: "CV Assistance",
-    link: "/cv",
-    icon: <IoAccessibilityOutline />,
+    title: "About us",
+    link: "/about-us",
+    icon: <FcAbout />,
     delay: 0.2,
   },
   {
     id: 2,
-    title: "Simulated Interview",
-    link: "/simulated-interview",
-    icon: <AimOutlined />,
+    title: "Koi fish",
+    link: "/products",
+    icon: <SiAnimalplanet />,
     delay: 0.3,
   },
   {
     id: 3,
-    title: "Learning",
-    link: "/learning",
-    icon: <TbBookFilled />,
+    title: "Contact",
+    link: "/contact-us",
+    icon: <ContactsFilled />,
     delay: 0.4,
   },
   {
     id: 4,
-    title: "Pricing",
-    link: "/pricing",
+    title: "News",
+    link: "/news",
     icon: <IoPricetagsOutline />,
     delay: 0.5,
   },
   {
     id: 5,
-    title: "Contact us",
-    link: "/contact-us",
+    title: "Consignment",
+    link: "/consignment",
     icon: <ContactsFilled />,
     delay: 0.6,
-  },
-  {
-    id: 6,
-    title: "Quickly support",
-    link: "/contact-us",
-    icon: <BiSupport />,
-    delay: 0.7,
   },
 ];
 

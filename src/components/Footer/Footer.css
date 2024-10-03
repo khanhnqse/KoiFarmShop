@@ -39,7 +39,7 @@
 
 .footer-link {
   color: white !important;
-  background-color: #3b7b7a;
+  
   transition: color 0.3s;
   font-size: 14px; /* Reduced font size */
 }

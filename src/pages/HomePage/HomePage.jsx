@@ -7,6 +7,7 @@ import Title from "antd/es/typography/Title";
 import Subscribe from "../../components/Subscribe/Subscribe";
 
 import Testimonials from "../../components/Feedback Section/Feedback";
+
 const Home = () => {
   return (
     <>

@@ -1,53 +1,75 @@
-import { Slider, Radio, Select } from "antd";
+import { Slider, Radio, Select, Spin } from "antd";
 import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const { Option } = Select;
 const ProductPage = () => {
-  const products = [
-    {
-      id: "EXK-K2175",
-      name: "Hi Utsuri",
-      price: 200,
-      image:
-        "https://bizweb.dktcdn.net/100/307/111/files/ca-koi-showa-sankoku1.jpg?v=1534352487117",
-    },
-    {
-      id: "EXK-K2174",
-      name: "Hi Utsuri",
-      price: 200,
-      image:
-        "https://visinhcakoi.com/wp-content/uploads/2021/07/ca-koi-showa-2-600x874-1.jpg",
-    },
-    {
-      id: "EXK-K2173",
-      name: "Kohaku",
-      price: 225,
-      image:
-        "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-    },
-    {
-      id: "EXK-K2173",
-      name: "Kohaku",
-      price: 225,
-      image:
-        "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-    },
-    {
-      id: "EXK-K2173",
-      name: "Kohaku",
-      price: 225,
-      image:
-        "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-    },
-    {
-      id: "EXK-K2173",
-      name: "Kohaku",
-      price: 225,
-      image:
-        "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-    },
-  ];
+  // const products = [
+  //   {
+  //     id: "EXK-K2175",
+  //     name: "Hi Utsuri",
+  //     price: 200,
+  //     image:
+  //       "https://bizweb.dktcdn.net/100/307/111/files/ca-koi-showa-sankoku1.jpg?v=1534352487117",
+  //   },
+  //   {
+  //     id: "EXK-K2174",
+  //     name: "Hi Utsuri",
+  //     price: 200,
+  //     image:
+  //       "https://visinhcakoi.com/wp-content/uploads/2021/07/ca-koi-showa-2-600x874-1.jpg",
+  //   },
+  //   {
+  //     id: "EXK-K2173",
+  //     name: "Kohaku",
+  //     price: 225,
+  //     image:
+  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
+  //   },
+  //   {
+  //     id: "EXK-K2173",
+  //     name: "Kohaku",
+  //     price: 225,
+  //     image:
+  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
+  //   },
+  //   {
+  //     id: "EXK-K2173",
+  //     name: "Kohaku",
+  //     price: 225,
+  //     image:
+  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
+  //   },
+  //   {
+  //     id: "EXK-K2173",
+  //     name: "Kohaku",
+  //     price: 225,
+  //     image:
+  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
+  //   },
+  // ];
+  const [fishs, setFishs] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+
+  const fetchFishs = async () => {
+    setLoading(true); //  Set loading to true before fetching
+    try {
+      const response = await axios.get(api);
+      console.log(response.data);
+      setFishs(response.data);
+    } catch (error) {
+      console.error("Error fetching fish data:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
+
+  useEffect(() => {
+    fetchFishs();
+  }, []);
 
   return (
     <div className="flex px-10 py-5">
@@ -120,8 +142,14 @@ const ProductPage = () => {
           </Select>
         </div>
 
-        {/* Use ProductGrid Component */}
-        <ProductGrid products={products} />
+        {/* Step 3: Add loading indicator */}
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <ProductGrid products={fishs} />
+        )}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
 import logo from "../../assets/logo.png";
 
 import "./Footer.css"; // Import the CSS file
+import { Link } from "react-router-dom";
 
 const { Paragraph, Title } = Typography;
 
@@ -59,24 +60,24 @@ export default function Footer() {
           </Title>
           <Typography direction="vertical" size="middle">
             <Paragraph className="footer-paragraph">
-              {/* <Link to="#" className="footer-link">
+              <Link to="/" className="footer-link">
                 Home
-              </Link> */}
+              </Link>
             </Paragraph>
             <Paragraph className="footer-paragraph">
-              {/* <Link to="#" className="footer-link">
-                CV Assistance
-              </Link> */}
+              <Link to="about-us" className="footer-link">
+                About Us
+              </Link>
             </Paragraph>
             <Paragraph className="footer-paragraph">
-              {/* <Link to="#" className="footer-link">
-                Simulated Interview
-              </Link> */}
+              <Link to="products" className="footer-link">
+                Products
+              </Link>
             </Paragraph>
             <Paragraph className="footer-paragraph">
-              {/* <Link to="#" className="footer-link">
-                Pricing
-              </Link> */}
+              <Link to="contact-us" className="footer-link">
+                Contact
+              </Link>
             </Paragraph>
           </Typography>
         </Col>

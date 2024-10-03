@@ -15,7 +15,7 @@ const ProductGrid = ({ products }) => {
       {products.map((product) => (
         <div
           key={product.id}
-          className="text-center border p-4 rounded-lg shadow-lg"
+          className="text-center border p-4 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105" // Add hover scaling
         >
           <img
             src={product.image}
@@ -27,7 +27,11 @@ const ProductGrid = ({ products }) => {
           <p className="text-red-600 font-bold">${product.price}.00</p>
 
           {/* Buy Button */}
-          <Button type="primary" onClick={() => handleBuyNow(product.id)}>
+          <Button
+            type="primary"
+            onClick={() => handleBuyNow(product.id)}
+            className="transition-colors duration-300 hover:bg-red-600 hover:text-white"
+          >
             View Now
           </Button>
         </div>
