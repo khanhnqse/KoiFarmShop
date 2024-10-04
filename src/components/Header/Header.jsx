@@ -1,50 +1,51 @@
 import { Layout, Menu, Input, Badge } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import "./Header.css";
-
+import { MenuItems } from "../../constant/menu-data";
+// import heroImg from "../../assets/images/hero.jpg";
+import logo from "../../assets/logo.png";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 const { Header: AntHeader } = Layout;
 
 function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedKey, setSelectedKey] = useState(location.pathname);
+
+  useEffect(() => {
+    setSelectedKey(location.pathname);
+  }, [location.pathname]);
+
+  const handleMenuClick = ({ key }) => {
+    setSelectedKey(key);
+    navigate(key);
+  };
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">
       <div className="logo">
-        <img
-          src="https://exclusivelykoi.co.uk/themes/exclusively-koi/assets/img/logo-black.svg"
-          alt="Exclusively Koi"
-          style={{ width: "120px" }}
-        />
+        <img src={logo} alt="Exclusively Koi" style={{ width: "120px" }} />
       </div>
       <Menu
-        style={{ backgroundColor: "transparent" }}
-        theme="dark"
+        onClick={handleMenuClick}
+        selectedKeys={[selectedKey]}
+        theme="light"
         mode="horizontal"
-        className="Menu"
-      >
-        <nav>
-          <ul>
-            <li>
-              <a href="#">Home</a>
-            </li>
-            <li>
-              <a href="#">About Us</a>
-            </li>
-            <li>
-              <a href="#">Products</a>
-            </li>
-            <li>
-              <a href="#">Contact</a>
-            </li>
-            <li>
-              <a href="#">News</a>
-            </li>
-          </ul>
-        </nav>
-      </Menu>
-      <div className="search-bar">
+        style={{
+          backgroundColor: "#fff ",
+          color: "#000",
+          width: "100%",
+          paddingLeft: "120px",
+          // Center menu items on small screens
+        }}
+        items={MenuItems}
+      />
+
+      <div className="search-bar ">
         <Input.Search
+          className="p-8 w-[350px]"
           placeholder="Search"
           enterButton="Search"
-          style={{ maxWidth: 300 }}
         />
       </div>
       <div className="cart">

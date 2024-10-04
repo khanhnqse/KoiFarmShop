@@ -6,7 +6,9 @@ const { Title } = Typography;
 function FeaturedProducts() {
   return (
     <section className="featured-products">
-      <Title level={2}>Featured Products</Title>
+      <Title className="pb-10" level={2}>
+        Featured Products
+      </Title>
       <Row gutter={[10, 6]} className="product-grid">
         <Col xs={24} sm={12} md={6}>
           <Card

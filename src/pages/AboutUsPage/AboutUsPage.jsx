@@ -2,6 +2,7 @@ import { Button, Col, Row } from "antd";
 import AboutUsSection from "../../components/AboutUsSection/AboutUsSection";
 import Title from "antd/es/typography/Title";
 import Paragraph from "antd/es/typography/Paragraph";
+import { Link } from "react-router-dom";
 
 const AboutUs = () => {
   return (
@@ -65,9 +66,11 @@ const AboutUs = () => {
         </Col>
       </Row>
       <div className="text-center mt-10 mb-10">
-        <Button type="default" size="large">
-          Contact Us Today
-        </Button>
+        <Link to="/contact-us">
+          <Button type="default" size="large">
+            Contact Us Today
+          </Button>
+        </Link>
       </div>
     </>
   );

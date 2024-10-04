@@ -1,7 +1,7 @@
 .hero {
     text-align: center;
-    padding: 120px 0;
-    background-image: url('src/assets/Section.png');
+    padding: 280px 0;
+    background-image: url('src/assets/hero.png');
     background-size: cover;
     background-position: center;
   }
