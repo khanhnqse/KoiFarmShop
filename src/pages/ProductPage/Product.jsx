@@ -58,7 +58,7 @@ const ProductPage = () => {
     setLoading(true); //  Set loading to true before fetching
     try {
       const response = await axios.get(api);
-      console.log(response.data);
+      console.log("data", response.data);
       setFishs(response.data);
     } catch (error) {
       console.error("Error fetching fish data:", error);
