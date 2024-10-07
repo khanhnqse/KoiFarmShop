@@ -6,6 +6,7 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const ProductInfo = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
@@ -120,13 +121,15 @@ const ProductInfo = ({ product }) => {
 
       {/* Buy Now & Add to Cart Buttons */}
       <div className="flex space-x-4">
-        <Button
-          type="primary"
-          size="large"
-          className="hover:bg-green-600 transition-colors duration-300"
-        >
-          Buy Now
-        </Button>
+        <Link to="/cart">
+          <Button
+            type="primary"
+            size="large"
+            className="hover:bg-green-600 transition-colors duration-300"
+          >
+            Buy Now
+          </Button>
+        </Link>
 
         <Button
           type="default"

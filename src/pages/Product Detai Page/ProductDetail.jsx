@@ -9,11 +9,11 @@ import { Col, Row, Spin } from "antd";
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [fishs, setFishs] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
 
   const fetchFishs = async () => {
-    setLoading(true); // Set loading to true before fetching
+    setLoading(true);
     try {
       const response = await axios.get(api);
       console.log("data", response.data);
@@ -21,7 +21,7 @@ const ProductDetailPage = () => {
     } catch (error) {
       console.error("Error fetching fish data:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     }
   };
 

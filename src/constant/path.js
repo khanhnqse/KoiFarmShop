@@ -21,6 +21,7 @@ export const PATHS = {
   },
   NEWS: {
     INDEX: NEWS,
+    DETAIL: `article/:id`,
   },
   CONSIGNMENT: {
     INDEX: CONSIGNMENT,

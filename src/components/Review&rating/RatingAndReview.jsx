@@ -21,34 +21,38 @@ const RatingAndReview = ({ product }) => {
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-bold mb-4">Rate and Review</h2>
-      <Form onFinish={handleSubmit}>
-        <Form.Item>
-          <Rate value={rating} onChange={setRating} />
-        </Form.Item>
-        <Form.Item>
-          <Input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)} // Capture username input
-            placeholder="Enter your username..."
-            className="border-gray-300 rounded-md"
-          />
-        </Form.Item>
-        <Form.Item>
-          <Input.TextArea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Write your feedback here..."
-            rows={4}
-            maxLength={200}
-            className="border-gray-300 rounded-md"
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit Review
-          </Button>
-        </Form.Item>
-      </Form>
+      <div className="flex ">
+        <div className="w-1/2">
+          <Form onFinish={handleSubmit}>
+            <Form.Item>
+              <Rate value={rating} onChange={setRating} />
+            </Form.Item>
+            <Form.Item>
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)} // Capture username input
+                placeholder="Enter your username..."
+                className="border-gray-300 rounded-md"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Input.TextArea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Write your feedback here..."
+                rows={4}
+                maxLength={200}
+                className="border-gray-300 rounded-md"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit Review
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </div>
 
       {/* Display Existing Reviews */}
       <h3 className="text-xl font-semibold mt-6 mb-5">Existing Reviews:</h3>

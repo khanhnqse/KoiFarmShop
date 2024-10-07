@@ -11,9 +11,9 @@ const AboutUs = () => {
       <Row
         gutter={[16, 16]}
         style={{
-          padding: "64px 24px", // Smaller padding for mobile devices
-          maxWidth: "1200px", // Limit the max width
-          margin: "0 auto", // Center the content
+          padding: "64px 24px",
+          maxWidth: "1200px",
+          margin: "0 auto",
         }}
       >
         <Col xs={24} md={12}>
