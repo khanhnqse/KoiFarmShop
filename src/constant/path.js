@@ -3,6 +3,7 @@ const PRODUCTS = '/products';
 const NEWS = '/news';
 const CONSIGNMENT = '/consignment';
 const CONTACT = '/contact-us';
+const CART = '/cart';
 
 export const PATHS = {
   HOME: '/',
@@ -20,6 +21,7 @@ export const PATHS = {
   },
   NEWS: {
     INDEX: NEWS,
+    DETAIL: `article/:id`,
   },
   CONSIGNMENT: {
     INDEX: CONSIGNMENT,
@@ -27,5 +29,8 @@ export const PATHS = {
   CONTACT: {
     INDEX: CONTACT,
   },
+  CART:{
+    INDEX: CART,
+  }
 
 };

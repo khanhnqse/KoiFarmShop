@@ -1,9 +1,16 @@
+import { Button } from "antd";
 import { useState } from "react";
 import { FaFacebook, FaTwitter, FaPinterest, FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const NewsPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const handleReadNews = (id) => {
+    const article = newsArticles.find((article) => article.id === id);
+    navigate(`/article/${id}`, { state: { article } });
+  };
 
   const newsArticles = [
     {
@@ -14,6 +21,13 @@ const NewsPage = () => {
       image:
         "https://static.chotot.com/storage/chotot-kinhnghiem/c2c/2021/04/ca3f5481-ca-koi.jpeg",
       category: "Varieties",
+      author: "Dr. Hiroshi Tanaka",
+      publishDate: "2024-10-01",
+      tags: ["Koi", "Varieties", "Discovery"],
+      content:
+        "In a groundbreaking discovery, researchers from the Koi Research Institute have identified a new variety of koi fish in a secluded pond in Japan. This particular koi showcases vibrant colors and unique patterns that have not been documented in existing koi varieties. The discovery highlights not only the rich biodiversity of koi but also emphasizes the importance of conserving natural habitats where these fish can thrive. As we continue to explore the depths of nature, we uncover hidden treasures that remind us of the delicate balance of our ecosystems. Scientists are now studying the genetic makeup of this new variety to understand its traits and the environmental conditions that led to its unique development.",
+      detailDescription:
+        "This koi variety features an intricate blend of colors, showcasing a stunning contrast that captivates koi enthusiasts. Its patterns are reminiscent of traditional Japanese art, embodying the spirit of harmony and tranquility often associated with koi fish. The research team plans to monitor the population of this variety in its natural habitat and may eventually bring them into captivity for breeding purposes, allowing koi lovers worldwide to enjoy this extraordinary discovery.",
     },
     {
       id: 2,
@@ -22,6 +36,13 @@ const NewsPage = () => {
         "Learn the basics of koi breeding with our comprehensive guide for novice enthusiasts.",
       image: "https://jpkoi.vn/wp-content/uploads/2020/04/ca-chep-koi-dep.jpg",
       category: "Breeding",
+      author: "Emily Wong",
+      publishDate: "2024-10-04",
+      tags: ["Koi", "Breeding", "Guide"],
+      content:
+        "Breeding koi fish is an exciting and rewarding experience for hobbyists looking to expand their koi collection. This article provides a comprehensive guide to the basics of koi breeding, including essential tips on selecting the right parent fish, creating optimal spawning environments, and caring for the fry once they hatch. Understanding the breeding cycle of koi and the specific conditions they require for successful reproduction is crucial for any enthusiast. From water quality to temperature and lighting, each factor plays a vital role in the health and viability of the offspring. With the right knowledge and techniques, anyone can embark on this rewarding journey, fostering a deeper appreciation for these beautiful creatures.",
+      detailDescription:
+        "The article will delve into the various breeding methods, including natural spawning and artificial spawning techniques. Readers will learn about the importance of genetics in koi breeding, how to select fish with desirable traits, and the best practices for raising healthy fry. Additionally, tips on common challenges faced during the breeding process will be addressed, ensuring that beginners feel confident and prepared as they take their first steps into the world of koi breeding.",
     },
     {
       id: 3,
@@ -31,8 +52,30 @@ const NewsPage = () => {
       image:
         "https://greenmore.vn/wp-content/uploads/2019/07/thiet-ke-san-vuon-ho-ca-koi-dep-greenmore-07.jpg",
       category: "Habitat",
+      author: "John Smith",
+      publishDate: "2024-10-06",
+      tags: ["Koi", "Pond", "Habitat"],
+      content:
+        "A well-designed koi pond is crucial for the health and happiness of your koi fish. This article outlines the key elements necessary for creating an ideal koi pond environment, from water quality and pond depth to filtration systems and landscaping. Each of these components contributes to the overall well-being of your koi. Proper water management is essential; koi thrive in clean, well-oxygenated water. The article provides detailed instructions on setting up an efficient filtration system that removes waste while maintaining optimal water quality. Furthermore, considerations for depth and surface area are discussed to ensure koi have ample space to swim and thrive.",
+      detailDescription:
+        "In addition to practical advice, the article also explores aesthetic elements, including how to incorporate natural features like plants and rocks into your pond design. These features not only enhance the beauty of your pond but also provide hiding spots for koi, reducing stress. Readers will find guidance on maintaining pond health throughout the seasons and learn about common challenges and solutions. By the end of the article, readers will be equipped with the knowledge to design a picturesque and functional koi pond that enhances their outdoor space and provides a nurturing environment for their beloved fish.",
     },
-    // Add more articles as needed
+    {
+      id: 4,
+      title: "Top 5 Koi Varieties for Your Pond",
+      summary:
+        "Explore the most popular koi varieties and their unique characteristics to help you choose the right one for your pond.",
+      image:
+        "https://images.unsplash.com/photo-1515986821211-0443679c2c9e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      category: "Varieties",
+      author: "Sarah Lee",
+      publishDate: "2024-10-08",
+      tags: ["Koi", "Varieties", "Guide"],
+      content:
+        "Choosing the right koi for your pond can significantly impact the aesthetic appeal and ecological balance of your garden. This article explores five of the most popular koi varieties, detailing their unique characteristics and suitability for different pond environments. From the striking colors of the Kohaku to the fascinating patterns of the Showa, understanding these varieties will help you make an informed decision. Each koi has its own set of requirements regarding space, water conditions, and companionship, and this article aims to educate readers on how to provide the best care for their chosen fish.",
+      detailDescription:
+        "The article includes a comprehensive comparison of each variety, highlighting their distinctive traits, such as color patterns, size, and temperament. Readers will gain insights into the historical significance of each variety in Japanese culture and their popularity among koi enthusiasts worldwide. Additionally, practical tips on how to introduce new koi to an existing pond and ensure compatibility with other fish will be provided. This informative guide will empower readers to select koi that not only beautify their pond but also thrive in harmony with their environment.",
+    },
   ];
 
   const filteredArticles = newsArticles.filter(
@@ -101,9 +144,12 @@ const NewsPage = () => {
                 <h2 className="text-xl font-semibold mb-2">{article.title}</h2>
                 <p className="text-gray-600 mb-4">{article.summary}</p>
                 <div className="flex justify-between items-center">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
+                  <Button
+                    onClick={() => handleReadNews(article.id)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
+                  >
                     Read More
-                  </button>
+                  </Button>
                   <div className="flex space-x-2">
                     <FaFacebook className="text-blue-600 cursor-pointer" />
                     <FaTwitter className="text-blue-400 cursor-pointer" />

@@ -15,7 +15,6 @@ const Home = () => {
       <FeaturedProducts />
       <Banner />
 
-      {/* <img style={{ width: "1200px"  }} src={banner1} alt="Hero Image" /> */}
       <img
         src={banner2}
         alt="Untitled design"

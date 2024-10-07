@@ -10,6 +10,8 @@ import NewsPage from "./pages/News Page/NewsPage";
 import ContactUsForm from "./pages/Contact/Contact";
 import ProductPage from "./pages/ProductPage/Product";
 import ProductDetailPage from "./pages/Product Detai Page/ProductDetail";
+import CartPage from "./pages/CartPage/CartPage";
+import ArticleDetail from "./pages/NewsDetailPage/NewsDetail";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path={PATHS.CONTACT.INDEX} element={<ContactUsForm />} />
         <Route path={PATHS.PRODUCTS.INDEX} element={<ProductPage />} />
         <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
+        <Route path={PATHS.CART.INDEX} element={<CartPage />} />
+        <Route path={PATHS.NEWS.DETAIL} element={<ArticleDetail />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

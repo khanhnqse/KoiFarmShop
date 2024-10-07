@@ -4,7 +4,7 @@ import "./Header.css";
 import { MenuItems } from "../../constant/menu-data";
 // import heroImg from "../../assets/images/hero.jpg";
 import logo from "../../assets/logo.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 const { Header: AntHeader } = Layout;
 
@@ -49,9 +49,11 @@ function Header() {
         />
       </div>
       <div className="cart">
-        <Badge count={0} showZero>
-          <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
-        </Badge>
+        <Link to="/cart">
+          <Badge count={1} showZero>
+            <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
+          </Badge>
+        </Link>
       </div>
     </AntHeader>
   );

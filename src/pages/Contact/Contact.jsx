@@ -2,12 +2,6 @@ import { Form, Input, Button, Typography, message } from "antd";
 import React from "react";
 
 const ContactUsForm = () => {
-  //   const onFinish = (values) => {
-  //     console.log("Received values:", values);
-  //     message.success("Your message has been sent successfully!");
-  //     // Here you can add your form submission logic (e.g., API call)
-  //   };
-
   const [result, setResult] = React.useState("");
 
   const onSubmit = async (values) => {
