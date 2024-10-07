@@ -143,11 +143,6 @@ const ProductDetailPage = () => {
           <div className="mb-6">
             <p className="font-semibold">Quantity:</p>
             <Input type="number" className="w-1/4" defaultValue={1} />
-            {/* <Select title="Quantity" defaultValue="1" className="w-1/4">
-              <Option value="1">1</Option>
-              <Option value="2">2</Option>
-              <Option value="3">3</Option>
-            </Select> */}
           </div>
 
           {/* Buy Now Button */}

@@ -6,50 +6,6 @@ import axios from "axios";
 
 const { Option } = Select;
 const ProductPage = () => {
-  // const products = [
-  //   {
-  //     id: "EXK-K2175",
-  //     name: "Hi Utsuri",
-  //     price: 200,
-  //     image:
-  //       "https://bizweb.dktcdn.net/100/307/111/files/ca-koi-showa-sankoku1.jpg?v=1534352487117",
-  //   },
-  //   {
-  //     id: "EXK-K2174",
-  //     name: "Hi Utsuri",
-  //     price: 200,
-  //     image:
-  //       "https://visinhcakoi.com/wp-content/uploads/2021/07/ca-koi-showa-2-600x874-1.jpg",
-  //   },
-  //   {
-  //     id: "EXK-K2173",
-  //     name: "Kohaku",
-  //     price: 225,
-  //     image:
-  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-  //   },
-  //   {
-  //     id: "EXK-K2173",
-  //     name: "Kohaku",
-  //     price: 225,
-  //     image:
-  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-  //   },
-  //   {
-  //     id: "EXK-K2173",
-  //     name: "Kohaku",
-  //     price: 225,
-  //     image:
-  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-  //   },
-  //   {
-  //     id: "EXK-K2173",
-  //     name: "Kohaku",
-  //     price: 225,
-  //     image:
-  //       "https://minhxuankoifarm.com/wp-content/uploads/2020/09/b3a2af58d86358b43bcbef7c409ca396.jpg",
-  //   },
-  // ];
   const [fishs, setFishs] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
   const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
