@@ -4,7 +4,7 @@ import ProductInfo from "../../components/Product Detail/ProductDetail";
 import RatingAndReview from "../../components/Review&rating/RatingAndReview";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Spin } from "antd";
+import { Col, Row, Spin } from "antd";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -59,10 +59,11 @@ const ProductDetailPage = () => {
       {/* Product Specifications or Details */}
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Koi Details</h2>
-        <p className="text-gray-600">
-          The Hi Utsuri variety is one of the most popular types of Koi due to
-          its distinctive and vivid red and black pattern...
-        </p>
+        <Row>
+          <Col span={12}>
+            <p className="text-gray-600">{product.detailDescription}</p>
+          </Col>
+        </Row>
       </div>
 
       {/* Rating and Review Section */}

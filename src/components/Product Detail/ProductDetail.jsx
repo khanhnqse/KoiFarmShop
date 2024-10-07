@@ -1,8 +1,35 @@
 /* eslint-disable react/prop-types */
-import { Button, Input, Rate } from "antd";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { Button, Divider, Input, Rate, notification } from "antd";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
+import { useState } from "react";
 
 const ProductInfo = ({ product }) => {
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAddToCart = () => {
+    // Handle adding the product to the cart
+    // Example: Add product to cart with selected quantity
+    const cartItem = {
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+    };
+
+    // Trigger a notification for feedback
+    notification.success({
+      message: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+      placement: "bottomRight",
+    });
+
+    // You can now add this cartItem to a cart state or dispatch it to your store
+    console.log("Product added to cart: ", cartItem);
+  };
+
   return (
     <div className="w-1/2">
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
@@ -20,6 +47,8 @@ const ProductInfo = ({ product }) => {
 
       {/* Product Description */}
       <p className="text-gray-600 mb-6">{product.description}</p>
+
+      <Divider />
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
@@ -75,21 +104,39 @@ const ProductInfo = ({ product }) => {
           </div>
         </div>
       </div>
+      <Divider />
 
       {/* Quantity Selection */}
       <div className="mb-6 mt-4">
         <p className="font-semibold">Quantity:</p>
-        <Input type="number" className="w-1/4" defaultValue={1} />
+        <Input
+          type="number"
+          className="w-1/4"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value))}
+          min={1}
+        />
       </div>
 
-      {/* Buy Now Button */}
-      <Button
-        type="primary"
-        size="large"
-        className="hover:bg-green-600 transition-colors duration-300"
-      >
-        Buy Now
-      </Button>
+      {/* Buy Now & Add to Cart Buttons */}
+      <div className="flex space-x-4">
+        <Button
+          type="primary"
+          size="large"
+          className="hover:bg-green-600 transition-colors duration-300"
+        >
+          Buy Now
+        </Button>
+
+        <Button
+          type="default"
+          size="large"
+          icon={<ShoppingCartOutlined />}
+          onClick={handleAddToCart}
+        >
+          Add to Cart
+        </Button>
+      </div>
     </div>
   );
 };
