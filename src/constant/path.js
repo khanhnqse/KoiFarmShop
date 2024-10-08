@@ -4,7 +4,7 @@ const NEWS = '/news';
 const CONSIGNMENT = '/consignment';
 const CONTACT = '/contact-us';
 const CART = '/cart';
-
+const PROFILE = '/profile';
 export const PATHS = {
   HOME: '/',
   LOGIN: '/login',
@@ -31,6 +31,9 @@ export const PATHS = {
   },
   CART:{
     INDEX: CART,
-  }
+  },
+  PROFILE: {
+    INDEX: PROFILE,
+  },
 
 };

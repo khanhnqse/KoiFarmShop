@@ -1,4 +1,4 @@
-import { Slider, Radio, Select, Spin } from "antd";
+import { Slider, Radio, Select, Spin, Pagination } from "antd";
 import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useEffect, useState } from "react";
@@ -8,6 +8,8 @@ const { Option } = Select;
 const ProductPage = () => {
   const [fishs, setFishs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
   const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
 
   const fetchFishs = async () => {
@@ -26,6 +28,16 @@ const ProductPage = () => {
   useEffect(() => {
     fetchFishs();
   }, []);
+
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
+  const paginatedFishs = fishs.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="flex px-10 py-5">
@@ -91,10 +103,14 @@ const ProductPage = () => {
             <Option value="priceHigh">Price: High to Low</Option>
             <Option value="priceLow">Price: Low to High</Option>
           </Select>
-          <Select defaultValue="12 Products Per Page" className="w-1/4">
+          <Select
+            defaultValue="3 Products Per Page"
+            className="w-1/4"
+            onChange={(value) => setPageSize(value)}
+          >
+            <Option value="3">3 Products Per Page</Option>
+            <Option value="6">6 Products Per Page</Option>
             <Option value="12">12 Products Per Page</Option>
-            <Option value="24">24 Products Per Page</Option>
-            <Option value="48">48 Products Per Page</Option>
           </Select>
         </div>
 
@@ -104,7 +120,16 @@ const ProductPage = () => {
             <Spin size="large" />
           </div>
         ) : (
-          <ProductGrid products={fishs} />
+          <>
+            <ProductGrid products={paginatedFishs} />
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={fishs.length}
+              onChange={handlePageChange}
+              className="mt-6 text-center"
+            />
+          </>
         )}
       </div>
     </div>
