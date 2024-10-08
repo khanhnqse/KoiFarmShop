@@ -1,92 +1,47 @@
-import { Card, Button, Typography, Row, Col } from "antd";
+import { Typography, Spin } from "antd";
 import "./FeaturedProducts.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import ProductGrid from "../ProductGrid/ProductGrid";
 
 const { Title } = Typography;
 
 function FeaturedProducts() {
+  const [fishs, setFishs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+
+  const fetchFishs = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(api);
+      console.log("data", response.data);
+      setFishs(response.data);
+    } catch (error) {
+      console.error("Error fetching fish data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFishs();
+  }, []);
+
   return (
     <section className="featured-products">
       <Title className="pb-10" level={2}>
         Featured Products
       </Title>
-      <Row gutter={[10, 6]} className="product-grid">
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            hoverable
-            cover={
-              <img
-                src="https://img.freepik.com/free-psd/swimming-fish-isolated_23-2151359668.jpg"
-                alt="Product 1"
-              />
-            }
-          >
-            <Card.Meta
-              title="Product 1"
-              description="Description of Product 1"
-            />
-            <Button type="primary" style={{ marginTop: "10px" }}>
-              Add to Cart
-            </Button>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            hoverable
-            cover={
-              <img
-                src="https://www.nicepng.com/png/detail/410-4105844_fish-koi-japan-png.png"
-                alt="Product 2"
-              />
-            }
-          >
-            <Card.Meta
-              title="Product 2"
-              description="Description of Product 2"
-            />
-            <Button type="primary" style={{ marginTop: "10px" }}>
-              Add to Cart
-            </Button>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            hoverable
-            cover={
-              <img
-                src="https://www.pngitem.com/pimgs/m/139-1393070_japanese-koi-fish-png-png-download-koi-fish.png"
-                alt="Product 3"
-              />
-            }
-          >
-            <Card.Meta
-              title="Product 3"
-              description="Description of Product 3"
-            />
-            <Button type="primary" style={{ marginTop: "10px" }}>
-              Add to Cart
-            </Button>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            hoverable
-            cover={
-              <img
-                src="https://img.freepik.com/free-psd/swimming-fish-isolated_23-2151359680.jpg"
-                alt="Product 3"
-              />
-            }
-          >
-            <Card.Meta
-              title="Product 3"
-              description="Description of Product 3"
-            />
-            <Button type="primary" style={{ marginTop: "10px" }}>
-              Add to Cart
-            </Button>
-          </Card>
-        </Col>
-      </Row>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-full">
+          <Spin size="large" />
+        </div>
+      ) : (
+        // Use slice to limit the number of items to 3
+        <ProductGrid products={fishs.slice(0, 3)} />
+      )}
     </section>
   );
 }

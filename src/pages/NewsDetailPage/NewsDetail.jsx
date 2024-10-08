@@ -26,7 +26,19 @@ const ArticleDetail = () => {
           {article.title}
         </Title>
         <Paragraph className="text-gray-600 mb-4">{article.summary}</Paragraph>
+
         <Paragraph className="text-gray-800">{article.content}</Paragraph>
+        <Paragraph className="text-gray-800">{article.content1}</Paragraph>
+        {/* Add subImage display */}
+        {article.subImage && (
+          <img
+            src={article.subImage}
+            alt={`${article.title} - Sub Image`}
+            className="w-full h-[550px] object-cover mb-4" // Adjusted size
+          />
+        )}
+        <Paragraph className="text-gray-800">{article.content2}</Paragraph>
+        <Paragraph className="text-gray-800">{article.content3}</Paragraph>
         <div className="mt-4">
           <span className="font-semibold">Author:</span> {article.author}
         </div>
