@@ -1,12 +1,16 @@
-import { Button, Spin } from "antd";
+import { Button, Spin, Select } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaFacebook, FaTwitter, FaPinterest, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+const { Option } = Select;
+
 const NewsPage = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTag, setSelectedTag] = useState("All");
   const api = "https://66fe0942699369308956d80c.mockapi.io/news";
 
   const fetchFishs = async () => {
@@ -27,17 +31,22 @@ const NewsPage = () => {
   }, []);
 
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("All");
+
   const handleReadNews = (id) => {
     const article = news.find((article) => article.id === id);
     navigate(`/article/${id}`, { state: { article } });
   };
 
+  // Extract unique tags
+  const uniqueTags = [
+    "All",
+    ...new Set(news.flatMap((article) => article.tags)),
+  ];
+
   const filteredArticles = news.filter(
     (article) =>
       article.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedFilter === "All" || article.category === selectedFilter)
+      (selectedTag === "All" || article.tags.includes(selectedTag))
   );
 
   return (
@@ -68,20 +77,18 @@ const NewsPage = () => {
             />
             <FaSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
-          <div className="flex space-x-2">
-            {["All", "Breeding", "Habitat", "Varieties"].map((filter) => (
-              <button
-                key={filter}
-                className={`px-4 py-2 rounded-full ${
-                  selectedFilter === filter
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => setSelectedFilter(filter)}
-              >
-                {filter}
-              </button>
-            ))}
+          <div className="flex ">
+            <Select
+              defaultValue="All"
+              className="w-[220px] "
+              onChange={(value) => setSelectedTag(value)}
+            >
+              {uniqueTags.map((tag) => (
+                <Option key={tag} value={tag}>
+                  {tag}
+                </Option>
+              ))}
+            </Select>
           </div>
         </div>
 
