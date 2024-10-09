@@ -72,7 +72,7 @@ function Header() {
       </div> */}
       <div className="cart pt-3">
         <Link to="/cart">
-          <Badge count={1} showZero className="pb-1">
+          <Badge count={0} showZero className="pb-1">
             <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
           </Badge>
         </Link>

@@ -36,7 +36,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      message.error("An error occurred during login. Please try again.");
+      message.error("Wrong User name or Password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -131,7 +131,8 @@ const LoginPage = () => {
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{
-            backgroundImage: "url('https://images')",
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1716787277130-dedef0bc94ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

@@ -24,17 +24,18 @@ const RegisterPage = () => {
       );
 
       if (response.status === 200) {
-        // Handle successful registration
         message.success("Registration successful! Please log in.");
-        // Redirect to login page
+
         navigate(PATHS.LOGIN);
-      } else {
-        // Handle registration failure
-        message.error("Registration failed. Please try again.");
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      message.error("An error occurred during registration. Please try again.");
+      if (error.response && error.response.data) {
+        message.error(error.response.data);
+      } else {
+        message.error(
+          "An error occurred during registration. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -49,8 +50,7 @@ const RegisterPage = () => {
         {/* Left section (Register form) */}
         <div className="w-2/3 p-10">
           <div className="text-left mb-8">
-            <img src={logo} alt="Logo" className="h-12 mb-4" />{" "}
-            {/* Replace with your logo */}
+            <img src={logo} alt="Logo" className="h-12 mb-4" />
             <h2 className="text-3xl font-bold mb-2">
               Register to Buy your Koi
             </h2>
@@ -103,7 +103,10 @@ const RegisterPage = () => {
             </Form.Item>
             <Form.Item
               name="email"
-              rules={[{ required: true, message: "Please input your email!" }]}
+              rules={[
+                { required: true, message: "Please input your email!" },
+                { type: "email", message: "Please enter a valid email!" },
+              ]}
             >
               <Input
                 placeholder="Email"
@@ -115,6 +118,10 @@ const RegisterPage = () => {
               name="password"
               rules={[
                 { required: true, message: "Please input your password!" },
+                {
+                  min: 6,
+                  message: "Password must be at least 6 characters long!",
+                },
               ]}
             >
               <Input.Password
@@ -125,11 +132,19 @@ const RegisterPage = () => {
             </Form.Item>
             <Form.Item
               name="confirmPassword"
+              dependencies={["password"]}
               rules={[
-                {
-                  required: true,
-                  message: "Please input your confirm password!",
-                },
+                { required: true, message: "Please confirm your password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("The two passwords do not match!")
+                    );
+                  },
+                }),
               ]}
             >
               <Input.Password
@@ -144,7 +159,7 @@ const RegisterPage = () => {
               <Button
                 type="primary"
                 size="large"
-                className="w-full mt-6 bg-gradient-to-r from-[#3B7B7A] to-teal-500 "
+                className="w-full mt-6 bg-gradient-to-r from-[#3B7B7A] to-teal-500"
                 htmlType="submit"
               >
                 Register <Spin spinning={loading} />
@@ -157,7 +172,8 @@ const RegisterPage = () => {
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{
-            backgroundImage: "url('https://images')",
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1651357159179-38f0be5bc74d?q=80&w=1818&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
