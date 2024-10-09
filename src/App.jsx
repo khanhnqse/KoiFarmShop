@@ -12,6 +12,8 @@ import ProductPage from "./pages/ProductPage/Product";
 import ProductDetailPage from "./pages/Product Detai Page/ProductDetail";
 import CartPage from "./pages/CartPage/CartPage";
 import ArticleDetail from "./pages/NewsDetailPage/NewsDetail";
+import UserProfile from "./pages/UserProfile/UserProfile";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
         <Route path={PATHS.CART.INDEX} element={<CartPage />} />
         <Route path={PATHS.NEWS.DETAIL} element={<ArticleDetail />} />
+        <Route path={PATHS.PROFILE.INDEX} element={<UserProfile />} />
+        <Route path={PATHS.CHECKOUT.INDEX} element={<CheckoutPage />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

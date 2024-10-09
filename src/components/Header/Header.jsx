@@ -1,11 +1,11 @@
-import { Layout, Menu, Input, Badge } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Layout, Menu, Input, Badge, Avatar, Dropdown } from "antd";
+import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import "./Header.css";
 import { MenuItems } from "../../constant/menu-data";
-// import heroImg from "../../assets/images/hero.jpg";
 import logo from "../../assets/logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 const { Header: AntHeader } = Layout;
 
 function Header() {
@@ -21,6 +21,19 @@ function Header() {
     setSelectedKey(key);
     navigate(key);
   };
+
+  const userMenu = (
+    <Menu>
+      <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+        Profile
+      </Menu.Item>
+
+      <Menu.Item key="logout" onClick={() => navigate("/logout")}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">
       <div className="logo">
@@ -36,24 +49,31 @@ function Header() {
           color: "#000",
           width: "100%",
           paddingLeft: "120px",
-          // Center menu items on small screens
         }}
         items={MenuItems}
       />
 
-      <div className="search-bar ">
+      <div className="search-bar">
         <Input.Search
           className="p-8 w-[350px]"
           placeholder="Search"
           enterButton="Search"
         />
       </div>
-      <div className="cart">
+      <div className="cart pt-3">
         <Link to="/cart">
-          <Badge count={1} showZero>
+          <Badge count={1} showZero className="pb-1">
             <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
           </Badge>
         </Link>
+      </div>
+      <div className="user-profile">
+        <Dropdown overlay={userMenu} trigger={["click"]}>
+          <Avatar
+            style={{ cursor: "pointer", marginLeft: "20px" }}
+            icon={<UserOutlined />}
+          />
+        </Dropdown>
       </div>
     </AntHeader>
   );
