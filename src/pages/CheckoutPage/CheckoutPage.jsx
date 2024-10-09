@@ -17,6 +17,30 @@ const CheckoutTabs = () => {
     }
   };
 
+  // Sample data for order summary
+  const orderData = [
+    {
+      title: "Product 1",
+      price: 100.0,
+      imageUrl:
+        "https://bizweb.dktcdn.net/100/307/111/files/ca-koi-showa-sankoku1.jpg?v=1534352487117",
+    },
+    {
+      title: "Product 2",
+      price: 200.0,
+      imageUrl:
+        "https://visinhcakoi.com/wp-content/uploads/2021/07/ca-koi-showa-2-600x874-1.jpg",
+    },
+  ];
+
+  const discount = 10.0;
+  const giftCard = 5.0;
+  const delivery = 15.0;
+  const taxes = 20.0;
+
+  const subtotal = orderData.reduce((sum, item) => sum + item.price, 0);
+  const total = subtotal - discount - giftCard + delivery + taxes;
+
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
@@ -81,16 +105,16 @@ const CheckoutTabs = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Country"
-                  name="country"
+                  label="Location"
+                  name="location"
                   rules={[
                     { required: true, message: "Please select your country!" },
                   ]}
                 >
-                  <Select placeholder="Select Country">
-                    <Option value="USA">USA</Option>
-                    <Option value="Canada">Canada</Option>
-                    <Option value="UK">UK</Option>
+                  <Select placeholder="Select Location">
+                    <Option value="TP.Ho Chi Minh">TP.Ho Chi Minh</Option>
+                    <Option value="Ha Noi">Ha Noi</Option>
+                    <Option value="Da Nang">Da Nang</Option>
                     {/* Add more countries as options */}
                   </Select>
                 </Form.Item>
@@ -175,23 +199,23 @@ const CheckoutTabs = () => {
                   </Form>
                 </TabPane>
 
-                {/* PayPal Tab */}
-                <TabPane tab="PayPal" key="2">
+                {/* VN Pay Tab */}
+                <TabPane tab="VN Pay" key="2">
                   <Form layout="vertical" onFinish={handleSubmit}>
                     <Form.Item
-                      label="PayPal Email"
-                      name="paypalEmail"
+                      label="VN Pay Account"
+                      name="vnPayAccount"
                       rules={[
                         {
                           required: true,
-                          message: "Please input your PayPal email!",
+                          message: "Please input your VN Pay account!",
                         },
                       ]}
                     >
-                      <Input placeholder="youremail@paypal.com" />
+                      <Input placeholder="Your VN Pay Account" />
                     </Form.Item>
                     <Button type="primary" htmlType="submit" block>
-                      Pay with PayPal
+                      Pay with VN Pay
                     </Button>
                   </Form>
                 </TabPane>
@@ -246,42 +270,47 @@ const CheckoutTabs = () => {
         </div>
 
         {/* Right side - Order Summary */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md">
+        <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md ">
           <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
-          <div className="flex justify-between items-center mb-2">
-            <p>Product title name goes here</p>
-            <p>$000.00</p>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <p>Product title name goes here</p>
-            <p>$000.00</p>
-          </div>
+          {orderData.map((item, index) => (
+            <div className="flex justify-between items-center mb-2" key={index}>
+              <div className="flex items-center">
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-12 h-12 mr-4"
+                />
+                <p>{item.title}</p>
+              </div>
+              <p>${item.price.toFixed(2)}</p>
+            </div>
+          ))}
           <hr className="my-2" />
           <div className="flex justify-between items-center mb-2">
             <p>Discount</p>
-            <p>-$00.00</p>
+            <p>-${discount.toFixed(2)}</p>
           </div>
           <div className="flex justify-between items-center mb-2">
             <p>Giftcard</p>
-            <p>-$00.00</p>
+            <p>-${giftCard.toFixed(2)}</p>
           </div>
           <hr className="my-2" />
           <div className="flex justify-between items-center mb-2">
             <p>Subtotal</p>
-            <p>$00.00</p>
+            <p>${subtotal.toFixed(2)}</p>
           </div>
           <div className="flex justify-between items-center mb-2">
             <p>Delivery</p>
-            <p>--</p>
+            <p>${delivery.toFixed(2)}</p>
           </div>
           <div className="flex justify-between items-center mb-2">
             <p>Taxes</p>
-            <p>--</p>
+            <p>${taxes.toFixed(2)}</p>
           </div>
           <hr className="my-2" />
           <div className="flex justify-between items-center font-semibold">
             <p>Total</p>
-            <p>$00.00</p>
+            <p>${total.toFixed(2)}</p>
           </div>
         </div>
       </div>

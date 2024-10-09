@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button, Rate, Form, Input } from "antd";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const RatingAndReview = ({ product }) => {
   const [rating, setRating] = useState(0);
@@ -58,7 +59,11 @@ const RatingAndReview = ({ product }) => {
         </div>
       ) : (
         <p className="text-red-500">
-          Please log in to rate and review this product.
+          Please{" "}
+          <Link className="bold" to="/login">
+            login
+          </Link>{" "}
+          to rate and review this product.
         </p>
       )}
 

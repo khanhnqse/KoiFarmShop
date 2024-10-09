@@ -2,6 +2,7 @@
 import { Button, InputNumber, Divider } from "antd";
 
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const CartPage = () => {
   return (
@@ -54,13 +55,15 @@ const CartPage = () => {
 
       {/* Checkout Button */}
       <div className="text-right">
-        <Button
-          type="primary"
-          size="large"
-          className="bg-red-600 hover:bg-red-500"
-        >
-          Proceed to checkout
-        </Button>
+        <Link to="/checkout">
+          <Button
+            type="primary"
+            size="large"
+            className="bg-red-600 hover:bg-red-500"
+          >
+            Proceed to checkout
+          </Button>
+        </Link>
       </div>
     </div>
   );
