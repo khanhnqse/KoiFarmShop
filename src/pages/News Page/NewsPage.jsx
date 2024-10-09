@@ -137,14 +137,6 @@ const NewsPage = () => {
                 No articles found matching your search criteria.
               </p>
             )}
-
-            {filteredArticles.length > 0 && (
-              <div className="text-center mt-8">
-                <button className="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-colors duration-300">
-                  Load More
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>

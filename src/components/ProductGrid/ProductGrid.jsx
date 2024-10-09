@@ -1,12 +1,11 @@
 import { Button } from "antd";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import PropTypes from "prop-types"; // Import PropTypes
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const ProductGrid = ({ products }) => {
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
 
   const handleBuyNow = (id) => {
-    // Redirect to the product detail page with the product ID
     navigate(`/products/${id}`);
   };
 

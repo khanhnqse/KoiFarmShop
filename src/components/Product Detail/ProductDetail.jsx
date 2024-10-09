@@ -6,14 +6,25 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const ProductInfo = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      notification.warning({
+        message: "Not Logged In",
+        description: "Please log in to add items to your cart.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     // Handle adding the product to the cart
-    // Example: Add product to cart with selected quantity
     const cartItem = {
       name: product.name,
       price: product.price,
@@ -29,6 +40,19 @@ const ProductInfo = ({ product }) => {
 
     // You can now add this cartItem to a cart state or dispatch it to your store
     console.log("Product added to cart: ", cartItem);
+  };
+
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      notification.warning({
+        message: "Not Logged In",
+        description: "Please log in to proceed with the purchase.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
+    navigate("/cart");
   };
 
   return (
@@ -121,15 +145,14 @@ const ProductInfo = ({ product }) => {
 
       {/* Buy Now & Add to Cart Buttons */}
       <div className="flex space-x-4">
-        <Link to="/cart">
-          <Button
-            type="primary"
-            size="large"
-            className="hover:bg-green-600 transition-colors duration-300"
-          >
-            Buy Now
-          </Button>
-        </Link>
+        <Button
+          type="primary"
+          size="large"
+          className="hover:bg-green-600 transition-colors duration-300"
+          onClick={handleBuyNow}
+        >
+          Buy Now
+        </Button>
 
         <Button
           type="default"
