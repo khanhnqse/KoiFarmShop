@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-
 import Home from "./pages/HomePage/HomePage";
 import MainLayout from "./Layout/MainLayout/MainLayout";
 import { PATHS } from "./constant/path";
@@ -15,7 +14,6 @@ import UserProfile from "./pages/UserProfile/UserProfile";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import Consignment from "./pages/ConsigmentPage/Consignment";
-
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";

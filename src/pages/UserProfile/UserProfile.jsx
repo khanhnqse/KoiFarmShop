@@ -1,19 +1,20 @@
 import { Input, Button, Form, Modal } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 // Step 1: Define the data object
-const userData = {
-  name: "Quang Khanh",
-  email: "khanhqn03@gmail.com",
-  phone: "0334363339",
-  points: "1500",
-  address: "9 Dictrict, Ho Chi Minh City",
+const defaultUserData = {
+  name: "",
+  email: "",
+  phone: "",
+  points: "",
+  address: "",
   avatar: "https://via.placeholder.com/100",
 };
 
 const UserProfile = () => {
-  // Step 2: Use the data object to populate the form fields
-  const [formData, setFormData] = useState(userData);
+  const { user } = useAuth();
+  const [formData, setFormData] = useState(defaultUserData);
   const [isEditing, setIsEditing] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -21,6 +22,19 @@ const UserProfile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.userName,
+        email: user.email,
+        phone: user.phone || "",
+        points: user.totalPoints.toString(),
+        address: user.address || "",
+        avatar: user.avatar || "https://via.placeholder.com/100",
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
