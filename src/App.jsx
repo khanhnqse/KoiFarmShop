@@ -31,7 +31,14 @@ function App() {
           <Route path={PATHS.CONTACT.INDEX} element={<ContactUsForm />} />
           <Route path={PATHS.PRODUCTS.INDEX} element={<ProductPage />} />
           <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
-          <Route path={PATHS.CONSIGNMENT.INDEX} element={<Consignment />}/>
+          <Route
+            path={PATHS.CONSIGNMENT.INDEX}
+            element={
+              <PrivateRoute>
+                <Consignment />
+              </PrivateRoute>
+            }
+          />
           <Route
             path={PATHS.CART.INDEX}
             element={
