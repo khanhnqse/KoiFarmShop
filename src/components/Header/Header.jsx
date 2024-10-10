@@ -12,7 +12,7 @@ const { Header: AntHeader } = Layout;
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, cart } = useAuth();
   const [selectedKey, setSelectedKey] = useState(location.pathname);
 
   useEffect(() => {
@@ -63,16 +63,9 @@ function Header() {
         items={MenuItems}
       />
 
-      {/* <div className="search-bar">
-        <Input.Search
-          className="p-8 w-[350px]"
-          placeholder="Search"
-          enterButton="Search"
-        />
-      </div> */}
       <div className="cart pt-3">
         <Link to="/cart">
-          <Badge count={0} showZero className="pb-1">
+          <Badge count={cart.length} showZero className="pb-1">
             <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
           </Badge>
         </Link>

@@ -13,6 +13,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
+  const [cart, setCart] = useState(
+    JSON.parse(localStorage.getItem("cart")) || []
+  );
   const navigate = useNavigate();
   let timeoutId;
 
@@ -29,8 +32,10 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setToken(null);
     setUser(null);
+    setCart([]);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("cart");
     clearTimeout(timeoutId);
     navigate(PATHS.LOGIN);
   };
@@ -46,6 +51,22 @@ export const AuthProvider = ({ children }) => {
   const resetSessionTimer = () => {
     clearTimeout(timeoutId);
     startSessionTimer();
+  };
+
+  const addToCart = (item) => {
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+    let newCart;
+    if (existingItem) {
+      newCart = cart.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      );
+    } else {
+      newCart = [...cart, { ...item, quantity: 1 }];
+    }
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
   };
 
   useEffect(() => {
@@ -64,7 +85,16 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, token, user, login, logout }}
+      value={{
+        isAuthenticated,
+        token,
+        user,
+        cart,
+        setCart,
+        addToCart,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

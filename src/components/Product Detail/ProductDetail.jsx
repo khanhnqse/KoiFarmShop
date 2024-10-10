@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const ProductInfo = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, addToCart } = useAuth();
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
@@ -31,6 +31,8 @@ const ProductInfo = ({ product }) => {
       quantity: quantity,
     };
 
+    addToCart(product, quantity);
+
     // Trigger a notification for feedback
     notification.success({
       message: "Added to Cart",
@@ -38,7 +40,6 @@ const ProductInfo = ({ product }) => {
       placement: "bottomRight",
     });
 
-    // You can now add this cartItem to a cart state or dispatch it to your store
     console.log("Product added to cart: ", cartItem);
   };
 
