@@ -14,6 +14,7 @@ import ArticleDetail from "./pages/NewsDetailPage/NewsDetail";
 import UserProfile from "./pages/UserProfile/UserProfile";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import Consignment from "./pages/ConsigmentPage/Consignment";
 
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -30,6 +31,7 @@ function App() {
           <Route path={PATHS.CONTACT.INDEX} element={<ContactUsForm />} />
           <Route path={PATHS.PRODUCTS.INDEX} element={<ProductPage />} />
           <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
+          <Route path={PATHS.CONSIGNMENT.INDEX} element={<Consignment />}/>
           <Route
             path={PATHS.CART.INDEX}
             element={
