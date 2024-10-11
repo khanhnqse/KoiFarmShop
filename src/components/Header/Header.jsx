@@ -1,4 +1,13 @@
-import { Layout, Menu, Badge, Avatar, Dropdown, Button, message } from "antd";
+import {
+  Layout,
+  Menu,
+  Badge,
+  Avatar,
+  Dropdown,
+  Button,
+  message,
+  Typography,
+} from "antd";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import "./Header.css";
 import { MenuItems } from "../../constant/menu-data";
@@ -12,7 +21,7 @@ const { Header: AntHeader } = Layout;
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout, cart } = useAuth();
+  const { isAuthenticated, logout, cart, user } = useAuth(); // Added user to destructuring
   const [selectedKey, setSelectedKey] = useState(location.pathname);
 
   useEffect(() => {
@@ -35,12 +44,23 @@ function Header() {
       <Menu.Item key="profile" onClick={() => navigate("/profile")}>
         Profile
       </Menu.Item>
-
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
     </Menu>
   );
+
+  // Conditionally create menu items for admin
+  const adminMenuItems = [
+    {
+      key: "/dashboard",
+      label: "Dashboard",
+    },
+    {
+      key: "/products",
+      label: "Product",
+    },
+  ];
 
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">
@@ -60,15 +80,21 @@ function Header() {
           width: "100%",
           paddingLeft: "120px",
         }}
-        items={MenuItems}
+        items={user?.role === "admin" ? adminMenuItems : MenuItems} // Conditionally render menu items
       />
 
       <div className="cart pt-3">
-        <Link to="/cart">
-          <Badge count={cart.length} showZero className="pb-1">
-            <ShoppingCartOutlined style={{ fontSize: "24px", color: "#000" }} />
-          </Badge>
-        </Link>
+        {user?.role === "admin" ? (
+          <Typography>Welcome Admin</Typography>
+        ) : (
+          <Link to="/cart">
+            <Badge count={cart.length} showZero className="pb-1">
+              <ShoppingCartOutlined
+                style={{ fontSize: "24px", color: "#000" }}
+              />
+            </Badge>
+          </Link>
+        )}
       </div>
       <div className="user-profile">
         {isAuthenticated ? (

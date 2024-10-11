@@ -29,8 +29,12 @@ const LoginPage = () => {
         message.success("Login successful!");
         login(token, user); // Update auth context with token and user info
         console.log("Logged in user:", user);
-        // Redirect to home page or another page
-        navigate(PATHS.HOME);
+        // Redirect based on user role
+        if (user.role === "admin") {
+          navigate(PATHS.DASHBOARD); // Navigate to dashboard if user is admin
+        } else {
+          navigate(PATHS.HOME); // Navigate to home page for other users
+        }
       } else {
         // Handle login failure
         message.error("Login failed. Please check your credentials.");

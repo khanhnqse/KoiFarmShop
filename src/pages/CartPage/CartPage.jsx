@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, InputNumber, Divider } from "antd";
+import { Button, InputNumber, Divider, Image } from "antd";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -44,10 +44,12 @@ const CartPage = () => {
           className="grid grid-cols-6 gap-4 items-center text-center mb-4"
         >
           <div className="flex col-span-2 items-center">
-            <img
+            <Image
               src={item.image || "https://via.placeholder.com/100"}
               alt="Product"
-              className="w-16 h-16 object-cover mr-4"
+              className="w-16 h-16 object-cover mr-4 p-1 border "
+              width={60}
+              height={60}
             />
             <div>
               <p className="font-bold">{item.name}</p>

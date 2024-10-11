@@ -17,6 +17,7 @@ import Consignment from "./pages/ConsigmentPage/Consignment";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import Dashboard from "./pages/Dashboard/DashBoard";
 
 function App() {
   return (
@@ -64,7 +65,16 @@ function App() {
           />
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
+          <Route
+            path={PATHS.DASHBOARD.INDEX}
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
         </Route>
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>
