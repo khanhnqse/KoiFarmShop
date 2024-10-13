@@ -13,6 +13,14 @@ export const PATHS = {
   FORGOT_PASSWORD: '/forgot-password',
   VERIFY_OTP: '/verify-otp',
   RESET_PASSWORD: '/reset-password',
+  DASHBOARD: {
+    INDEX: '/dashboard',
+    CHILDREN: {
+      OVERVIEW: '/dashboard/overview',
+      USERS: '/dashboard/users',
+      SETTINGS: '/dashboard/settings',
+    },
+  },
   PRODUCTS: {
     INDEX: PRODUCTS,
     DETAIL: `products/:id`,
@@ -38,6 +46,6 @@ export const PATHS = {
   },
   CHECKOUT: {
     INDEX: CHECKOUT
-  },  
+  },
 
 };

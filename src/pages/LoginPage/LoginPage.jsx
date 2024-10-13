@@ -24,12 +24,17 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
-        const { token } = response.data;
+        const { token, user } = response.data;
         // Handle successful login
         message.success("Login successful!");
-        login(token); // Update auth context with token
-        // Redirect to home page or another page
-        navigate(PATHS.HOME);
+        login(token, user); // Update auth context with token and user info
+        console.log("Logged in user:", user);
+        // Redirect based on user role
+        if (user.role === "admin") {
+          navigate(PATHS.DASHBOARD); // Navigate to dashboard if user is admin
+        } else {
+          navigate(PATHS.HOME); // Navigate to home page for other users
+        }
       } else {
         // Handle login failure
         message.error("Login failed. Please check your credentials.");
@@ -131,8 +136,7 @@ const LoginPage = () => {
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1716787277130-dedef0bc94ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+            backgroundImage: "url('holder')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

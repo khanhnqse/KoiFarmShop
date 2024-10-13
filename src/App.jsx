@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-
 import Home from "./pages/HomePage/HomePage";
 import MainLayout from "./Layout/MainLayout/MainLayout";
 import { PATHS } from "./constant/path";
@@ -14,10 +13,11 @@ import ArticleDetail from "./pages/NewsDetailPage/NewsDetail";
 import UserProfile from "./pages/UserProfile/UserProfile";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
-
+import Consignment from "./pages/ConsigmentPage/Consignment";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import Dashboard from "./pages/Dashboard/DashBoard";
 
 function App() {
   return (
@@ -30,6 +30,14 @@ function App() {
           <Route path={PATHS.CONTACT.INDEX} element={<ContactUsForm />} />
           <Route path={PATHS.PRODUCTS.INDEX} element={<ProductPage />} />
           <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
+          <Route
+            path={PATHS.CONSIGNMENT.INDEX}
+            element={
+              <PrivateRoute>
+                <Consignment />
+              </PrivateRoute>
+            }
+          />
           <Route
             path={PATHS.CART.INDEX}
             element={
@@ -57,7 +65,16 @@ function App() {
           />
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
+          <Route
+            path={PATHS.DASHBOARD.INDEX}
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
         </Route>
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>

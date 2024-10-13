@@ -16,6 +16,7 @@ const ProductPage = () => {
   const [selectedGender, setSelectedGender] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
   const [sortOption, setSortOption] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
   const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
 
   const fetchFishs = async () => {
@@ -65,6 +66,10 @@ const ProductPage = () => {
     setSortOption(value);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   const filteredFishs = fishs.filter((fish) => {
     return (
       fish.price >= priceRange[0] &&
@@ -72,7 +77,10 @@ const ProductPage = () => {
       (selectedCategory ? fish.name === selectedCategory : true) &&
       (selectedBreeder ? fish.breeder === selectedBreeder : true) &&
       (selectedGender ? fish.gender === selectedGender : true) &&
-      (selectedAge ? fish.age === selectedAge : true)
+      (selectedAge ? fish.age === selectedAge : true) &&
+      (searchQuery
+        ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true)
     );
   });
 
@@ -108,6 +116,8 @@ const ProductPage = () => {
           <input
             type="text"
             placeholder="Search"
+            value={searchQuery}
+            onChange={handleSearchChange}
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
