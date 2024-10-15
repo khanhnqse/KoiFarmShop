@@ -21,8 +21,8 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
 import Dashboard from "./pages/Admin/Dashboard/DashBoard";
 import ConsignmentManage from "./pages/Admin/Consignment/ConsignmentManagement";
-// import Staff from "./pages/Admin/Staff/Staff";
-// import Customer from "./pages/Admin/Customer/Customer"
+import StaffManagement from "./pages/Admin/Staff/StaffManagement";
+import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 
 function App() {
   return (
@@ -73,6 +73,8 @@ function App() {
           <Route path={PATHS.DASHBOARD.INDEX} element={<Dashboard />}>
             <Route path={PATHS.DASHBOARD.CHILDREN.KOI} element={<KoiManagement />} />
             <Route path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT} element ={<ConsignmentManage />}/>
+            <Route path={PATHS.DASHBOARD.CHILDREN.CUSTOMER} element ={<CustomerManagement />}/>
+            <Route path={PATHS.DASHBOARD.CHILDREN.STAFF} element ={<StaffManagement />}/>
           </Route>
         </Route>
 
