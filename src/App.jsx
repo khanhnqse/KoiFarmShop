@@ -17,7 +17,9 @@ import Consignment from "./pages/ConsigmentPage/Consignment";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import Dashboard from "./pages/Dashboard/DashBoard";
+
+import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
+import Dashboard from "./pages/Admin/Dashboard/DashBoard";
 
 function App() {
   return (
@@ -41,7 +43,7 @@ function App() {
           <Route
             path={PATHS.CART.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <CartPage />
               </PrivateRoute>
             }
@@ -50,7 +52,7 @@ function App() {
           <Route
             path={PATHS.PROFILE.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <UserProfile />
               </PrivateRoute>
             }
@@ -58,7 +60,7 @@ function App() {
           <Route
             path={PATHS.CHECKOUT.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <CheckoutPage />
               </PrivateRoute>
             }
@@ -68,11 +70,16 @@ function App() {
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute requiredRole="admin">
                 <Dashboard />
               </PrivateRoute>
             }
-          />
+          >
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.KOI}
+              element={<KoiManagement />}
+            />
+          </Route>
         </Route>
 
         <Route path="*" element={<PageNotFound />} />

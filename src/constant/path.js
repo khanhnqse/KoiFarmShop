@@ -16,9 +16,8 @@ export const PATHS = {
   DASHBOARD: {
     INDEX: '/dashboard',
     CHILDREN: {
-      OVERVIEW: '/dashboard/overview',
-      USERS: '/dashboard/users',
-      SETTINGS: '/dashboard/settings',
+      KOI: '/dashboard/koi',
+     
     },
   },
   PRODUCTS: {
