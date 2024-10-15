@@ -67,14 +67,7 @@ function App() {
           />
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
-          <Route
-            path={PATHS.DASHBOARD.INDEX}
-            element={
-              <PrivateRoute requiredRole="admin">
-                <Dashboard />
-              </PrivateRoute>
-            }
-          >
+          <Route path={PATHS.DASHBOARD.INDEX} element={<Dashboard />}>
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
               element={<KoiManagement />}
