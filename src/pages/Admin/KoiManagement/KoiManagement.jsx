@@ -159,7 +159,7 @@ function KoiManagement() {
               onConfirm={() => handleDeleteKoi(koiId)}
             >
               <Button type="primary" danger>
-                Delete
+                Delete 
               </Button>
             </Popup>
             <Button

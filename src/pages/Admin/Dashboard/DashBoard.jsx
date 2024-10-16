@@ -28,7 +28,7 @@ const items = [
     getItem("Customer","/dashboard/customer"),
     getItem("Staff", "/dashboard/staff"),
   ]),
-  getItem("Orders", "sub2", <UnorderedListOutlined />),
+  getItem("Orders", "/dashboard/order", <UnorderedListOutlined />),
   getItem("Setting", "6", <LogoutOutlined />),
 ];
 
