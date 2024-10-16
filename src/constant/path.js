@@ -1,24 +1,27 @@
-const ABOUT_US = '/about-us';
-const PRODUCTS = '/products';
-const NEWS = '/news';
-const CONSIGNMENT = '/consignment';
-const CONTACT = '/contact-us';
-const CART = '/cart';
-const PROFILE = '/profile';
-const CHECKOUT = '/checkout';
+const ABOUT_US = "/about-us";
+const PRODUCTS = "/products";
+const NEWS = "/news";
+const CONSIGNMENT = "/consignment";
+const CONTACT = "/contact-us";
+const CART = "/cart";
+const PROFILE = "/profile";
+const CHECKOUT = "/checkout";
 export const PATHS = {
-  HOME: '/',
-  LOGIN: '/login',
-  REGISTER: '/register',
-  FORGOT_PASSWORD: '/forgot-password',
-  VERIFY_OTP: '/verify-otp',
-  RESET_PASSWORD: '/reset-password',
+  HOME: "/",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  FORGOT_PASSWORD: "/forgot-password",
+  VERIFY_OTP: "/verify-otp",
+  RESET_PASSWORD: "/reset-password",
   DASHBOARD: {
-    INDEX: '/dashboard',
+    INDEX: "/dashboard",
     CHILDREN: {
-      OVERVIEW: '/dashboard/overview',
-      USERS: '/dashboard/users',
-      SETTINGS: '/dashboard/settings',
+      KOI: "/dashboard/koi",
+      CONSIGNMENT: "/dashboard/consignment",
+      CUSTOMER: "/dashboard/customer",
+      STAFF: "/dashboard/staff",
+      ORDER: "/dashboard/order",
+      SETTING: "/dashboard/setting,"
     },
   },
   PRODUCTS: {
@@ -38,14 +41,13 @@ export const PATHS = {
   CONTACT: {
     INDEX: CONTACT,
   },
-  CART:{
+  CART: {
     INDEX: CART,
   },
   PROFILE: {
     INDEX: PROFILE,
   },
   CHECKOUT: {
-    INDEX: CHECKOUT
+    INDEX: CHECKOUT,
   },
-
 };

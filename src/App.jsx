@@ -17,7 +17,13 @@ import Consignment from "./pages/ConsigmentPage/Consignment";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import Dashboard from "./pages/Dashboard/DashBoard";
+
+import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
+import Dashboard from "./pages/Admin/Dashboard/DashBoard";
+import ConsignmentManage from "./pages/Admin/Consignment/ConsignmentManagement";
+import StaffManagement from "./pages/Admin/Staff/StaffManagement";
+import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
+import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 
 function App() {
   return (
@@ -41,7 +47,7 @@ function App() {
           <Route
             path={PATHS.CART.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <CartPage />
               </PrivateRoute>
             }
@@ -50,7 +56,7 @@ function App() {
           <Route
             path={PATHS.PROFILE.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <UserProfile />
               </PrivateRoute>
             }
@@ -58,7 +64,7 @@ function App() {
           <Route
             path={PATHS.CHECKOUT.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute restrictedToAdmin>
                 <CheckoutPage />
               </PrivateRoute>
             }
@@ -68,11 +74,32 @@ function App() {
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
-              <PrivateRoute>
+              <PrivateRoute requiredRole="admin">
                 <Dashboard />
               </PrivateRoute>
             }
-          />
+          >
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.KOI}
+              element={<KoiManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}
+              element={<ConsignmentManage />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.CUSTOMER}
+              element={<CustomerManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.STAFF}
+              element={<StaffManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.ORDER}
+              element={<OrderKoiManagement />}
+            />
+          </Route>
         </Route>
 
         <Route path="*" element={<PageNotFound />} />

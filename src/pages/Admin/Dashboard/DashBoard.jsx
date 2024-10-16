@@ -1,13 +1,15 @@
 import { useState } from "react";
 import {
-  DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
-  TeamOutlined,
   UserOutlined,
+  ProductOutlined,
+  TagOutlined,
+  UnorderedListOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
-const { Header, Content, Footer, Sider } = Layout;
+import { Layout, Menu, theme } from "antd";
+import { Outlet, useNavigate } from "react-router-dom";
+const { Content, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
   return {
@@ -19,18 +21,15 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem("Option 1", "1", <PieChartOutlined />),
-  getItem("Option 2", "2", <DesktopOutlined />),
-  getItem("User", "sub1", <UserOutlined />, [
-    getItem("Tom", "3"),
-    getItem("Bill", "4"),
-    getItem("Alex", "5"),
+  getItem("Dashboard", "1", <PieChartOutlined />),
+  getItem("Koi Management", "/dashboard/koi", <ProductOutlined />),
+  getItem("Consignment", "/dashboard/consignment", <TagOutlined />),
+  getItem("Users", "sub1", <UserOutlined />, [
+    getItem("Customer","/dashboard/customer"),
+    getItem("Staff", "/dashboard/staff"),
   ]),
-  getItem("Team", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
-  ]),
-  getItem("Files", "9", <FileOutlined />),
+  getItem("Orders", "/dashboard/order", <UnorderedListOutlined />),
+  getItem("Setting", "6", <LogoutOutlined />),
 ];
 
 const Dashboard = () => {
@@ -38,6 +37,11 @@ const Dashboard = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const navigate = useNavigate();
+
+  const handleMenuClick = ({ key }) => {
+    navigate(key);
+  };
 
   return (
     <Layout
@@ -53,32 +57,19 @@ const Dashboard = () => {
       >
         <div className="demo-logo-vertical" />
         <Menu
-          theme="light" // Changed theme to light
-          defaultSelectedKeys={["1"]}
+          theme="light"
+          defaultSelectedKeys={["/dashboard/overview"]}
           mode="inline"
           items={items}
+          onClick={handleMenuClick}
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        />
         <Content
           style={{
             margin: "0 16px",
           }}
         >
-          <Breadcrumb
-            style={{
-              margin: "16px 0",
-            }}
-          >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
           <div
             style={{
               padding: 24,
@@ -87,16 +78,9 @@ const Dashboard = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            Bill is a cat.
+            <Outlet />
           </div>
         </Content>
-        <Footer
-          style={{
-            textAlign: "center",
-          }}
-        >
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        </Footer>
       </Layout>
     </Layout>
   );
