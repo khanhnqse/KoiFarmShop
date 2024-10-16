@@ -132,9 +132,9 @@ function StaffManagement() {
 
   return (
     <div>
-      <Typography.Title level={2}>Customer Management</Typography.Title>
+      <Typography.Title level={2}>Staff Management</Typography.Title>
       <Button onClick={handleOpenModal}>
-        <PlusOutlined /> Add New Customer
+        <PlusOutlined /> Add New Staff
       </Button>
       <Table columns={columns} dataSource={filteredCustomers} scroll={{ x: 1500, y: 450 }} />
       <Modal

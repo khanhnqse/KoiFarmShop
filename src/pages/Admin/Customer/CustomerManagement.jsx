@@ -12,17 +12,19 @@ import {
   Typography,
   Select,
   DatePicker,
+  Popconfirm,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import { PlusOutlined } from "@ant-design/icons";
 
 function CustomerManagement() {
   const [customers, setCustomers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [form] = useForm();
   const api = "http://localhost:5090/api/User";
 
@@ -35,18 +37,17 @@ function CustomerManagement() {
     fetchCustomers();
   }, []);
 
-  const filteredCustomers = customers.filter(customer => customer.role === "customer");
+  const filteredCustomers = customers.filter(
+    (customer) => customer.role === "customer"
+  );
 
   const columns = [
     {
       title: "ID",
       dataIndex: "userId",
       key: "userId",
-      sorter: {
-        compare: (a, b) => a.userID - b.userID,
-      },
+      sorter: (a, b) => a.userId - b.userId,
       defaultSortOrder: "ascend",
-      fixed: "left",
     },
     {
       title: "User Name",
@@ -99,6 +100,30 @@ function CustomerManagement() {
       dataIndex: "totalPoints",
       key: "totalPoints",
     },
+    {
+      title: "Action",
+      dataIndex: "userId",
+      key: "action",
+      render: (userId, record) => (
+        <>
+          <Button
+            type="primary"
+            onClick={() => handleOpenUpdateModal(record)}
+            style={{ marginRight: 8 }}
+          >
+            Update
+          </Button>
+          <Popconfirm
+            title="Are you sure to delete this customer?"
+            onConfirm={() => handleDeleteCustomer(userId)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger>Delete</Button>
+          </Popconfirm>
+        </>
+      ),
+    },
   ];
 
   const handleOpenModal = () => {
@@ -116,17 +141,53 @@ function CustomerManagement() {
 
     try {
       setSubmitting(true);
-      const response = await axios.post(api, customer);
+      await axios.post(api, customer);
       message.success("Customer created successfully");
       setOpenModal(false);
       fetchCustomers();
       form.resetFields();
-      console.log("data", response.data);
     } catch (error) {
-      console.log(error);
       message.error("Failed to create customer");
+      console.error("Delete customer error:", error);
+      console.log()
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleOpenUpdateModal = (customer) => {
+    setSelectedCustomer(customer);
+    setUpdateModalOpen(true);
+    form.setFieldsValue({
+      ...customer,
+      registerDate: moment(customer.registerDate),
+    });
+  };
+
+  const handleUpdateCustomer = async (customer) => {
+    try {
+      setSubmitting(true);
+      await axios.put(`${api}/${selectedCustomer.userId}`, customer);
+      message.success("Customer updated successfully");
+      setUpdateModalOpen(false);
+      fetchCustomers();
+      form.resetFields();
+    } catch (error) {
+      message.error("Failed to update customer");
+      console.error("Update customer error:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteCustomer = async (userId) => {
+    try {
+      await axios.delete(`${api}/${userId}`);
+      message.success("Customer deleted successfully");
+      fetchCustomers();
+    } catch (error) {
+      message.error("Failed to delete customer");
+      console.error("Delete customer error:", error);
     }
   };
 
@@ -137,6 +198,8 @@ function CustomerManagement() {
         <PlusOutlined /> Add New Customer
       </Button>
       <Table columns={columns} dataSource={filteredCustomers} scroll={{ x: 1500, y: 450 }} />
+
+      {/* Add New Customer Modal */}
       <Modal
         confirmLoading={submitting}
         title="Add New Customer"
@@ -145,7 +208,7 @@ function CustomerManagement() {
         onOk={() => form.submit()}
       >
         <Form onFinish={handleSubmitCustomer} form={form} layout="vertical">
-          <Row gutter={16}>
+        <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 label="User Name"
@@ -238,6 +301,19 @@ function CustomerManagement() {
               </Form.Item>
             </Col>
           </Row>
+        </Form>
+      </Modal>
+
+      {/* Update Customer Modal */}
+      <Modal
+        confirmLoading={submitting}
+        title="Update Customer"
+        open={updateModalOpen}
+        onCancel={() => setUpdateModalOpen(false)}
+        onOk={() => form.submit()}
+      >
+        <Form onFinish={handleUpdateCustomer} form={form} layout="vertical">
+          {/* Form fields similar to creation */}
         </Form>
       </Modal>
     </div>

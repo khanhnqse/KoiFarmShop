@@ -75,7 +75,7 @@ function OrderKoiManagement() {
             form.resetFields();
         } catch (error) {
             message.error("Failed to create order");
-            console.error("Delete koi error:", error);
+            console.error("Create order error:", error);
         } finally {
             setSubmitting(false);
         }
@@ -91,7 +91,7 @@ function OrderKoiManagement() {
             form.resetFields();
         } catch (error) {
             message.error("Failed to update order");
-            console.error("Delete koi error:", error);
+            console.error("Delete order error:", error);
         } finally {
             setSubmitting(false);
         }
