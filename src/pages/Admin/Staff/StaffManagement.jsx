@@ -142,13 +142,13 @@ function CustomerManagement() {
     try {
       setSubmitting(true);
       await axios.post(api, customer);
-      message.success("Customer created successfully");
+      message.success("staff created successfully");
       setOpenModal(false);
       fetchCustomers();
       form.resetFields();
     } catch (error) {
-      message.error("Failed to create customer");
-      console.error("Delete customer error:", error);
+      message.error("Failed to create stafff");
+      console.error("Delete staff error:", error);
       console.log()
     } finally {
       setSubmitting(false);
@@ -168,13 +168,13 @@ function CustomerManagement() {
     try {
       setSubmitting(true);
       await axios.put(`${api}/${selectedCustomer.userId}`, customer);
-      message.success("Customer updated successfully");
+      message.success("Staff updated successfully");
       setUpdateModalOpen(false);
       fetchCustomers();
       form.resetFields();
     } catch (error) {
-      message.error("Failed to update customer");
-      console.error("Update customer error:", error);
+      message.error("Failed to update staff");
+      console.error("Update staff error:", error);
     } finally {
       setSubmitting(false);
     }
@@ -183,19 +183,19 @@ function CustomerManagement() {
   const handleDeleteCustomer = async (userId) => {
     try {
       await axios.delete(`${api}/${userId}`);
-      message.success("Customer deleted successfully");
+      message.success("staff deleted successfully");
       fetchCustomers();
     } catch (error) {
-      message.error("Failed to delete customer");
-      console.error("Delete customer error:", error);
+      message.error("Failed to delete staff");
+      console.error("Delete staff error:", error);
     }
   };
 
   return (
     <div>
-      <Typography.Title level={2}>Customer Management</Typography.Title>
+      <Typography.Title level={2}>Staff Management</Typography.Title>
       <Button onClick={handleOpenModal}>
-        <PlusOutlined /> Add New Customer
+        <PlusOutlined /> Add New Staff
       </Button>
       <Table columns={columns} dataSource={filteredCustomers} scroll={{ x: 1500, y: 450 }} />
 
