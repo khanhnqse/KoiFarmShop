@@ -1,15 +1,14 @@
-import { Input, Button, Form, Modal } from "antd";
+import { Input, Button, Form, Modal, message, Spin } from "antd";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 // Step 1: Define the data object
 const defaultUserData = {
-  name: "",
+  userName: "",
   email: "",
-  phone: "",
-  points: "",
+  phoneNumber: "",
   address: "",
-  avatar: "https://via.placeholder.com/100",
 };
 
 const UserProfile = () => {
@@ -22,18 +21,35 @@ const UserProfile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
+  // Step 2: Fetch user data from the API
+  const fetchUserData = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://localhost:7285/api/User/${user.userId}`
+      );
+      const userData = response.data;
       setFormData({
-        name: user.userName,
-        email: user.email,
-        phone: user.phone || "",
-        points: user.totalPoints.toString(),
-        address: user.address || "",
-        avatar: user.avatar || "https://via.placeholder.com/100",
+        userName: userData.userName,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber || "",
+        address: userData.address || "",
       });
+      message.success("User data fetched successfully");
+    } catch (error) {
+      message.error("Failed to fetch user data");
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Step 3: Use useEffect to fetch data on mount and when user changes
+  useEffect(() => {
+    fetchUserData();
   }, [user]);
 
   const handleInputChange = (e) => {
@@ -52,14 +68,46 @@ const UserProfile = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Updated Profile Data:", formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.put(
+        `https://localhost:7285/api/User/updateProfile${user.userId}`,
+        formData
+      );
+      message.success("Profile updated successfully");
+      console.log("Updated Profile Data:", response.data);
+      setIsEditing(false);
+    } catch (error) {
+      message.error("Failed to update profile");
+      console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordSave = () => {
-    console.log("Password Data:", passwordData);
-    setIsModalVisible(false);
+  // Step 1: Update handlePasswordSave to call the change password API
+  const handlePasswordSave = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "https://localhost:7285/api/User/ChangePassword",
+        {
+          userName: formData.userName,
+
+          newPassword: passwordData.newPassword,
+          confirmPassword: passwordData.confirmPassword,
+        }
+      );
+      message.success("Password changed successfully");
+      console.log("Password Change Response:", response.data);
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error("Failed to change password");
+      console.error("Error changing password:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,12 +115,12 @@ const UserProfile = () => {
       {/* User Info */}
       <div className="flex items-center">
         <img
-          src={formData.avatar}
+          src={"https://via.placeholder.com/100"}
           alt="User"
           className="w-24 h-24 rounded-full"
         />
         <div className="ml-4">
-          <h2 className="text-xl font-semibold">{formData.name}</h2>
+          <h2 className="text-xl font-semibold">{formData.userName}</h2>
           <p className="text-gray-600">{formData.email}</p>
         </div>
         <Button
@@ -86,58 +134,59 @@ const UserProfile = () => {
 
       {/* Form */}
       <div className="mt-8">
-        <Form layout="vertical">
-          <Form.Item label="User Name">
-            <Input
-              name="name"
-              value={formData.name}
-              placeholder="Your Name"
-              onChange={handleInputChange}
-              disabled={!isEditing}
-            />
-          </Form.Item>
-          <Form.Item label="Email">
-            <Input
-              name="email"
-              value={formData.email}
-              placeholder="youremail@gmail.com"
-              onChange={handleInputChange}
-              disabled={!isEditing}
-            />
-          </Form.Item>
-          <Form.Item label="Phone">
-            <Input
-              name="phone"
-              value={formData.phone}
-              placeholder="Your Phone Number"
-              onChange={handleInputChange}
-              disabled={!isEditing}
-            />
-          </Form.Item>
-          <Form.Item label="Points">
-            <Input
-              name="points"
-              value={formData.points}
-              placeholder="Your Points"
-              onChange={handleInputChange}
-              disabled={true}
-            />
-          </Form.Item>
-          <Form.Item label="Address">
-            <Input
-              name="address"
-              value={formData.address}
-              placeholder="Your Address"
-              onChange={handleInputChange}
-              disabled={!isEditing}
-            />
-          </Form.Item>
-          {isEditing && (
-            <Button type="primary" onClick={handleSave}>
-              Save
-            </Button>
-          )}
-        </Form>
+        <Spin spinning={loading}>
+          <Form layout="vertical">
+            <Form.Item label="User Name">
+              <Input
+                name="userName"
+                value={formData.userName}
+                placeholder="Your Name"
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+            </Form.Item>
+            <Form.Item label="Email">
+              <Input
+                name="email"
+                value={formData.email}
+                placeholder="youremail@gmail.com"
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+            </Form.Item>
+            <Form.Item label="Phone Number">
+              <Input
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                placeholder="Your Phone Number"
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+            </Form.Item>
+            <Form.Item label="Address">
+              <Input
+                name="address"
+                value={formData.address}
+                placeholder="Your Address"
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              />
+            </Form.Item>
+            <Form.Item label="Point">
+              <Input
+                name="point"
+                value={formData.point}
+                placeholder="Your point"
+                disabled={true}
+              />
+            </Form.Item>
+            {isEditing && (
+              <Button type="primary" onClick={handleSave}>
+                Save
+              </Button>
+            )}
+          </Form>
+        </Spin>
         <div className="mt-4 flex justify-between">
           <Button type="default" onClick={() => setIsModalVisible(true)}>
             Change Password
@@ -153,13 +202,14 @@ const UserProfile = () => {
         onCancel={() => setIsModalVisible(false)}
       >
         <Form layout="vertical">
-          <Form.Item label="Current Password">
-            <Input.Password
-              name="currentPassword"
-              value={passwordData.currentPassword}
+          <Form.Item label="User Name">
+            <Input
+              name="userName"
+              value={formData.userName}
               onChange={handlePasswordChange}
             />
           </Form.Item>
+
           <Form.Item label="New Password">
             <Input.Password
               name="newPassword"

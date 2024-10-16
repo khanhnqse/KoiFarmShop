@@ -26,7 +26,7 @@ function CustomerManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [form] = useForm();
-  const api = "http://localhost:5090/api/User";
+  const api = "https://localhost:7285/api/User";
 
   const fetchCustomers = async () => {
     const response = await axios.get(api);
@@ -38,7 +38,7 @@ function CustomerManagement() {
   }, []);
 
   const filteredCustomers = customers.filter(
-    (customer) => customer.role === "staff" || customer.role === "admin" 
+    (customer) => customer.role === "staff"
   );
 
   const columns = [
@@ -95,11 +95,7 @@ function CustomerManagement() {
       key: "registerDate",
       render: (date) => moment(date).format("YYYY-MM-DD"),
     },
-    {
-      title: "Total Points",
-      dataIndex: "totalPoints",
-      key: "totalPoints",
-    },
+
     {
       title: "Action",
       dataIndex: "userId",
@@ -149,7 +145,7 @@ function CustomerManagement() {
     } catch (error) {
       message.error("Failed to create stafff");
       console.error("Delete staff error:", error);
-      console.log()
+      console.log();
     } finally {
       setSubmitting(false);
     }
@@ -197,7 +193,11 @@ function CustomerManagement() {
       <Button onClick={handleOpenModal}>
         <PlusOutlined /> Add New Staff
       </Button>
-      <Table columns={columns} dataSource={filteredCustomers} scroll={{ x: 1500, y: 450 }} />
+      <Table
+        columns={columns}
+        dataSource={filteredCustomers}
+        scroll={{ x: 1500, y: 450 }}
+      />
 
       {/* Add New Customer Modal */}
       <Modal
@@ -208,7 +208,7 @@ function CustomerManagement() {
         onOk={() => form.submit()}
       >
         <Form onFinish={handleSubmitCustomer} form={form} layout="vertical">
-        <Row gutter={16}>
+          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 label="User Name"
@@ -242,7 +242,9 @@ function CustomerManagement() {
               <Form.Item
                 label="Phone Number"
                 name="phoneNumber"
-                rules={[{ required: true, message: "Please input phone number" }]}
+                rules={[
+                  { required: true, message: "Please input phone number" },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -282,10 +284,7 @@ function CustomerManagement() {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                label="Register Date"
-                name="registerDate"
-              >
+              <Form.Item label="Register Date" name="registerDate">
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -295,7 +294,9 @@ function CustomerManagement() {
               <Form.Item
                 label="Total Points"
                 name="totalPoints"
-                rules={[{ required: true, message: "Please input total points" }]}
+                rules={[
+                  { required: true, message: "Please input total points" },
+                ]}
               >
                 <InputNumber min={0} />
               </Form.Item>
@@ -313,8 +314,7 @@ function CustomerManagement() {
         onOk={() => form.submit()}
       >
         <Form onFinish={handleUpdateCustomer} form={form} layout="vertical">
-       
-        <Row gutter={16}>
+          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 label="User Name"
@@ -348,7 +348,9 @@ function CustomerManagement() {
               <Form.Item
                 label="Phone Number"
                 name="phoneNumber"
-                rules={[{ required: true, message: "Please input phone number" }]}
+                rules={[
+                  { required: true, message: "Please input phone number" },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -388,10 +390,7 @@ function CustomerManagement() {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                label="Register Date"
-                name="registerDate"
-              >
+              <Form.Item label="Register Date" name="registerDate">
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -401,7 +400,9 @@ function CustomerManagement() {
               <Form.Item
                 label="Total Points"
                 name="totalPoints"
-                rules={[{ required: true, message: "Please input total points" }]}
+                rules={[
+                  { required: true, message: "Please input total points" },
+                ]}
               >
                 <InputNumber min={0} />
               </Form.Item>

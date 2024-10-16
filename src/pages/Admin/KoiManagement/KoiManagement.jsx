@@ -13,6 +13,7 @@ import {
   Upload,
   Tag,
   Select,
+  Tooltip,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
@@ -22,7 +23,6 @@ import { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import uploadFile from "../../../utils/file";
 import Popup from "../../../components/Popup/Popup";
-// Import the custom Popup component
 
 function KoiManagement() {
   const [kois, setKoi] = useState([]);
@@ -35,7 +35,7 @@ function KoiManagement() {
   const [fileListCertificate, setFileListCertificate] = useState([]);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedKoi, setSelectedKoi] = useState(null);
-  const api = "http://localhost:5090/api/Koi";
+  const api = "https://localhost:7285/api/Koi";
   const fetchKoi = async () => {
     const response = await axios.get(api);
     console.log(response.data);
@@ -146,6 +146,43 @@ function KoiManagement() {
       },
     },
     {
+      tilte: "Description",
+      dataIndex: "description",
+    },
+    {
+      title: "Detail Description",
+      dataIndex: "detailDescription",
+      key: "detailDescription",
+      render: (detailDescription) => (
+        <Tooltip title={detailDescription}>
+          <span
+            style={{
+              display: "inline-block",
+              width: "80px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {detailDescription}
+          </span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Additional Image",
+      dataIndex: "additionalImage",
+      key: "additionalImage",
+      render: (additionalImage) => (
+        <div style={{ display: "flex", gap: "8px", overflowX: "auto" }}>
+          {Array.isArray(additionalImage) &&
+            additionalImage.map((imageUrl, index) => (
+              <Image key={index} src={imageUrl} width={50} height={50} />
+            ))}
+        </div>
+      ),
+    },
+    {
       title: "Action",
       dataIndex: "koiId",
       key: "koiId",
@@ -159,7 +196,7 @@ function KoiManagement() {
               onConfirm={() => handleDeleteKoi(koiId)}
             >
               <Button type="primary" danger>
-                Delete 
+                Delete
               </Button>
             </Popup>
             <Button
