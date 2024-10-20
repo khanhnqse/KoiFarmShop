@@ -1,421 +1,190 @@
-import moment from "moment";
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Row,
-  Col,
-  Table,
-  Typography,
-  Select,
-  DatePicker,
-  Popconfirm,
-} from "antd";
-import { useForm } from "antd/es/form/Form";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import {
+  fetchCustomerData,
+  saveCustomer,
+  deleteCustomer,
+} from "../../../services/sevice";
+import { customerColumns } from "../../../constant/menu-data";
 
-function CustomerManagement() {
+const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [form] = useForm();
-  const api = "https://localhost:7285/api/User";
-
-  const fetchCustomers = async () => {
-    const response = await axios.get(api);
-    setCustomers(response.data);
-  };
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchCustomers();
+    loadCustomerData();
   }, []);
 
-  const filteredCustomers = customers.filter(
-    (customer) => customer.role === "customer"
-  );
+  const loadCustomerData = async () => {
+    setLoading(true);
+    const customerData = await fetchCustomerData();
+    setCustomers(customerData);
+    setLoading(false);
+  };
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "userId",
-      key: "userId",
-      sorter: (a, b) => a.userId - b.userId,
-      defaultSortOrder: "ascend",
-    },
-    {
-      title: "User Name",
-      dataIndex: "userName",
-      key: "userName",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-      render: (role) => (
-        <span style={{ color: role === "admin" ? "red" : "blue" }}>
-          {role.charAt(0).toUpperCase() + role.slice(1)}
-        </span>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <span style={{ color: status === "active" ? "green" : "red" }}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      ),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Phone Number",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
-    },
-    {
-      title: "Register Date",
-      dataIndex: "registerDate",
-      key: "registerDate",
-      render: (date) => moment(date).format("YYYY-MM-DD"),
-    },
-    {
-      title: "Total Points",
-      dataIndex: "totalPoints",
-      key: "totalPoints",
-    },
-    {
-      title: "Action",
-      dataIndex: "userId",
-      key: "action",
-      render: (userId, record) => (
-        <>
-          <Button
-            type="primary"
-            onClick={() => handleOpenUpdateModal(record)}
-            style={{ marginRight: 8 }}
-          >
-            Update
-          </Button>
-          <Popconfirm
-            title="Are you sure to delete this customer?"
-            onConfirm={() => handleDeleteCustomer(userId)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger>Delete</Button>
-          </Popconfirm>
-        </>
-      ),
-    },
-  ];
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
+  const handleOpenModal = (customer = null) => {
+    setIsUpdateMode(!!customer);
+    setIsModalVisible(true);
+    if (customer) {
+      form.setFieldsValue(customer);
+    } else {
+      form.resetFields();
+    }
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
-  const handleSubmitCustomer = async (customer) => {
-    customer.registerDate = customer.registerDate
-      ? customer.registerDate.format("YYYY-MM-DD")
-      : moment().format("YYYY-MM-DD"); // Default to current date if not provided
-
-    try {
-      setSubmitting(true);
-      await axios.post(api, customer);
-      message.success("Customer created successfully");
-      setOpenModal(false);
-      fetchCustomers();
-      form.resetFields();
-    } catch (error) {
-      message.error("Failed to create customer");
-      console.error("Delete customer error:", error);
-      console.log();
-    } finally {
-      setSubmitting(false);
+  const handleSaveCustomer = async (values) => {
+    setLoading(true);
+    if (isUpdateMode) {
+      const { userName, email, phoneNumber, address } = values;
+      await saveCustomer(
+        {
+          userId: form.getFieldValue("userId"),
+          userName,
+          email,
+          phoneNumber,
+          address,
+        },
+        isUpdateMode
+      );
+    } else {
+      const { userName, password, confirmPassword, email } = values;
+      await saveCustomer(
+        { userName, password, confirmPassword, email },
+        isUpdateMode
+      );
     }
-  };
-
-  const handleOpenUpdateModal = (customer) => {
-    setSelectedCustomer(customer);
-    setUpdateModalOpen(true);
-    form.setFieldsValue({
-      ...customer,
-      registerDate: moment(customer.registerDate),
-    });
-  };
-
-  const handleUpdateCustomer = async (customer) => {
-    try {
-      setSubmitting(true);
-      await axios.put(`${api}/${selectedCustomer.userId}`, customer);
-      message.success("Customer updated successfully");
-      setUpdateModalOpen(false);
-      fetchCustomers();
-      form.resetFields();
-    } catch (error) {
-      message.error("Failed to update customer");
-      console.error("Update customer error:", error);
-    } finally {
-      setSubmitting(false);
-    }
+    loadCustomerData();
+    handleCloseModal();
+    setLoading(false);
   };
 
   const handleDeleteCustomer = async (userId) => {
-    try {
-      await axios.delete(`${api}/${userId}`);
-      message.success("Customer deleted successfully");
-      fetchCustomers();
-    } catch (error) {
-      message.error("Failed to delete customer");
-      console.error("Delete customer error:", error);
-    }
+    setLoading(true);
+    await deleteCustomer(userId);
+    loadCustomerData();
+    setLoading(false);
   };
 
   return (
     <div>
       <Typography.Title level={2}>Customer Management</Typography.Title>
-      <Button onClick={handleOpenModal}>
-        <PlusOutlined /> Add New Customer
+      <Button
+        type="primary"
+        onClick={() => handleOpenModal()}
+        style={{ marginBottom: 16 }}
+      >
+        <PlusOutlined /> Add Customer
       </Button>
       <Table
-        columns={columns}
-        dataSource={filteredCustomers}
+        columns={customerColumns(handleOpenModal, handleDeleteCustomer)}
+        dataSource={customers}
+        loading={loading}
+        rowKey="userId"
         scroll={{ x: 1500, y: 450 }}
       />
-
-      {/* Add New Customer Modal */}
       <Modal
-        confirmLoading={submitting}
-        title="Add New Customer"
-        open={openModal}
+        title={isUpdateMode ? "Update Customer" : "Add Customer"}
+        visible={isModalVisible}
         onCancel={handleCloseModal}
         onOk={() => form.submit()}
       >
-        <Form onFinish={handleSubmitCustomer} form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleSaveCustomer}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="User Name"
                 name="userName"
-                rules={[{ required: true, message: "Please input user name" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: "Please input email" }]}
-              >
-                <Input type="email" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: "Please input password" }]}
-              >
-                <Input.Password />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Phone Number"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Please input phone number" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Role"
-                name="role"
-                rules={[{ required: true, message: "Please select role" }]}
-              >
-                <Select>
-                  <Select.Option value="customer">Customer</Select.Option>
-                  <Select.Option value="admin">Admin</Select.Option>
-                  <Select.Option value="staff">Staff</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Status"
-                name="status"
-                rules={[{ required: true, message: "Please select status" }]}
-              >
-                <Select>
-                  <Select.Option value="active">Active</Select.Option>
-                  <Select.Option value="locked">Locked</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Address" name="address">
-                <Input.TextArea />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Register Date" name="registerDate">
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Total Points"
-                name="totalPoints"
-                rules={[
-                  { required: true, message: "Please input total points" },
-                ]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-
-      {/* Update Customer Modal */}
-      <Modal
-        confirmLoading={submitting}
-        title="Update Customer"
-        open={updateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        onOk={() => form.submit()}
-      >
-        <Form onFinish={handleUpdateCustomer} form={form} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
                 label="User Name"
-                name="userName"
-                rules={[{ required: true, message: "Please input user name" }]}
+                rules={[
+                  { required: true, message: "Please input the user name!" },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Email"
                 name="email"
-                rules={[{ required: true, message: "Please input email" }]}
-              >
-                <Input type="email" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: "Please input password" }]}
-              >
-                <Input.Password />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Phone Number"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Please input phone number" },
-                ]}
+                label="Email"
+                rules={[{ required: true, message: "Please input the email!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Role"
-                name="role"
-                rules={[{ required: true, message: "Please select role" }]}
-              >
-                <Select>
-                  <Select.Option value="customer">Customer</Select.Option>
-                  <Select.Option value="admin">Admin</Select.Option>
-                  <Select.Option value="staff">Staff</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Status"
-                name="status"
-                rules={[{ required: true, message: "Please select status" }]}
-              >
-                <Select>
-                  <Select.Option value="active">Active</Select.Option>
-                  <Select.Option value="locked">Locked</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Address" name="address">
-                <Input.TextArea />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Register Date" name="registerDate">
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Total Points"
-                name="totalPoints"
-                rules={[
-                  { required: true, message: "Please input total points" },
-                ]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-          </Row>
+          {isUpdateMode ? (
+            <>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="phoneNumber"
+                    label="Phone Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the phone number!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="address"
+                    label="Address"
+                    rules={[
+                      { required: true, message: "Please input the address!" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[
+                      { required: true, message: "Please input the password!" },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm the password!",
+                      },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          )}
         </Form>
       </Modal>
     </div>
   );
-}
+};
 
 export default CustomerManagement;
