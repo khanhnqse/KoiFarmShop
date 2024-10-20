@@ -23,6 +23,7 @@ import StaffManagement from "./pages/Admin/Staff/StaffManagement";
 import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
+import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
 
 function App() {
   return (
@@ -97,6 +98,10 @@ function App() {
             <Route
               path={PATHS.DASHBOARD.CHILDREN.ORDER}
               element={<OrderKoiManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.PROMOTION}
+              element={<PromotionManagement />}
             />
           </Route>
         </Route>

@@ -1,122 +1,190 @@
-import { useEffect, useState } from "react";
-import { Button, Typography, message, Form } from "antd";
-import axios from "axios";
-import moment from "moment";
+import { useState, useEffect } from "react";
+import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import CustomerModal from "../../../components/Modals/customerModal";
-import CustomerTable from "../../../components/Tables/customerTable";
+import {
+  fetchStaffData,
+  saveStaff,
+  deleteStaff,
+} from "../../../services/sevice";
+import { staffColumns } from "../../../constant/menu-data";
 
-const CustomerManagement = () => {
-  const [customers, setCustomers] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+const StaffManagement = () => {
+  const [staff, setStaff] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [form] = Form.useForm();
-  const api = "http://localhost:5090/api/User";
-
-  const fetchCustomers = async () => {
-    const response = await axios.get(api);
-    setCustomers(response.data);
-  };
 
   useEffect(() => {
-    fetchCustomers();
+    loadStaffData();
   }, []);
 
- const handleOpenCreateModal = () => {
-    form.resetFields();  // Clear form fields
-    setOpenModal(true);  // Open the modal for creating a new customer
+  const loadStaffData = async () => {
+    setLoading(true);
+    const staffData = await fetchStaffData();
+    setStaff(staffData);
+    setLoading(false);
   };
 
-  const handleSubmitCustomer = async (customer) => {
-    customer.registerDate = customer.registerDate
-      ? customer.registerDate.format("YYYY-MM-DD")
-      : moment().format("YYYY-MM-DD");
-
-    try {
-      setSubmitting(true);
-      await axios.post(api, customer);
-      message.success("Customer created successfully");
-      setOpenModal(false);
-      fetchCustomers();
+  const handleOpenModal = (staff = null) => {
+    setIsUpdateMode(!!staff);
+    setIsModalVisible(true);
+    if (staff) {
+      form.setFieldsValue(staff);
+    } else {
       form.resetFields();
-    } catch (error) {
-      message.error("Failed to create customer");
-      console.error(error);
-    } finally {
-      setSubmitting(false);
     }
   };
 
- 
-
-  const handleUpdateCustomer = async (customer) => {
-    try {
-      setSubmitting(true);
-      await axios.put(`${api}/${selectedCustomer.userId}`, customer);
-      message.success("Customer updated successfully");
-      setUpdateModalOpen(false);
-      fetchCustomers();
-      form.resetFields();
-    } catch (error) {
-      message.error("Failed to update customer");
-      console.error(error);
-    } finally {
-      setSubmitting(false);
-    }
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
-  const handleDeleteCustomer = async (userId) => {
-    try {
-      await axios.delete(`${api}/${userId}`);
-      message.success("Customer deleted successfully");
-      fetchCustomers();
-    } catch (error) {
-      message.error("Failed to delete customer");
-      console.error(error);
+  const handleSaveStaff = async (values) => {
+    setLoading(true);
+    if (isUpdateMode) {
+      const { userName, email, phoneNumber, address } = values;
+      await saveStaff(
+        {
+          userId: form.getFieldValue("userId"),
+          userName,
+          email,
+          phoneNumber,
+          address,
+        },
+        isUpdateMode
+      );
+    } else {
+      const { userName, password, confirmPassword, email } = values;
+      await saveStaff(
+        { userName, password, confirmPassword, email },
+        isUpdateMode
+      );
     }
+    loadStaffData();
+    handleCloseModal();
+    setLoading(false);
+  };
+
+  const handleDeleteStaff = async (userId) => {
+    setLoading(true);
+    await deleteStaff(userId);
+    loadStaffData();
+    setLoading(false);
   };
 
   return (
     <div>
-      <Typography.Title level={2}>Customer Management</Typography.Title>
-      <Button onClick={handleOpenCreateModal}>
-        <PlusOutlined /> Add New Customer
+      <Typography.Title level={2}>Staff Management</Typography.Title>
+      <Button
+        type="primary"
+        onClick={() => handleOpenModal()}
+        style={{ marginBottom: 16 }}
+      >
+        <PlusOutlined /> Add Staff
       </Button>
-
-      <CustomerTable
-        customers={customers.filter((c) => c.role === "staff" ||c.role === "admin" )}
-        handleOpenUpdateModal={(customer) => {
-          setSelectedCustomer(customer);
-          setUpdateModalOpen(true);
-          form.setFieldsValue({
-            ...customer,
-            registerDate: moment(customer.registerDate),
-          });
-        }}
-        handleDeleteCustomer={handleDeleteCustomer}
+      <Table
+        columns={staffColumns(handleOpenModal, handleDeleteStaff)}
+        dataSource={staff}
+        loading={loading}
+        rowKey="userId"
+        scroll={{ x: 1500, y: 450 }}
       />
-
-      <CustomerModal
-        visible={openModal}
-        onCancel={() => setOpenModal(false)}
-        onOk={handleSubmitCustomer}
-        form={form}
-        submitting={submitting}
-        title="Add New Customer"
-      />
-
-      <CustomerModal
-        visible={updateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        onOk={handleUpdateCustomer}
-        form={form}
-        submitting={submitting}
-        title="Update Customer"
-      />
+      <Modal
+        title={isUpdateMode ? "Update Staff" : "Add Staff"}
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        onOk={() => form.submit()}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSaveStaff}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="userName"
+                label="User Name"
+                rules={[
+                  { required: true, message: "Please input the user name!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ required: true, message: "Please input the email!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          {isUpdateMode ? (
+            <>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="phoneNumber"
+                    label="Phone Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the phone number!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="address"
+                    label="Address"
+                    rules={[
+                      { required: true, message: "Please input the address!" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[
+                      { required: true, message: "Please input the password!" },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm the password!",
+                      },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </>
+          )}
+        </Form>
+      </Modal>
     </div>
   );
 };
 
-export default CustomerManagement;
+export default StaffManagement;

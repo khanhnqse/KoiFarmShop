@@ -4,7 +4,7 @@ import { message } from "antd";
 const fishApi = "https://localhost:7285/api/Koi";
 const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
-
+const promotionApi = "https://localhost:7285/api/Promotion";
 // Fish management service
 export const fetchFishData = async () => {
   try {
@@ -81,5 +81,84 @@ export const deleteCustomer = async (userId) => {
   } catch (error) {
     message.error("Failed to delete customer");
     console.error("Error deleting customer:", error);
+  }
+};
+
+// Staff management service
+export const fetchStaffData = async () => {
+  try {
+    const response = await axios.get(userApi);
+    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
+    message.success("Staff data fetched successfully");
+    return staffData;
+  } catch (error) {
+    message.error("Failed to fetch staff data");
+    console.error("Error fetching staff data:", error);
+    return [];
+  }
+};
+
+export const saveStaff = async (staff, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      const { userName, email, phoneNumber, address } = staff;
+      await axios.put(`${userApi}/updateProfile${staff.userId}`, { userName, email, phoneNumber, address });
+      message.success("Staff updated successfully");
+    } else {
+      const { userName, password, confirmPassword, email } = staff;
+      await axios.post(addUserApi, { userName, password, confirmPassword, email });
+      message.success("Staff created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save staff data");
+    console.error("Error saving staff data:", error);
+  }
+};
+
+export const deleteStaff = async (userId) => {
+  try {
+    await axios.delete(`${userApi}/${userId}`);
+    message.success("Staff deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete staff");
+    console.error("Error deleting staff:", error);
+  }
+};
+
+// Promotion management service
+export const fetchPromotionData = async () => {
+  try {
+    const response = await axios.get(promotionApi);
+    message.success("Promotion data fetched successfully");
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch promotion data");
+    console.error("Error fetching promotion data:", error);
+    return [];
+  }
+};
+
+export const savePromotion = async (promotion, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${promotionApi}/${promotion.promotionId}`, promotion);
+      message.success("Promotion updated successfully");
+    } else {
+      await axios.post(promotionApi, promotion);
+      message.success("Promotion created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save promotion data");
+    console.error("Error saving promotion data:", error);
+  }
+};
+
+export const deletePromotion = async (promotionId) => {
+  try {
+    await axios.delete(`${promotionApi}/${promotionId}`);
+    message.success("Promotion deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete promotion");
+    console.error("Error deleting promotion:", error);
   }
 };

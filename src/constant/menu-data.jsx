@@ -275,3 +275,181 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     ),
   },
 ];
+
+// Staff management Table columns
+
+const handleStaffMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeleteStaff
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteStaff(record.userId);
+  }
+};
+
+const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
+  <Menu
+    onClick={(e) =>
+      handleStaffMenuClick(e, record, handleOpenModal, handleDeleteStaff)
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
+  {
+    title: "User ID",
+    dataIndex: "userId",
+    key: "userId",
+  },
+  {
+    title: "User Name",
+    dataIndex: "userName",
+    key: "userName",
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Phone Number",
+    dataIndex: "phoneNumber",
+    key: "phoneNumber",
+  },
+  {
+    title: "Role",
+    dataIndex: "role",
+    key: "role",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status) => (
+      <Tag color={status === "active" ? "green" : "red"}>{status}</Tag>
+    ),
+  },
+  {
+    title: "Register Date",
+    dataIndex: "registerDate",
+    key: "registerDate",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={staffMenu(record, handleOpenModal, handleDeleteStaff)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
+
+// Promotion management Table columns
+
+const handlePromotionMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeletePromotion
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeletePromotion(record.promotionId);
+  }
+};
+
+const promotionMenu = (record, handleOpenModal, handleDeletePromotion) => (
+  <Menu
+    onClick={(e) =>
+      handlePromotionMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeletePromotion
+      )
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
+  {
+    title: "Promotion ID",
+    dataIndex: "promotionId",
+    key: "promotionId",
+  },
+  {
+    title: "Promotion Name",
+    dataIndex: "promotionName",
+    key: "promotionName",
+  },
+  {
+    title: "Description",
+    dataIndex: "description",
+    key: "description",
+  },
+  {
+    title: "Discount Rate",
+    dataIndex: "discountRate",
+    key: "discountRate",
+  },
+  {
+    title: "Start Date",
+    dataIndex: "startDate",
+    key: "startDate",
+  },
+  {
+    title: "End Date",
+    dataIndex: "endDate",
+    key: "endDate",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status) => (
+      <Tag color={status ? "green" : "red"}>
+        {status ? "Active" : "Inactive"}
+      </Tag>
+    ),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={promotionMenu(record, handleOpenModal, handleDeletePromotion)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];

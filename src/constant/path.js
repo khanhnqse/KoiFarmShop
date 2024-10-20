@@ -21,6 +21,7 @@ export const PATHS = {
       CUSTOMER: "/dashboard/customer",
       STAFF: "/dashboard/staff",
       ORDER: "/dashboard/order",
+      PROMOTION: "/dashboard/promotion",
       SETTING: "/dashboard/setting,"
     },
   },
