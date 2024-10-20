@@ -62,6 +62,7 @@ const PromotionManagement = () => {
     setLoading(true);
     const promotionData = {
       ...values,
+      promotionId: isUpdateMode ? form.getFieldValue("promotionId") : undefined,
       startDate: values.startDate.format("YYYY-MM-DD"),
       endDate: values.endDate.format("YYYY-MM-DD"),
     };

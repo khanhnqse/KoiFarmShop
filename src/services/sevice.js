@@ -9,7 +9,7 @@ const promotionApi = "https://localhost:7285/api/Promotion";
 export const fetchFishData = async () => {
   try {
     const response = await axios.get(fishApi);
-    message.success("Fish data fetched successfully");
+   
     return response.data;
   } catch (error) {
     message.error("Failed to fetch fish data");
@@ -48,7 +48,7 @@ export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
     const customerData = response.data.filter((user) => user.role === "customer");
-    message.success("Customer data fetched successfully");
+   
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -89,7 +89,7 @@ export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
     const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
-    message.success("Staff data fetched successfully");
+   
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -129,7 +129,7 @@ export const deleteStaff = async (userId) => {
 export const fetchPromotionData = async () => {
   try {
     const response = await axios.get(promotionApi);
-    message.success("Promotion data fetched successfully");
+    
     return response.data;
   } catch (error) {
     message.error("Failed to fetch promotion data");
