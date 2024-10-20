@@ -187,3 +187,91 @@ export const detailColumns = [
         : "No details available",
   },
 ];
+
+// Customer management Table columns
+
+const handleCustomerMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeleteCustomer
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteCustomer(record.userId);
+  }
+};
+
+const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
+  <Menu
+    onClick={(e) =>
+      handleCustomerMenuClick(e, record, handleOpenModal, handleDeleteCustomer)
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
+  {
+    title: "User ID",
+    dataIndex: "userId",
+    key: "userId",
+  },
+  {
+    title: "User Name",
+    dataIndex: "userName",
+    key: "userName",
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Phone Number",
+    dataIndex: "phoneNumber",
+    key: "phoneNumber",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status) => (
+      <Tag color={status === "active" ? "green" : "red"}>{status}</Tag>
+    ),
+  },
+  {
+    title: "Register Date",
+    dataIndex: "registerDate",
+    key: "registerDate",
+  },
+  {
+    title: "Total Points",
+    dataIndex: "totalPoints",
+    key: "totalPoints",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={customerMenu(record, handleOpenModal, handleDeleteCustomer)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
