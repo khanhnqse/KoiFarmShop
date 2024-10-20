@@ -17,13 +17,12 @@ import Consignment from "./pages/ConsigmentPage/Consignment";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
-
-import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
 import Dashboard from "./pages/Admin/Dashboard/DashBoard";
 import ConsignmentManage from "./pages/Admin/Consignment/ConsignmentManagement";
 import StaffManagement from "./pages/Admin/Staff/StaffManagement";
 import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
+import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
 
 function App() {
   return (
@@ -81,7 +80,7 @@ function App() {
           >
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
-              element={<KoiManagement />}
+              element={<FishManagement />}
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}
