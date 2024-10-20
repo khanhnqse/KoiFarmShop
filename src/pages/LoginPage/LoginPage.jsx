@@ -1,11 +1,12 @@
 import { Button, Input, Form, message, Spin } from "antd";
-import { FacebookOutlined, GoogleOutlined } from "@ant-design/icons";
+
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../../assets/logo.png";
 import { PATHS } from "../../constant/path";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import LoginWithGoogle from "./LoginWithGoogle";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -64,20 +65,7 @@ const LoginPage = () => {
 
           {/* Social login buttons */}
           <div className="flex space-x-4 mb-6">
-            <Button
-              icon={<FacebookOutlined />}
-              className="w-1/3 flex items-center justify-center"
-              style={{ backgroundColor: "#3b5998", color: "#fff" }}
-            >
-              Facebook
-            </Button>
-            <Button
-              icon={<GoogleOutlined />}
-              className="w-1/3 flex items-center justify-center"
-              style={{ backgroundColor: "#db4437", color: "#fff" }}
-            >
-              Google
-            </Button>
+            <LoginWithGoogle /> {/* Add the LoginWithGoogle component */}
           </div>
 
           {/* OR Divider */}

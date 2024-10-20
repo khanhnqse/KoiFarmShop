@@ -9,6 +9,7 @@ import {
   Select,
   Row,
   Col,
+  Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import {
@@ -81,6 +82,7 @@ const PromotionManagement = () => {
 
   return (
     <div>
+      <Typography.Title level={2}>Promotion Management</Typography.Title>
       <Button
         type="primary"
         onClick={() => handleOpenModal()}

@@ -38,7 +38,6 @@ const UserProfile = () => {
         phoneNumber: userData.phoneNumber || "",
         address: userData.address || "",
       });
-      message.success("User data fetched successfully");
     } catch (error) {
       message.error("Failed to fetch user data");
       console.error("Error fetching user data:", error);

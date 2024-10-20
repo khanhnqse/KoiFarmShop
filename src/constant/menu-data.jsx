@@ -223,6 +223,10 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     title: "User ID",
     dataIndex: "userId",
     key: "userId",
+    sorter: {
+      compare: (a, b) => a.userId - b.userId,
+    },
+    defaultSortOrder: "ascend",
   },
   {
     title: "User Name",
@@ -311,6 +315,10 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     title: "User ID",
     dataIndex: "userId",
     key: "userId",
+    sorter: {
+      compare: (a, b) => a.userId - b.userId,
+    },
+    defaultSortOrder: "ascend",
   },
   {
     title: "User Name",
@@ -404,6 +412,10 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Promotion ID",
     dataIndex: "promotionId",
     key: "promotionId",
+    sorter: {
+      compare: (a, b) => a.promotionId - b.promotionId,
+    },
+    defaultSortOrder: "ascend",
   },
   {
     title: "Promotion Name",

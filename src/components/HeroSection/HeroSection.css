@@ -1,7 +1,7 @@
 .hero {
     text-align: center;
     padding: 280px 0;
-    background-image: url('src/assets/hero.png');
+    /* background-image: url('src/assets/hero.png'); */
     background-size: cover;
     background-position: center;
   }
