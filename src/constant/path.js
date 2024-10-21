@@ -16,6 +16,7 @@ export const PATHS = {
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {
+      OVERVIEW: "/dashboard/overview",
       KOI: "/dashboard/koi",
       CONSIGNMENT: "/dashboard/consignment",
       CUSTOMER: "/dashboard/customer",

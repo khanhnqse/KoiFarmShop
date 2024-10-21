@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/HomePage/HomePage";
 import MainLayout from "./Layout/MainLayout/MainLayout";
 import { PATHS } from "./constant/path";
@@ -24,7 +24,7 @@ import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
 import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
-
+import Overview from "./pages/Admin/Overview/Overview";
 function App() {
   return (
     <AuthProvider>
@@ -79,6 +79,7 @@ function App() {
               </PrivateRoute>
             }
           >
+            <Route index element={<Navigate to={PATHS.DASHBOARD.CHILDREN.OVERVIEW} replace />} />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
               element={<FishManagement />}
@@ -103,6 +104,7 @@ function App() {
               path={PATHS.DASHBOARD.CHILDREN.PROMOTION}
               element={<PromotionManagement />}
             />
+            <Route path={PATHS.DASHBOARD.CHILDREN.OVERVIEW} element={<Overview />} />
           </Route>
         </Route>
 
