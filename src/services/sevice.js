@@ -4,12 +4,13 @@ import { message } from "antd";
 const fishApi = "https://localhost:7285/api/Koi";
 const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
+const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
 const promotionApi = "https://localhost:7285/api/Promotion";
+
 // Fish management service
 export const fetchFishData = async () => {
   try {
     const response = await axios.get(fishApi);
-   
     return response.data;
   } catch (error) {
     message.error("Failed to fetch fish data");
@@ -48,7 +49,6 @@ export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
     const customerData = response.data.filter((user) => user.role === "customer");
-   
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -89,7 +89,6 @@ export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
     const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
-   
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -106,7 +105,7 @@ export const saveStaff = async (staff, isUpdateMode) => {
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addUserApi, { userName, password, confirmPassword, email });
+      await axios.post(addStaffApi, { userName, password, confirmPassword, email }); // Use the new API endpoint for creating staff
       message.success("Staff created successfully");
     }
   } catch (error) {
@@ -129,7 +128,6 @@ export const deleteStaff = async (userId) => {
 export const fetchPromotionData = async () => {
   try {
     const response = await axios.get(promotionApi);
-    
     return response.data;
   } catch (error) {
     message.error("Failed to fetch promotion data");

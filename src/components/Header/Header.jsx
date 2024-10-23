@@ -56,10 +56,6 @@ function Header() {
       key: "/dashboard",
       label: "Dashboard",
     },
-    {
-      key: "/products",
-      label: "Product",
-    },
   ];
 
   return (
