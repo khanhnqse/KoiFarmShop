@@ -137,7 +137,11 @@ function Consignment() {
       <Button onClick={handleOpenModal}>
         <PlusOutlined /> Create new Consignment
       </Button>
-      <Table columns={columns} dataSource={consignments} scroll={{ x: 1500, y: 450 }} />
+      <Table
+        columns={columns}
+        dataSource={consignments}
+        scroll={{ x: 1500, y: 450 }}
+      />
       <Modal
         confirmLoading={submitting}
         title="Create new Consignment"
@@ -151,7 +155,9 @@ function Consignment() {
               <FormItem
                 label="Type of Consignment"
                 name="consignmentType"
-                rules={[{ required: true, message: "Please input consignment type" }]}
+                rules={[
+                  { required: true, message: "Please input consignment type" },
+                ]}
               >
                 <Input />
               </FormItem>
@@ -160,7 +166,9 @@ function Consignment() {
               <FormItem
                 label="Price"
                 name="consignmentPrice"
-                rules={[{ required: true, message: "Please input consignment price" }]}
+                rules={[
+                  { required: true, message: "Please input consignment price" },
+                ]}
               >
                 <InputNumber min={0} />
               </FormItem>
@@ -168,7 +176,7 @@ function Consignment() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-            <FormItem
+              <FormItem
                 label="User ID"
                 name="userID"
                 rules={[{ required: true, message: "Please input User ID" }]}
