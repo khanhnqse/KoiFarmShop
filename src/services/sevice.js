@@ -1,10 +1,10 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "https://localhost:7285/api/Koi";
-const userApi = "https://localhost:7285/api/User";
-const addUserApi = "https://localhost:7285/api/User/register";
-const promotionApi = "https://localhost:7285/api/Promotion";
+const fishApi = "https://localhost:5090/api/Koi";
+const userApi = "http://localhost:5090/api/User";
+const addUserApi = "https://localhost:5090/api/User/register";
+const promotionApi = "https://localhost:5090/api/Promotion";
 // Fish management service
 export const fetchFishData = async () => {
   try {
