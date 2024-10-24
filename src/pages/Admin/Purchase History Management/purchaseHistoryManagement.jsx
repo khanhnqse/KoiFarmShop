@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Row, Col, Typography, DatePicker } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Row,
+  Col,
+  Typography,
+  DatePicker,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { fetchPurchaseHistoryData, savePurchaseHistory, deletePurchaseHistory } from "../../../services/sevice";
+import {
+  fetchPurchaseHistoryData,
+  savePurchaseHistory,
+  deletePurchaseHistory,
+} from "../../../services/sevice";
 import { purchaseHistoryColumns } from "../../../constant/menu-data";
 
 const PurchaseHistoryManagement = () => {
@@ -29,17 +43,16 @@ const PurchaseHistoryManagement = () => {
     setIsModalVisible(true);
     if (purchaseHistory) {
       form.setFieldsValue({
-        orderID: purchaseHistory.orderID,
-        userID: purchaseHistory.userID,
+        orderId: purchaseHistory.orderId,
+        userId: purchaseHistory.userId,
         purchaseDate: purchaseHistory.purchaseDate,
         totalMoney: purchaseHistory.totalMoney,
         discountMoney: purchaseHistory.discountMoney,
-        finalMoney: purchaseHistory.finalMoney,
         orderStatus: purchaseHistory.orderStatus,
         paymentMethod: purchaseHistory.paymentMethod,
         shippingDate: purchaseHistory.shippingDate,
         deliveryStatus: purchaseHistory.deliveryStatus,
-        promotionID: purchaseHistory.promotionID,
+        promotionId: purchaseHistory.promotionId,
         earnedPoints: purchaseHistory.earnedPoints,
         usedPoints: purchaseHistory.usedPoints,
       });
@@ -57,7 +70,10 @@ const PurchaseHistoryManagement = () => {
   const handleSavePurchaseHistory = async (values) => {
     setLoading(true);
     if (isUpdateMode && selectedPurchaseHistory) {
-      await savePurchaseHistory({ ...selectedPurchaseHistory, ...values }, true);
+      await savePurchaseHistory(
+        { ...selectedPurchaseHistory, ...values },
+        true
+      );
     } else {
       await savePurchaseHistory(values, false);
     }
@@ -66,9 +82,9 @@ const PurchaseHistoryManagement = () => {
     setLoading(false);
   };
 
-  const handleDeletePurchaseHistory = async (orderID) => {
+  const handleDeletePurchaseHistory = async (orderId) => {
     setLoading(true);
-    await deletePurchaseHistory(orderID);
+    await deletePurchaseHistory(orderId);
     loadPurchaseHistoryData();
     setLoading(false);
   };
@@ -84,34 +100,47 @@ const PurchaseHistoryManagement = () => {
         <PlusOutlined /> Add Purchase History
       </Button>
       <Table
-        columns={purchaseHistoryColumns(handleOpenModal, handleDeletePurchaseHistory)}
+        columns={purchaseHistoryColumns(
+          handleOpenModal,
+          handleDeletePurchaseHistory
+        )}
         dataSource={purchaseHistories}
         loading={loading}
-        rowKey="orderID"
+        rowKey="orderId"
         scroll={{ x: 1500, y: 450 }}
       />
       <Modal
-        title={isUpdateMode ? "Update Purchase History" : "Add Purchase History"}
+        title={
+          isUpdateMode ? "Update Purchase History" : "Add Purchase History"
+        }
         visible={isModalVisible}
         onCancel={handleCloseModal}
         onOk={() => form.submit()}
       >
-        <Form form={form} layout="vertical" onFinish={handleSavePurchaseHistory}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSavePurchaseHistory}
+        >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="orderID"
+                name="orderId"
                 label="Order ID"
-                rules={[{ required: true, message: "Please input the order ID!" }]}
+                rules={[
+                  { required: true, message: "Please input the order ID!" },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="userID"
+                name="userId"
                 label="User ID"
-                rules={[{ required: true, message: "Please input the user ID!" }]}
+                rules={[
+                  { required: true, message: "Please input the user ID!" },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -122,7 +151,12 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="purchaseDate"
                 label="Purchase Date"
-                rules={[{ required: true, message: "Please select the purchase date!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the purchase date!",
+                  },
+                ]}
               >
                 <DatePicker />
               </Form.Item>
@@ -131,7 +165,9 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="totalMoney"
                 label="Total Money"
-                rules={[{ required: true, message: "Please input the total money!" }]}
+                rules={[
+                  { required: true, message: "Please input the total money!" },
+                ]}
               >
                 <Input type="number" />
               </Form.Item>
@@ -142,7 +178,12 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="discountMoney"
                 label="Discount Money"
-                rules={[{ required: true, message: "Please input the discount money!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the discount money!",
+                  },
+                ]}
               >
                 <Input type="number" />
               </Form.Item>
@@ -151,7 +192,9 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="finalMoney"
                 label="Final Money"
-                rules={[{ required: true, message: "Please input the final money!" }]}
+                rules={[
+                  { required: true, message: "Please input the final money!" },
+                ]}
               >
                 <Input type="number" />
               </Form.Item>
@@ -162,7 +205,9 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="orderStatus"
                 label="Order Status"
-                rules={[{ required: true, message: "Please input the order status!" }]}
+                rules={[
+                  { required: true, message: "Please input the order status!" },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -171,7 +216,12 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="paymentMethod"
                 label="Payment Method"
-                rules={[{ required: true, message: "Please input the payment method!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the payment method!",
+                  },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -182,7 +232,12 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="shippingDate"
                 label="Shipping Date"
-                rules={[{ required: true, message: "Please select the shipping date!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the shipping date!",
+                  },
+                ]}
               >
                 <DatePicker />
               </Form.Item>
@@ -191,7 +246,12 @@ const PurchaseHistoryManagement = () => {
               <Form.Item
                 name="deliveryStatus"
                 label="Delivery Status"
-                rules={[{ required: true, message: "Please input the delivery status!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the delivery status!",
+                  },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -199,28 +259,19 @@ const PurchaseHistoryManagement = () => {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="promotionID"
-                label="Promotion ID"
-              >
+              <Form.Item name="promotionId" label="Promotion ID">
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
-                name="earnedPoints"
-                label="Earned Points"
-              >
+              <Form.Item name="earnedPoints" label="Earned Points">
                 <Input type="number" />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="usedPoints"
-                label="Used Points"
-              >
+              <Form.Item name="usedPoints" label="Used Points">
                 <Input type="number" />
               </Form.Item>
             </Col>

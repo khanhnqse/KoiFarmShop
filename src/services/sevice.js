@@ -6,8 +6,9 @@ const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
 const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
 const promotionApi = "https://localhost:7285/api/Promotion";
-const purchasehistoryApi = "http://localhost:7285/api/PurchaseHistory";
-const feedbackApi = "http://localhost:7285/api/Feedback";
+const purchasehistoryApi = "https://localhost:7285/api/PurchaseHistory"; // Updated API endpoint for purchase history
+const feedbackApi = "https://localhost:7285/api/Feedback"; // Updated API endpoint for feedback
+
 // Fish management service
 export const fetchFishData = async () => {
   try {
@@ -193,7 +194,7 @@ export const fetchFeedbackData = async () => {
 export const saveFeedback = async (feedback, isUpdateMode) => {
   try {
     if (isUpdateMode) {
-      await axios.put(`${feedbackApi}/${feedback.feedbackID}`, feedback);
+      await axios.put(`${feedbackApi}/${feedback.feedbackId}`, feedback);
       message.success("Feedback updated successfully");
     } else {
       await axios.post(feedbackApi, feedback);
@@ -206,9 +207,9 @@ export const saveFeedback = async (feedback, isUpdateMode) => {
 };
 
 // Delete Feedback
-export const deleteFeedback = async (feedbackID) => {
+export const deleteFeedback = async (feedbackId) => {
   try {
-    await axios.delete(`${feedbackApi}/${feedbackID}`);
+    await axios.delete(`${feedbackApi}/${feedbackId}`);
     message.success("Feedback deleted successfully");
   } catch (error) {
     message.error("Failed to delete feedback");
@@ -216,7 +217,7 @@ export const deleteFeedback = async (feedbackID) => {
   }
 };
 
-//Purchase History Management services
+// Purchase History Management services
 // Fetch Purchase History Data
 export const fetchPurchaseHistoryData = async () => {
   try {
@@ -234,7 +235,7 @@ export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
   try {
     if (isUpdateMode) {
       await axios.put(
-        `${purchasehistoryApi}/${purchaseHistory.orderID}`,
+        `${purchasehistoryApi}/${purchaseHistory.orderId}`,
         purchaseHistory
       );
       message.success("Purchase history updated successfully");
@@ -249,9 +250,9 @@ export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
 };
 
 // Delete Purchase History
-export const deletePurchaseHistory = async (orderID) => {
+export const deletePurchaseHistory = async (orderId) => {
   try {
-    await axios.delete(`${purchasehistoryApi}/${orderID}`);
+    await axios.delete(`${purchasehistoryApi}/${orderId}`);
     message.success("Purchase history deleted successfully");
   } catch (error) {
     message.error("Failed to delete purchase history");

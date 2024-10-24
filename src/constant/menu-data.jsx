@@ -477,7 +477,7 @@ const handleFeedbackMenuClick = (
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
-    handleDeleteFeedback(record.feedbackID);
+    handleDeleteFeedback(record.feedbackId);
   }
 };
 
@@ -501,32 +501,27 @@ const feedbackMenu = (record, handleOpenModal, handleDeleteFeedback) => (
 export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
   {
     title: "Feedback ID",
-    dataIndex: "feedbackID",
-    key: "feedbackID",
+    dataIndex: "feedbackId",
+    key: "feedbackId",
     sorter: {
-      compare: (a, b) => a.feedbackID - b.feedbackID,
+      compare: (a, b) => a.feedbackId - b.feedbackId,
     },
     defaultSortOrder: "ascend",
   },
   {
     title: "User ID",
-    dataIndex: "userID",
-    key: "userID",
+    dataIndex: "userId",
+    key: "userId",
   },
   {
     title: "Order ID",
-    dataIndex: "orderID",
-    key: "orderID",
+    dataIndex: "orderId",
+    key: "orderId",
   },
   {
     title: "Koi ID",
-    dataIndex: "koiID",
-    key: "koiID",
-  },
-  {
-    title: "Fishes ID",
-    dataIndex: "fishesID",
-    key: "fishesID",
+    dataIndex: "koiId",
+    key: "koiId",
   },
   {
     title: "Rating",
@@ -566,27 +561,38 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
 ];
 
 // Purchase History Table Columns
-export const purchaseHistoryMenu = (record, handleOpenModal, handleDeletePurchaseHistory) => (
-  <Menu onClick={(e) => handleMenuClick(e, record, handleOpenModal, handleDeletePurchaseHistory)}>
+export const purchaseHistoryMenu = (
+  record,
+  handleOpenModal,
+  handleDeletePurchaseHistory
+) => (
+  <Menu
+    onClick={(e) =>
+      handleMenuClick(e, record, handleOpenModal, handleDeletePurchaseHistory)
+    }
+  >
     <Menu.Item key="edit">Edit</Menu.Item>
     <Menu.Item key="delete">Delete</Menu.Item>
   </Menu>
 );
 
-export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHistory) => [
+export const purchaseHistoryColumns = (
+  handleOpenModal,
+  handleDeletePurchaseHistory
+) => [
   {
     title: "Order ID",
-    dataIndex: "orderID",
-    key: "orderID",
+    dataIndex: "orderId",
+    key: "orderId",
     sorter: {
-      compare: (a, b) => a.orderID - b.orderID,
+      compare: (a, b) => a.orderId - b.orderId,
     },
     defaultSortOrder: "ascend",
   },
   {
     title: "User ID",
-    dataIndex: "userID",
-    key: "userID",
+    dataIndex: "userId",
+    key: "userId",
   },
   {
     title: "Purchase Date",
@@ -598,26 +604,34 @@ export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHist
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
   },
   {
     title: "Order Status",
     dataIndex: "orderStatus",
     key: "orderStatus",
     render: (status) => (
-      <Tag color={status === "Completed" ? "green" : status === "Pending" ? "orange" : "red"}>
+      <Tag
+        color={
+          status === "completed"
+            ? "green"
+            : status === "pending"
+            ? "orange"
+            : "red"
+        }
+      >
         {status}
       </Tag>
     ),
@@ -640,8 +654,8 @@ export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHist
   },
   {
     title: "Promotion ID",
-    dataIndex: "promotionID",
-    key: "promotionID",
+    dataIndex: "promotionId",
+    key: "promotionId",
   },
   {
     title: "Earned Points",
@@ -658,7 +672,11 @@ export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHist
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={purchaseHistoryMenu(record, handleOpenModal, handleDeletePurchaseHistory)}
+        overlay={purchaseHistoryMenu(
+          record,
+          handleOpenModal,
+          handleDeletePurchaseHistory
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -666,5 +684,3 @@ export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHist
     ),
   },
 ];
-
-

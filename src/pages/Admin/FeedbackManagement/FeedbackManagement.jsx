@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { fetchFeedbackData, saveFeedback, deleteFeedback } from "../../../services/sevice";
+import {
+  fetchFeedbackData,
+  saveFeedback,
+  deleteFeedback,
+} from "../../../services/sevice";
 import { feedbackColumns } from "../../../constant/menu-data";
 
 const FeedbackManagement = () => {
@@ -31,11 +35,10 @@ const FeedbackManagement = () => {
     if (feedback) {
       // Populate form with selected feedback for editing
       form.setFieldsValue({
-        feedbackID: feedback.feedbackID,
-        userID: feedback.userID,
-        orderID: feedback.orderID,
-        koiID: feedback.koiID,
-        fishesID: feedback.fishesID,
+        feedbackId: feedback.feedbackId,
+        userId: feedback.userId,
+        orderId: feedback.orderId,
+        koiId: feedback.koiId,
         rating: feedback.rating,
         content: feedback.content,
         feedbackDate: feedback.feedbackDate,
@@ -65,9 +68,9 @@ const FeedbackManagement = () => {
     setLoading(false);
   };
 
-  const handleDeleteFeedback = async (feedbackID) => {
+  const handleDeleteFeedback = async (feedbackId) => {
     setLoading(true);
-    await deleteFeedback(feedbackID);
+    await deleteFeedback(feedbackId);
     loadFeedbackData();
     setLoading(false);
   };
@@ -86,7 +89,7 @@ const FeedbackManagement = () => {
         columns={feedbackColumns(handleOpenModal, handleDeleteFeedback)}
         dataSource={feedbacks}
         loading={loading}
-        rowKey="feedbackID"
+        rowKey="feedbackId"
         scroll={{ x: 1500, y: 450 }}
       />
       <Modal
@@ -99,18 +102,22 @@ const FeedbackManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="userID"
+                name="userId"
                 label="User ID"
-                rules={[{ required: true, message: "Please input the user ID!" }]}
+                rules={[
+                  { required: true, message: "Please input the user ID!" },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="orderID"
+                name="orderId"
                 label="Order ID"
-                rules={[{ required: true, message: "Please input the order ID!" }]}
+                rules={[
+                  { required: true, message: "Please input the order ID!" },
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -119,50 +126,59 @@ const FeedbackManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="koiID"
+                name="koiId"
                 label="Koi ID"
-                rules={[{ required: true, message: "Please input the Koi ID!" }]}
+                rules={[
+                  { required: true, message: "Please input the Koi ID!" },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                name="fishesID"
-                label="Fishes ID"
-                rules={[{ required: true, message: "Please input the Fishes ID!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="rating"
                 label="Rating"
-                rules={[{ required: true, message: "Please input the rating!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="feedbackDate"
-                label="Feedback Date"
-                rules={[{ required: true, message: "Please input the feedback date!" }]}
+                rules={[
+                  { required: true, message: "Please input the rating!" },
+                ]}
               >
                 <Input />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item
-            name="content"
-            label="Content"
-            rules={[{ required: true, message: "Please input the feedback content!" }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="content"
+                label="Content"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the feedback content!",
+                  },
+                ]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="feedbackDate"
+                label="Feedback Date"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the feedback date!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </div>
