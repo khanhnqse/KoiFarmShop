@@ -465,3 +465,101 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     ),
   },
 ];
+
+// Feedback management Table columns
+const handleFeedbackMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeleteFeedback
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteFeedback(record.feedbackID);
+  }
+};
+
+// Feedback Action Menu
+const feedbackMenu = (record, handleOpenModal, handleDeleteFeedback) => (
+  <Menu
+    onClick={(e) =>
+      handleFeedbackMenuClick(e, record, handleOpenModal, handleDeleteFeedback)
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+// Feedback Table Columns
+export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
+  {
+    title: "Feedback ID",
+    dataIndex: "feedbackID",
+    key: "feedbackID",
+    sorter: {
+      compare: (a, b) => a.feedbackID - b.feedbackID,
+    },
+    defaultSortOrder: "ascend",
+  },
+  {
+    title: "User ID",
+    dataIndex: "userID",
+    key: "userID",
+  },
+  {
+    title: "Order ID",
+    dataIndex: "orderID",
+    key: "orderID",
+  },
+  {
+    title: "Koi ID",
+    dataIndex: "koiID",
+    key: "koiID",
+  },
+  {
+    title: "Fishes ID",
+    dataIndex: "fishesID",
+    key: "fishesID",
+  },
+  {
+    title: "Rating",
+    dataIndex: "rating",
+    key: "rating",
+    render: (rating) => (
+      <Tag color={rating >= 4 ? "green" : rating >= 2 ? "orange" : "red"}>
+        {rating}
+      </Tag>
+    ),
+  },
+  {
+    title: "Content",
+    dataIndex: "content",
+    key: "content",
+    render: (text) => (
+      <span>{text.length > 50 ? text.substring(0, 50) + "..." : text}</span>
+    ),
+  },
+  {
+    title: "Feedback Date",
+    dataIndex: "feedbackDate",
+    key: "feedbackDate",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={feedbackMenu(record, handleOpenModal, handleDeleteFeedback)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];

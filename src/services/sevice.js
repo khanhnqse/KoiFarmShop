@@ -4,12 +4,13 @@ import { message } from "antd";
 const fishApi = "https://localhost:5090/api/Koi";
 const userApi = "http://localhost:5090/api/User";
 const addUserApi = "https://localhost:5090/api/User/register";
-const promotionApi = "https://localhost:5090/api/Promotion";
+const promotionApi = "http://localhost:5090/api/Promotion";
+const feedbackApi = "http://localhost:5090/api/Feedback";
 // Fish management service
 export const fetchFishData = async () => {
   try {
     const response = await axios.get(fishApi);
-   
+
     return response.data;
   } catch (error) {
     message.error("Failed to fetch fish data");
@@ -47,8 +48,10 @@ export const deleteFish = async (koiId) => {
 export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
-    const customerData = response.data.filter((user) => user.role === "customer");
-   
+    const customerData = response.data.filter(
+      (user) => user.role === "customer"
+    );
+
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -61,11 +64,21 @@ export const saveCustomer = async (customer, isUpdateMode) => {
   try {
     if (isUpdateMode) {
       const { userName, email, phoneNumber, address } = customer;
-      await axios.put(`${userApi}/updateProfile${customer.userId}`, { userName, email, phoneNumber, address });
+      await axios.put(`${userApi}/updateProfile${customer.userId}`, {
+        userName,
+        email,
+        phoneNumber,
+        address,
+      });
       message.success("Customer updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = customer;
-      await axios.post(addUserApi, { userName, password, confirmPassword, email });
+      await axios.post(addUserApi, {
+        userName,
+        password,
+        confirmPassword,
+        email,
+      });
       message.success("Customer created successfully");
     }
   } catch (error) {
@@ -88,8 +101,10 @@ export const deleteCustomer = async (userId) => {
 export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
-    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
-   
+    const staffData = response.data.filter(
+      (user) => user.role === "admin" || user.role === "staff"
+    );
+
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -102,11 +117,21 @@ export const saveStaff = async (staff, isUpdateMode) => {
   try {
     if (isUpdateMode) {
       const { userName, email, phoneNumber, address } = staff;
-      await axios.put(`${userApi}/updateProfile${staff.userId}`, { userName, email, phoneNumber, address });
+      await axios.put(`${userApi}/updateProfile${staff.userId}`, {
+        userName,
+        email,
+        phoneNumber,
+        address,
+      });
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addUserApi, { userName, password, confirmPassword, email });
+      await axios.post(addUserApi, {
+        userName,
+        password,
+        confirmPassword,
+        email,
+      });
       message.success("Staff created successfully");
     }
   } catch (error) {
@@ -129,7 +154,7 @@ export const deleteStaff = async (userId) => {
 export const fetchPromotionData = async () => {
   try {
     const response = await axios.get(promotionApi);
-    
+
     return response.data;
   } catch (error) {
     message.error("Failed to fetch promotion data");
@@ -160,5 +185,44 @@ export const deletePromotion = async (promotionId) => {
   } catch (error) {
     message.error("Failed to delete promotion");
     console.error("Error deleting promotion:", error);
+  }
+};
+
+// Feedback Management services
+export const fetchFeedbackData = async () => {
+  try {
+    const response = await axios.get(feedbackApi);
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch feedback data");
+    console.error("Error fetching feedback data:", error);
+    return [];
+  }
+};
+
+// Save Feedback (Create or Update)
+export const saveFeedback = async (feedback, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${feedbackApi}/${feedback.feedbackID}`, feedback);
+      message.success("Feedback updated successfully");
+    } else {
+      await axios.post(feedbackApi, feedback);
+      message.success("Feedback created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save feedback data");
+    console.error("Error saving feedback data:", error);
+  }
+};
+
+// Delete Feedback
+export const deleteFeedback = async (feedbackID) => {
+  try {
+    await axios.delete(`${feedbackApi}/${feedbackID}`);
+    message.success("Feedback deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete feedback");
+    console.error("Error deleting feedback:", error);
   }
 };

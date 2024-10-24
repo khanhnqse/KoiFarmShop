@@ -1,76 +1,74 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  fetchCustomerData,
-  saveCustomer,
-  deleteCustomer,
-} from "../../../services/sevice";
-import { customerColumns } from "../../../constant/menu-data";
+import { fetchFeedbackData, saveFeedback, deleteFeedback } from "../../../services/sevice";
+import { feedbackColumns } from "../../../constant/menu-data";
 
-const CustomerManagement = () => {
-  const [customers, setCustomers] = useState([]);
+const FeedbackManagement = () => {
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState(null); // Store the selected feedback
   const [form] = Form.useForm();
 
   useEffect(() => {
-    loadCustomerData();
+    loadFeedbackData();
   }, []);
 
-  const loadCustomerData = async () => {
+  const loadFeedbackData = async () => {
     setLoading(true);
-    const customerData = await fetchCustomerData();
-    setCustomers(customerData);
+    const feedbackData = await fetchFeedbackData();
+    setFeedbacks(feedbackData);
     setLoading(false);
   };
 
-  const handleOpenModal = (customer = null) => {
-    setIsUpdateMode(!!customer);
+  // Open modal for editing or adding new feedback
+  const handleOpenModal = (feedback = null) => {
+    setIsUpdateMode(!!feedback);
+    setSelectedFeedback(feedback); // Store selected feedback for edit
     setIsModalVisible(true);
-    if (customer) {
-      form.setFieldsValue(customer);
+    if (feedback) {
+      // Populate form with selected feedback for editing
+      form.setFieldsValue({
+        feedbackID: feedback.feedbackID,
+        userID: feedback.userID,
+        orderID: feedback.orderID,
+        koiID: feedback.koiID,
+        fishesID: feedback.fishesID,
+        rating: feedback.rating,
+        content: feedback.content,
+        feedbackDate: feedback.feedbackDate,
+      });
     } else {
-      form.resetFields();
+      form.resetFields(); // Reset fields for adding new feedback
     }
   };
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
     form.resetFields();
+    setSelectedFeedback(null);
   };
 
-  const handleSaveCustomer = async (values) => {
+  const handleSaveFeedback = async (values) => {
     setLoading(true);
-    if (isUpdateMode) {
-      const { userName, email, phoneNumber, address } = values;
-      await saveCustomer(
-        {
-          userId: form.getFieldValue("userId"),
-          userName,
-          email,
-          phoneNumber,
-          address,
-        },
-        isUpdateMode
-      );
+    if (isUpdateMode && selectedFeedback) {
+      // Update feedback
+      await saveFeedback({ ...selectedFeedback, ...values }, true);
     } else {
-      const { userName, password, confirmPassword, email } = values;
-      await saveCustomer(
-        { userName, password, confirmPassword, email },
-        isUpdateMode
-      );
+      // Add new feedback
+      await saveFeedback(values, false);
     }
-    loadCustomerData();
+    loadFeedbackData();
     handleCloseModal();
     setLoading(false);
   };
 
-  const handleDeleteCustomer = async (userId) => {
+  const handleDeleteFeedback = async (feedbackID) => {
     setLoading(true);
-    await deleteCustomer(userId);
-    loadCustomerData();
+    await deleteFeedback(feedbackID);
+    loadFeedbackData();
     setLoading(false);
   };
 
@@ -85,106 +83,90 @@ const CustomerManagement = () => {
         <PlusOutlined /> Add Feedback
       </Button>
       <Table
-        columns={customerColumns(handleOpenModal, handleDeleteCustomer)}
-        dataSource={customers}
+        columns={feedbackColumns(handleOpenModal, handleDeleteFeedback)}
+        dataSource={feedbacks}
         loading={loading}
-        rowKey="userId"
+        rowKey="feedbackID"
         scroll={{ x: 1500, y: 450 }}
       />
       <Modal
-        title={isUpdateMode ? "Update Customer" : "Add Customer"}
+        title={isUpdateMode ? "Update Feedback" : "Add Feedback"}
         visible={isModalVisible}
         onCancel={handleCloseModal}
         onOk={() => form.submit()}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveCustomer}>
+        <Form form={form} layout="vertical" onFinish={handleSaveFeedback}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="userName"
-                label="User Name"
-                rules={[
-                  { required: true, message: "Please input the user name!" },
-                ]}
+                name="userID"
+                label="User ID"
+                rules={[{ required: true, message: "Please input the user ID!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="email"
-                label="Email"
-                rules={[{ required: true, message: "Please input the email!" }]}
+                name="orderID"
+                label="Order ID"
+                rules={[{ required: true, message: "Please input the order ID!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
           </Row>
-          {isUpdateMode ? (
-            <>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    name="phoneNumber"
-                    label="Phone Number"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input the phone number!",
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="address"
-                    label="Address"
-                    rules={[
-                      { required: true, message: "Please input the address!" },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </>
-          ) : (
-            <>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[
-                      { required: true, message: "Please input the password!" },
-                    ]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please confirm the password!",
-                      },
-                    ]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </>
-          )}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="koiID"
+                label="Koi ID"
+                rules={[{ required: true, message: "Please input the Koi ID!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="fishesID"
+                label="Fishes ID"
+                rules={[{ required: true, message: "Please input the Fishes ID!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="rating"
+                label="Rating"
+                rules={[{ required: true, message: "Please input the rating!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="feedbackDate"
+                label="Feedback Date"
+                rules={[{ required: true, message: "Please input the feedback date!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item
+            name="content"
+            label="Content"
+            rules={[{ required: true, message: "Please input the feedback content!" }]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
         </Form>
       </Modal>
     </div>
   );
 };
 
-export default CustomerManagement;
+export default FeedbackManagement;

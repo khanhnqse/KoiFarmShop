@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts';
 
 const salesData = [
