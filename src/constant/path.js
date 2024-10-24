@@ -23,6 +23,8 @@ export const PATHS = {
       STAFF: "/dashboard/staff",
       ORDER: "/dashboard/order",
       PROMOTION: "/dashboard/promotion",
+      FEEDBACK: "/dashboard/feedback",
+      PURCHASEHISTORY: "/dashboard/purchasehistory",
       SETTING: "/dashboard/setting,"
     },
   },
