@@ -6,6 +6,7 @@ const userApi = "http://localhost:5090/api/User";
 const addUserApi = "https://localhost:5090/api/User/register";
 const promotionApi = "http://localhost:5090/api/Promotion";
 const feedbackApi = "http://localhost:5090/api/Feedback";
+const purchasehistoryApi = "http://localhost:5090/api/PurchaseHistory";
 // Fish management service
 export const fetchFishData = async () => {
   try {
@@ -224,5 +225,48 @@ export const deleteFeedback = async (feedbackID) => {
   } catch (error) {
     message.error("Failed to delete feedback");
     console.error("Error deleting feedback:", error);
+  }
+};
+
+//Purchase History Management services
+// Fetch Purchase History Data
+export const fetchPurchaseHistoryData = async () => {
+  try {
+    const response = await axios.get(purchasehistoryApi);
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch purchase history data");
+    console.error("Error fetching purchase history data:", error);
+    return [];
+  }
+};
+
+// Save Purchase History (Create or Update)
+export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(
+        `${purchasehistoryApi}/${purchaseHistory.orderID}`,
+        purchaseHistory
+      );
+      message.success("Purchase history updated successfully");
+    } else {
+      await axios.post(purchasehistoryApi, purchaseHistory);
+      message.success("Purchase history created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save purchase history data");
+    console.error("Error saving purchase history data:", error);
+  }
+};
+
+// Delete Purchase History
+export const deletePurchaseHistory = async (orderID) => {
+  try {
+    await axios.delete(`${purchasehistoryApi}/${orderID}`);
+    message.success("Purchase history deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete purchase history");
+    console.error("Error deleting purchase history:", error);
   }
 };

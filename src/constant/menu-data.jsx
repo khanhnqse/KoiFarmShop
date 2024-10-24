@@ -563,3 +563,107 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     ),
   },
 ];
+
+// Purchase History Table Columns
+export const purchaseHistoryMenu = (record, handleOpenModal, handleDeletePurchaseHistory) => (
+  <Menu onClick={(e) => handleMenuClick(e, record, handleOpenModal, handleDeletePurchaseHistory)}>
+    <Menu.Item key="edit">Edit</Menu.Item>
+    <Menu.Item key="delete">Delete</Menu.Item>
+  </Menu>
+);
+
+export const purchaseHistoryColumns = (handleOpenModal, handleDeletePurchaseHistory) => [
+  {
+    title: "Order ID",
+    dataIndex: "orderID",
+    key: "orderID",
+    sorter: {
+      compare: (a, b) => a.orderID - b.orderID,
+    },
+    defaultSortOrder: "ascend",
+  },
+  {
+    title: "User ID",
+    dataIndex: "userID",
+    key: "userID",
+  },
+  {
+    title: "Purchase Date",
+    dataIndex: "purchaseDate",
+    key: "purchaseDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
+  },
+  {
+    title: "Total Money",
+    dataIndex: "totalMoney",
+    key: "totalMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+  },
+  {
+    title: "Discount Money",
+    dataIndex: "discountMoney",
+    key: "discountMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+  },
+  {
+    title: "Final Money",
+    dataIndex: "finalMoney",
+    key: "finalMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : '$0.00'), // Format money with fallback
+  },
+  {
+    title: "Order Status",
+    dataIndex: "orderStatus",
+    key: "orderStatus",
+    render: (status) => (
+      <Tag color={status === "Completed" ? "green" : status === "Pending" ? "orange" : "red"}>
+        {status}
+      </Tag>
+    ),
+  },
+  {
+    title: "Payment Method",
+    dataIndex: "paymentMethod",
+    key: "paymentMethod",
+  },
+  {
+    title: "Shipping Date",
+    dataIndex: "shippingDate",
+    key: "shippingDate",
+    render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
+  },
+  {
+    title: "Delivery Status",
+    dataIndex: "deliveryStatus",
+    key: "deliveryStatus",
+  },
+  {
+    title: "Promotion ID",
+    dataIndex: "promotionID",
+    key: "promotionID",
+  },
+  {
+    title: "Earned Points",
+    dataIndex: "earnedPoints",
+    key: "earnedPoints",
+  },
+  {
+    title: "Used Points",
+    dataIndex: "usedPoints",
+    key: "usedPoints",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={purchaseHistoryMenu(record, handleOpenModal, handleDeletePurchaseHistory)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
+
+
