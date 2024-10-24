@@ -32,7 +32,7 @@ const LoginPage = () => {
         console.log("Logged in user:", user);
         // Redirect based on user role
         if (user.role === "admin") {
-          navigate(PATHS.DASHBOARD.INDEX); // Navigate to dashboard if user is admin
+          navigate(PATHS.DASHBOARD.CHILDREN.OVERVIEW); // Navigate to dashboard if user is admin
         } else {
           navigate(PATHS.HOME); // Navigate to home page for other users
         }

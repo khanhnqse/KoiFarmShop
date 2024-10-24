@@ -431,6 +431,7 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Discount Rate",
     dataIndex: "discountRate",
     key: "discountRate",
+    render: (text) => `${text}%`, // Render discount rate as a percentage
   },
   {
     title: "Start Date",
