@@ -44,6 +44,9 @@ function Header() {
       <Menu.Item key="profile" onClick={() => navigate("/profile")}>
         Profile
       </Menu.Item>
+      <Menu.Item key="order-history" onClick={() => navigate("/history")}>
+        Order History
+      </Menu.Item>
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
