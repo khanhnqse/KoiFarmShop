@@ -8,6 +8,7 @@ import {
   LogoutOutlined,
   PercentageOutlined,
   CommentOutlined,
+  PayCircleOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -33,6 +34,7 @@ const items = [
   getItem("Orders Management", "/dashboard/order", <UnorderedListOutlined />),
   getItem("Promotion ", "/dashboard/promotion", <PercentageOutlined />),
   getItem("Feedback Management","/dashboard/feedback",<CommentOutlined /> ),
+  getItem("Purchase History Management","/dashboard/purchasehistory", <PayCircleOutlined />),
   getItem("Setting", "6", <LogoutOutlined />),
 ];
 
