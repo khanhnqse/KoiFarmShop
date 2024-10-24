@@ -431,6 +431,7 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Discount Rate",
     dataIndex: "discountRate",
     key: "discountRate",
+    render: (text) => `${text}%`, // Render discount rate as a percentage
   },
   {
     title: "Start Date",
@@ -458,6 +459,224 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     render: (text, record) => (
       <Dropdown
         overlay={promotionMenu(record, handleOpenModal, handleDeletePromotion)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
+
+// Feedback management Table columns
+const handleFeedbackMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeleteFeedback
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteFeedback(record.feedbackId);
+  }
+};
+
+// Feedback Action Menu
+const feedbackMenu = (record, handleOpenModal, handleDeleteFeedback) => (
+  <Menu
+    onClick={(e) =>
+      handleFeedbackMenuClick(e, record, handleOpenModal, handleDeleteFeedback)
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+// Feedback Table Columns
+export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
+  {
+    title: "Feedback ID",
+    dataIndex: "feedbackId",
+    key: "feedbackId",
+    sorter: {
+      compare: (a, b) => a.feedbackId - b.feedbackId,
+    },
+    defaultSortOrder: "ascend",
+  },
+  {
+    title: "User ID",
+    dataIndex: "userId",
+    key: "userId",
+  },
+  {
+    title: "Order ID",
+    dataIndex: "orderId",
+    key: "orderId",
+  },
+  {
+    title: "Koi ID",
+    dataIndex: "koiId",
+    key: "koiId",
+  },
+  {
+    title: "Rating",
+    dataIndex: "rating",
+    key: "rating",
+    render: (rating) => (
+      <Tag color={rating >= 4 ? "green" : rating >= 2 ? "orange" : "red"}>
+        {rating}
+      </Tag>
+    ),
+  },
+  {
+    title: "Content",
+    dataIndex: "content",
+    key: "content",
+    render: (text) => (
+      <span>{text.length > 50 ? text.substring(0, 50) + "..." : text}</span>
+    ),
+  },
+  {
+    title: "Feedback Date",
+    dataIndex: "feedbackDate",
+    key: "feedbackDate",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={feedbackMenu(record, handleOpenModal, handleDeleteFeedback)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
+
+// Purchase History Table Columns
+export const purchaseHistoryMenu = (
+  record,
+  handleOpenModal,
+  handleDeletePurchaseHistory
+) => (
+  <Menu
+    onClick={(e) =>
+      handleMenuClick(e, record, handleOpenModal, handleDeletePurchaseHistory)
+    }
+  >
+    <Menu.Item key="edit">Edit</Menu.Item>
+    <Menu.Item key="delete">Delete</Menu.Item>
+  </Menu>
+);
+
+export const purchaseHistoryColumns = (
+  handleOpenModal,
+  handleDeletePurchaseHistory
+) => [
+  {
+    title: "Order ID",
+    dataIndex: "orderId",
+    key: "orderId",
+    sorter: {
+      compare: (a, b) => a.orderId - b.orderId,
+    },
+    defaultSortOrder: "ascend",
+  },
+  {
+    title: "User ID",
+    dataIndex: "userId",
+    key: "userId",
+  },
+  {
+    title: "Purchase Date",
+    dataIndex: "purchaseDate",
+    key: "purchaseDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
+  },
+  {
+    title: "Total Money",
+    dataIndex: "totalMoney",
+    key: "totalMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+  },
+  {
+    title: "Discount Money",
+    dataIndex: "discountMoney",
+    key: "discountMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+  },
+  {
+    title: "Final Money",
+    dataIndex: "finalMoney",
+    key: "finalMoney",
+    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+  },
+  {
+    title: "Order Status",
+    dataIndex: "orderStatus",
+    key: "orderStatus",
+    render: (status) => (
+      <Tag
+        color={
+          status === "completed"
+            ? "green"
+            : status === "pending"
+            ? "orange"
+            : "red"
+        }
+      >
+        {status}
+      </Tag>
+    ),
+  },
+  {
+    title: "Payment Method",
+    dataIndex: "paymentMethod",
+    key: "paymentMethod",
+  },
+  {
+    title: "Shipping Date",
+    dataIndex: "shippingDate",
+    key: "shippingDate",
+    render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
+  },
+  {
+    title: "Delivery Status",
+    dataIndex: "deliveryStatus",
+    key: "deliveryStatus",
+  },
+  {
+    title: "Promotion ID",
+    dataIndex: "promotionId",
+    key: "promotionId",
+  },
+  {
+    title: "Earned Points",
+    dataIndex: "earnedPoints",
+    key: "earnedPoints",
+  },
+  {
+    title: "Used Points",
+    dataIndex: "usedPoints",
+    key: "usedPoints",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={purchaseHistoryMenu(
+          record,
+          handleOpenModal,
+          handleDeletePurchaseHistory
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />

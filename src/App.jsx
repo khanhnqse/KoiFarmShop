@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/HomePage/HomePage";
 import MainLayout from "./Layout/MainLayout/MainLayout";
 import { PATHS } from "./constant/path";
@@ -24,7 +24,10 @@ import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
 import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
-
+import FeedbackManagement from "./pages/Admin/FeedbackManagement/FeedbackManagement";
+import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement";
+import Overview from "./pages/Admin/Overview/Overview";
+import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 function App() {
   return (
     <AuthProvider>
@@ -71,6 +74,7 @@ function App() {
           />
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
+          <Route path={PATHS.HISTORY} element={<OrderHistoryPage />} />
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
@@ -79,6 +83,12 @@ function App() {
               </PrivateRoute>
             }
           >
+            <Route
+              index
+              element={
+                <Navigate to={PATHS.DASHBOARD.CHILDREN.OVERVIEW} replace />
+              }
+            />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
               element={<FishManagement />}
@@ -100,8 +110,20 @@ function App() {
               element={<OrderKoiManagement />}
             />
             <Route
+              path={PATHS.DASHBOARD.CHILDREN.FEEDBACK}
+              element={<FeedbackManagement />}
+            />
+            <Route
               path={PATHS.DASHBOARD.CHILDREN.PROMOTION}
               element={<PromotionManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.PURCHASEHISTORY}
+              element={<PurchaseHistoryManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.OVERVIEW}
+              element={<Overview />}
             />
           </Route>
         </Route>

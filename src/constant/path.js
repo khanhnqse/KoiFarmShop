@@ -13,15 +13,19 @@ export const PATHS = {
   FORGOT_PASSWORD: "/forgot-password",
   VERIFY_OTP: "/verify-otp",
   RESET_PASSWORD: "/reset-password",
+  HISTORY: "/history",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {
+      OVERVIEW: "/dashboard/overview",
       KOI: "/dashboard/koi",
       CONSIGNMENT: "/dashboard/consignment",
       CUSTOMER: "/dashboard/customer",
       STAFF: "/dashboard/staff",
       ORDER: "/dashboard/order",
       PROMOTION: "/dashboard/promotion",
+      FEEDBACK: "/dashboard/feedback",
+      PURCHASEHISTORY: "/dashboard/purchasehistory",
       SETTING: "/dashboard/setting,"
     },
   },
