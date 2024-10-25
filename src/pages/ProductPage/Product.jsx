@@ -17,12 +17,15 @@ const ProductPage = () => {
   const [selectedAge, setSelectedAge] = useState(null);
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+  const [showFishOnly, setShowFishOnly] = useState(false); // New state for checkbox
+  const api = "https://localhost:7285/api/Koi";
+  const fishApi = "https://localhost:7285/api/Fish";
 
   const fetchFishs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(api);
+      // Use the correct API based on the checkbox
+      const response = await axios.get(showFishOnly ? fishApi : api);
       console.log("data", response.data);
       setFishs(response.data);
     } catch (error) {
@@ -34,7 +37,7 @@ const ProductPage = () => {
 
   useEffect(() => {
     fetchFishs();
-  }, []);
+  }, [showFishOnly]);
 
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
@@ -75,7 +78,7 @@ const ProductPage = () => {
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
-      (selectedBreeder ? fish.breeder === selectedBreeder : true) &&
+      (selectedBreeder ? fish.breed === selectedBreeder : true) &&
       (selectedGender ? fish.gender === selectedGender : true) &&
       (selectedAge ? fish.age === selectedAge : true) &&
       (searchQuery
@@ -83,7 +86,6 @@ const ProductPage = () => {
         : true)
     );
   });
-
   const sortedFishs = [...filteredFishs].sort((a, b) => {
     if (sortOption === "newest") {
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -204,6 +206,16 @@ const ProductPage = () => {
             <Option value="priceHigh">Price: High to Low</Option>
             <Option value="priceLow">Price: Low to High</Option>
           </Select>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={showFishOnly}
+              onChange={(e) => setShowFishOnly(e.target.checked)}
+            />
+            Fish only
+          </label>
+
           <Select
             defaultValue="3 Products Per Page"
             className="w-1/4"
