@@ -32,7 +32,7 @@ const LoginPage = () => {
         console.log("Logged in user:", user);
         // Redirect based on user role
         if (user.role === "admin") {
-          navigate(PATHS.DASHBOARD.INDEX); // Navigate to dashboard if user is admin
+          navigate(PATHS.DASHBOARD.CHILDREN.OVERVIEW); // Navigate to dashboard if user is admin
         } else {
           navigate(PATHS.HOME); // Navigate to home page for other users
         }
@@ -124,7 +124,8 @@ const LoginPage = () => {
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{
-            backgroundImage: "url('holder')",
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1641374446184-45be9cce898c?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

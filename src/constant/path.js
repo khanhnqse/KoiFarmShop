@@ -13,6 +13,7 @@ export const PATHS = {
   FORGOT_PASSWORD: "/forgot-password",
   VERIFY_OTP: "/verify-otp",
   RESET_PASSWORD: "/reset-password",
+  HISTORY: "/history",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {

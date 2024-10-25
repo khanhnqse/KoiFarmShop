@@ -9,6 +9,8 @@ import { PATHS } from "../../constant/path";
 
 const MainLayout = () => {
   const location = useLocation();
+  const isDashboardPath = location.pathname.startsWith(PATHS.DASHBOARD.INDEX);
+
   return (
     <>
       <MainContextProvider>
@@ -19,7 +21,7 @@ const MainLayout = () => {
               <Outlet />
             </Content>
           </Layout>
-          {location.pathname !== PATHS.DASHBOARD.CHILDREN.KOI && <Footer />}
+          {!isDashboardPath && <Footer />}
         </Layout>
       </MainContextProvider>
     </>

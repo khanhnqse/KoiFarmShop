@@ -25,8 +25,9 @@ import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
 import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
 import FeedbackManagement from "./pages/Admin/FeedbackManagement/FeedbackManagement";
-import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement"
+import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement";
 import Overview from "./pages/Admin/Overview/Overview";
+import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 function App() {
   return (
     <AuthProvider>
@@ -73,6 +74,7 @@ function App() {
           />
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
+          <Route path={PATHS.HISTORY} element={<OrderHistoryPage />} />
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
@@ -115,9 +117,10 @@ function App() {
               path={PATHS.DASHBOARD.CHILDREN.PROMOTION}
               element={<PromotionManagement />}
             />
-            <Route 
-            path={PATHS.DASHBOARD.CHILDREN.PURCHASEHISTORY}
-            element={<PurchaseHistoryManagement />} />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.PURCHASEHISTORY}
+              element={<PurchaseHistoryManagement />}
+            />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.OVERVIEW}
               element={<Overview />}

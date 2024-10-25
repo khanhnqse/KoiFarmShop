@@ -1,17 +1,18 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "http://localhost:5090/api/Fish";
-const userApi = "http://localhost:5090/api/User";
-const addUserApi = "https://localhost:5090/api/User/register";
-const promotionApi = "http://localhost:5090/api/Promotion";
-const feedbackApi = "http://localhost:5090/api/Feedback";
-const purchasehistoryApi = "http://localhost:5090/api/PurchaseHistory";
+const fishApi = "https://localhost:7285/api/Koi";
+const userApi = "https://localhost:7285/api/User";
+const addUserApi = "https://localhost:7285/api/User/register";
+const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
+const promotionApi = "https://localhost:7285/api/Promotion";
+const purchasehistoryApi = "https://localhost:7285/api/PurchaseHistory"; // Updated API endpoint for purchase history
+const feedbackApi = "https://localhost:7285/api/Feedback"; // Updated API endpoint for feedback
+
 // Fish management service
 export const fetchFishData = async () => {
   try {
     const response = await axios.get(fishApi);
-
     return response.data;
   } catch (error) {
     message.error("Failed to fetch fish data");
@@ -49,10 +50,7 @@ export const deleteFish = async (koiId) => {
 export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
-    const customerData = response.data.filter(
-      (user) => user.role === "customer"
-    );
-
+    const customerData = response.data.filter((user) => user.role === "customer");
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -102,10 +100,7 @@ export const deleteCustomer = async (userId) => {
 export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
-    const staffData = response.data.filter(
-      (user) => user.role === "admin" || user.role === "staff"
-    );
-
+    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -127,12 +122,7 @@ export const saveStaff = async (staff, isUpdateMode) => {
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addUserApi, {
-        userName,
-        password,
-        confirmPassword,
-        email,
-      });
+      await axios.post(addStaffApi, { userName, password, confirmPassword, email }); // Use the new API endpoint for creating staff
       message.success("Staff created successfully");
     }
   } catch (error) {
@@ -155,7 +145,6 @@ export const deleteStaff = async (userId) => {
 export const fetchPromotionData = async () => {
   try {
     const response = await axios.get(promotionApi);
-
     return response.data;
   } catch (error) {
     message.error("Failed to fetch promotion data");
@@ -205,7 +194,7 @@ export const fetchFeedbackData = async () => {
 export const saveFeedback = async (feedback, isUpdateMode) => {
   try {
     if (isUpdateMode) {
-      await axios.put(`${feedbackApi}/${feedback.feedbackID}`, feedback);
+      await axios.put(`${feedbackApi}/${feedback.feedbackId}`, feedback);
       message.success("Feedback updated successfully");
     } else {
       await axios.post(feedbackApi, feedback);
@@ -218,9 +207,9 @@ export const saveFeedback = async (feedback, isUpdateMode) => {
 };
 
 // Delete Feedback
-export const deleteFeedback = async (feedbackID) => {
+export const deleteFeedback = async (feedbackId) => {
   try {
-    await axios.delete(`${feedbackApi}/${feedbackID}`);
+    await axios.delete(`${feedbackApi}/${feedbackId}`);
     message.success("Feedback deleted successfully");
   } catch (error) {
     message.error("Failed to delete feedback");
@@ -228,7 +217,7 @@ export const deleteFeedback = async (feedbackID) => {
   }
 };
 
-//Purchase History Management services
+// Purchase History Management services
 // Fetch Purchase History Data
 export const fetchPurchaseHistoryData = async () => {
   try {
@@ -246,7 +235,7 @@ export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
   try {
     if (isUpdateMode) {
       await axios.put(
-        `${purchasehistoryApi}/${purchaseHistory.orderID}`,
+        `${purchasehistoryApi}/${purchaseHistory.orderId}`,
         purchaseHistory
       );
       message.success("Purchase history updated successfully");
@@ -261,9 +250,9 @@ export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
 };
 
 // Delete Purchase History
-export const deletePurchaseHistory = async (orderID) => {
+export const deletePurchaseHistory = async (orderId) => {
   try {
-    await axios.delete(`${purchasehistoryApi}/${orderID}`);
+    await axios.delete(`${purchasehistoryApi}/${orderId}`);
     message.success("Purchase history deleted successfully");
   } catch (error) {
     message.error("Failed to delete purchase history");
