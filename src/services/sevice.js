@@ -1,7 +1,7 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "https://localhost:5090/api/Koi";
+const fishApi = "http://localhost:5090/api/Fish";
 const userApi = "http://localhost:5090/api/User";
 const addUserApi = "https://localhost:5090/api/User/register";
 const promotionApi = "http://localhost:5090/api/Promotion";
