@@ -9,7 +9,7 @@ const { Title } = Typography;
 function FeaturedProducts() {
   const [fishs, setFishs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+  const api = "https://localhost:7285/api/Koi";
 
   const fetchFishs = async () => {
     setLoading(true);

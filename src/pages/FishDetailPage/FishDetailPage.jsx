@@ -1,33 +1,28 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Col, Row, Spin } from "antd";
+import { Spin } from "antd";
 import ImageGallery from "./../../components/Image Gallery/ImageGallery";
-import ProductInfo from "./../../components/Product Detail/ProductDetail";
+import FishInfo from "./../../components/FishInfo/FishInfo";
 import RatingAndReview from "./../../components/Review&rating/RatingAndReview";
 
-const ProductDetailPage = () => {
+const FishDetailPage = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
+  const [fish, setFish] = useState(null);
   const [feedbacks, setFeedbacks] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
-  const productApi = `https://localhost:7285/api/Koi/${id}`;
-  const feedbackApi = `https://localhost:7285/api/Feedback/getFeedbackbyKoiid/${id}`;
-  const averageRatingApi = `https://localhost:7285/api/Feedback/average-rating-koi/${id}`;
+  const fishApi = `https://localhost:7285/api/Fish/${id}`;
+  const feedbackApi = `https://localhost:7285/api/Feedback/getfeedbackbyfishid/${id}`;
+  const averageRatingApi = `https://localhost:7285/api/Feedback/average-rating-fish/${id}`;
 
-  const fetchProduct = async () => {
+  const fetchFish = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(productApi);
-      const productData = response.data;
-      // Parse the additionImage field into an array of image URLs
-      productData.additionImage = productData.additionImage
-        ? productData.additionImage.split(", ")
-        : [];
-      setProduct(productData);
+      const response = await axios.get(fishApi);
+      setFish(response.data);
     } catch (error) {
-      console.error("Error fetching product data:", error);
+      console.error("Error fetching fish data:", error);
     } finally {
       setLoading(false);
     }
@@ -52,7 +47,7 @@ const ProductDetailPage = () => {
   };
 
   useEffect(() => {
-    fetchProduct();
+    fetchFish();
     fetchFeedbacks();
     fetchAverageRating();
   }, [id]);
@@ -65,37 +60,26 @@ const ProductDetailPage = () => {
     );
   }
 
-  if (!product) {
-    return <p>Product not found</p>;
+  if (!fish) {
+    return <p>Fish not found</p>;
   }
 
   return (
     <div className="container mx-auto p-10">
       <div className="flex">
         {/* Left Section: Image Gallery */}
-        <ImageGallery
-          mainImage={product.imageKoi}
-          additionalImages={product.additionImage}
-        />
+        <ImageGallery mainImage={fish.imageFishes} additionalImages={[]} />
 
-        {/* Right Section: Product Info */}
-        <ProductInfo product={product} averageRating={averageRating} />
+        {/* Right Section: Fish Info */}
+        <FishInfo fish={fish} averageRating={averageRating} />
       </div>
 
       {/* Product Specifications or Details */}
-      <div className="mt-10">
-        <h2 className="text-2xl font-bold mb-4">Koi Details</h2>
-        <Row>
-          <Col span={12}>
-            <p className="text-gray-600">{product.detailDescription}</p>
-          </Col>
-        </Row>
-      </div>
 
       {/* Rating and Review Section */}
-      <RatingAndReview product={product} feedbacks={feedbacks} />
+      <RatingAndReview product={fish} feedbacks={feedbacks} />
     </div>
   );
 };
 
-export default ProductDetailPage;
+export default FishDetailPage;

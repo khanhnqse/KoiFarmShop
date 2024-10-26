@@ -35,7 +35,7 @@ function KoiManagement() {
   const [fileListCertificate, setFileListCertificate] = useState([]);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedKoi, setSelectedKoi] = useState(null);
-  const api = "http://localhost:5090/api/Koi";
+  const api = "https://localhost:7285/api/Koi";
   const fetchKoi = async () => {
     const response = await axios.get(api);
     console.log(response.data);

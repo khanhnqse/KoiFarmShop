@@ -1,8 +1,9 @@
-import { Slider, Radio, Select, Spin, Pagination } from "antd";
+import { Slider, Radio, Select, Spin, Pagination, Button } from "antd";
 import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const ProductPage = () => {
@@ -17,7 +18,8 @@ const ProductPage = () => {
   const [selectedAge, setSelectedAge] = useState(null);
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+  const api = "https://localhost:7285/api/Koi";
+  const navigate = useNavigate();
 
   const fetchFishs = async () => {
     setLoading(true);
@@ -70,12 +72,16 @@ const ProductPage = () => {
     setSearchQuery(e.target.value);
   };
 
+  const handleViewFishProducts = () => {
+    navigate("/fish");
+  };
+
   const filteredFishs = fishs.filter((fish) => {
     return (
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
-      (selectedBreeder ? fish.breeder === selectedBreeder : true) &&
+      (selectedBreeder ? fish.breed === selectedBreeder : true) &&
       (selectedGender ? fish.gender === selectedGender : true) &&
       (selectedAge ? fish.age === selectedAge : true) &&
       (searchQuery
@@ -83,7 +89,6 @@ const ProductPage = () => {
         : true)
     );
   });
-
   const sortedFishs = [...filteredFishs].sort((a, b) => {
     if (sortOption === "newest") {
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -104,7 +109,7 @@ const ProductPage = () => {
 
   // Extract unique values for filters
   const uniqueCategories = [...new Set(fishs.map((fish) => fish.name))];
-  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breeder))];
+  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breed))];
   const uniqueGenders = [...new Set(fishs.map((fish) => fish.gender))];
   const uniqueAges = [...new Set(fishs.map((fish) => fish.age))];
 
@@ -152,9 +157,9 @@ const ProductPage = () => {
             onChange={handleBreederChange}
           >
             <Option value="All">All</Option>
-            {uniqueBreeders.map((breeder) => (
-              <Option key={breeder} value={breeder}>
-                {breeder}
+            {uniqueBreeders.map((breed) => (
+              <Option key={breed} value={breed}>
+                {breed}
               </Option>
             ))}
           </Select>
@@ -191,6 +196,16 @@ const ProductPage = () => {
             ))}
           </Select>
         </div>
+
+        <div className="mb-6">
+          <Button
+            type="primary"
+            onClick={handleViewFishProducts}
+            className="w-full"
+          >
+            View Fish Products
+          </Button>
+        </div>
       </div>
 
       {/* Product List */}
@@ -204,6 +219,7 @@ const ProductPage = () => {
             <Option value="priceHigh">Price: High to Low</Option>
             <Option value="priceLow">Price: Low to High</Option>
           </Select>
+
           <Select
             defaultValue="3 Products Per Page"
             className="w-1/4"
