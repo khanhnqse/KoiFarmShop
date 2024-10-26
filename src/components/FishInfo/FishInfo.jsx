@@ -1,15 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Button, Divider, Input, Rate, notification } from "antd";
-import {
-  CheckOutlined,
-  CloseOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const ProductInfo = ({ product, averageRating }) => {
+const FishInfo = ({ fish, averageRating }) => {
   const [quantity, setQuantity] = useState(1);
   const { isAuthenticated, cart, setCart } = useAuth();
   const navigate = useNavigate();
@@ -24,25 +20,22 @@ const ProductInfo = ({ product, averageRating }) => {
       return;
     }
 
-    // Check if the product is already in the cart
-    const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.koiId
-    );
+    const existingFishIndex = cart.findIndex((item) => item.id === fish.id);
 
-    if (existingProductIndex !== -1) {
+    if (existingFishIndex !== -1) {
       // Update the quantity of the existing product in the cart
       const newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
+      newCart[existingFishIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: product.koiId,
-        name: product.name,
-        price: product.price,
+        id: fish.fishesId,
+        name: fish.name,
+        price: fish.price,
         quantity: quantity,
-        image: product.imageKoi,
+        image: fish.imageFishes,
       };
 
       const newCart = [...cart, cartItem];
@@ -53,11 +46,11 @@ const ProductInfo = ({ product, averageRating }) => {
     // Trigger a notification for feedback
     notification.success({
       message: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${fish.name} has been added to your cart.`,
       placement: "bottomRight",
     });
 
-    console.log("Product added to cart: ", product);
+    console.log("Fish added to cart: ", fish);
   };
 
   const handleBuyNow = () => {
@@ -69,11 +62,9 @@ const ProductInfo = ({ product, averageRating }) => {
       });
       return;
     }
-
     // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.id
-      //koiId to id
+      (item) => item.id === fish.fishesId
     );
 
     if (existingProductIndex !== -1) {
@@ -85,11 +76,11 @@ const ProductInfo = ({ product, averageRating }) => {
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: product.koiId,
-        name: product.name,
-        price: product.price,
+        id: fish.fishesId,
+        name: fish.name,
+        price: fish.price,
         quantity: quantity,
-        image: product.imageKoi,
+        image: fish.imageKoi,
       };
 
       const newCart = [...cart, cartItem];
@@ -103,75 +94,56 @@ const ProductInfo = ({ product, averageRating }) => {
 
   return (
     <div className="w-1/2">
-      <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+      <h1 className="text-3xl font-bold mb-4">{fish.name}</h1>
 
-      {/* Product Rating */}
+      {/* Fish Rating */}
       <div className="flex items-center mb-4">
         <Rate defaultValue={averageRating} disabled allowHalf />
         <span className="ml-2 text-gray-600">{averageRating}/5</span>
       </div>
 
-      {/* Product Price */}
+      {/* Fish Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
-        ${product.price}.00
+        ${fish.price}.00
       </p>
-
-      {/* Product Description */}
-      <p className="text-gray-600 mb-6">{product.description}</p>
 
       <Divider />
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Column 1: Breeder, Gender, Age, Personality */}
+        {/* Column 1: Quantity, Koi Type ID, Name */}
         <div>
           <div className="mb-4">
-            <p className="font-semibold">Breed:</p>
-            <p>{product.breed}</p>
+            <p className="font-semibold">Quantity:</p>
+            <p>{fish.quantity}</p>
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold">Gender:</p>
-            <p>{product.gender}</p>
+            <p className="font-semibold">Koi Type ID:</p>
+            <p>{fish.koiTypeId}</p>
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold">Age:</p>
-            <p>{product.age}</p>
-          </div>
-
-          <div className="mb-4">
-            <p className="font-semibold">Personality:</p>
-            <p>{product.personality}</p>
+            <p className="font-semibold">Name:</p>
+            <p>{fish.name}</p>
           </div>
         </div>
 
-        {/* Column 2: Size, Feeding Amount, Health Status, Award Certificate */}
+        {/* Column 2: Status, Price, Quantity in Stock */}
         <div>
           <div className="mb-4">
-            <p className="font-semibold">Size:</p>
-            <p>{product.size} cm</p>
+            <p className="font-semibold">Status:</p>
+            <p>{fish.status}</p>
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold">Feeding Amount:</p>
-            <p>{product.feedingAmount} kg/day</p>
+            <p className="font-semibold">Price:</p>
+            <p>${fish.price}.00</p>
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold">Health Status:</p>
-            <p>{product.healthStatus}</p>
-          </div>
-
-          <div className="mb-4 flex items-center">
-            <p className="font-semibold">Award Certificate:</p>
-            <p className="ml-2">
-              {product.awardCertificates ? (
-                <CheckOutlined className="text-green-600" />
-              ) : (
-                <CloseOutlined className="text-red-600" />
-              )}
-            </p>
+            <p className="font-semibold">Quantity in Stock:</p>
+            <p>{fish.quantityInStock}</p>
           </div>
         </div>
       </div>
@@ -213,4 +185,4 @@ const ProductInfo = ({ product, averageRating }) => {
   );
 };
 
-export default ProductInfo;
+export default FishInfo;

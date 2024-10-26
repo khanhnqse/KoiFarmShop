@@ -6,6 +6,7 @@ const CONTACT = "/contact-us";
 const CART = "/cart";
 const PROFILE = "/profile";
 const CHECKOUT = "/checkout";
+const FISH = "/fish";
 export const PATHS = {
   HOME: "/",
   LOGIN: "/login",
@@ -54,5 +55,10 @@ export const PATHS = {
   },
   CHECKOUT: {
     INDEX: CHECKOUT,
+  },
+  FISH: {
+    INDEX: FISH,
+    DETAIL: `fish/:id`,
+    
   },
 };
