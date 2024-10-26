@@ -28,6 +28,8 @@ import FeedbackManagement from "./pages/Admin/FeedbackManagement/FeedbackManagem
 import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement";
 import Overview from "./pages/Admin/Overview/Overview";
 import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
+import FishProductPage from "./pages/FishPage/FishPage";
+import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
 function App() {
   return (
     <AuthProvider>
@@ -39,6 +41,8 @@ function App() {
           <Route path={PATHS.CONTACT.INDEX} element={<ContactUsForm />} />
           <Route path={PATHS.PRODUCTS.INDEX} element={<ProductPage />} />
           <Route path={PATHS.PRODUCTS.DETAIL} element={<ProductDetailPage />} />
+          <Route path={PATHS.FISH.INDEX} element={<FishProductPage />} />
+          <Route path={PATHS.FISH.DETAIL} element={<FishDetailPage />} />
           <Route
             path={PATHS.CONSIGNMENT.INDEX}
             element={
@@ -91,9 +95,7 @@ function App() {
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
-              element={
-                  <FishManagement />
-              }
+              element={<FishManagement />}
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}

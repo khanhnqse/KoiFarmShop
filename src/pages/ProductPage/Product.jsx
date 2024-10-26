@@ -1,8 +1,9 @@
-import { Slider, Radio, Select, Spin, Pagination } from "antd";
+import { Slider, Radio, Select, Spin, Pagination, Button } from "antd";
 import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const ProductPage = () => {
@@ -17,33 +18,25 @@ const ProductPage = () => {
   const [selectedAge, setSelectedAge] = useState(null);
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFishOnly, setShowFishOnly] = useState(false); // New state for checkbox
   const api = "https://localhost:7285/api/Koi";
-  const fishApi = "https://localhost:7285/api/Fish";
+  const navigate = useNavigate();
 
   const fetchFishs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(showFishOnly ? fishApi : api);
-      const data = response.data;
-  
-      // Kiểm tra nếu dữ liệu là cá hay koi và lưu trữ
-      if (showFishOnly) {
-        setFishs(data.map(fish => ({ ...fish, type: 'fish' }))); // Đánh dấu dữ liệu là cá
-      } else {
-        setFishs(data.map(koi => ({ ...koi, type: 'koi' }))); // Đánh dấu dữ liệu là koi
-      }
+      const response = await axios.get(api);
+      console.log("data", response.data);
+      setFishs(response.data);
     } catch (error) {
       console.error("Error fetching fish data:", error);
     } finally {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchFishs();
-  }, [showFishOnly]);
+  }, []);
 
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
@@ -77,6 +70,10 @@ const ProductPage = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleViewFishProducts = () => {
+    navigate("/fish");
   };
 
   const filteredFishs = fishs.filter((fish) => {
@@ -160,9 +157,9 @@ const ProductPage = () => {
             onChange={handleBreederChange}
           >
             <Option value="All">All</Option>
-            {uniqueBreeders.map((breeder) => (
-              <Option key={breeder} value={breeder}>
-                {breeder}
+            {uniqueBreeders.map((breed) => (
+              <Option key={breed} value={breed}>
+                {breed}
               </Option>
             ))}
           </Select>
@@ -199,6 +196,16 @@ const ProductPage = () => {
             ))}
           </Select>
         </div>
+
+        <div className="mb-6">
+          <Button
+            type="primary"
+            onClick={handleViewFishProducts}
+            className="w-full"
+          >
+            View Fish Products
+          </Button>
+        </div>
       </div>
 
       {/* Product List */}
@@ -212,15 +219,6 @@ const ProductPage = () => {
             <Option value="priceHigh">Price: High to Low</Option>
             <Option value="priceLow">Price: Low to High</Option>
           </Select>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showFishOnly}
-              onChange={(e) => setShowFishOnly(e.target.checked)}
-            />
-            Fish only
-          </label>
 
           <Select
             defaultValue="3 Products Per Page"
