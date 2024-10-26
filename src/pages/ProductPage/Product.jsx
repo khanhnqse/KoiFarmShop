@@ -17,24 +17,33 @@ const ProductPage = () => {
   const [selectedAge, setSelectedAge] = useState(null);
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+  const [showFishOnly, setShowFishOnly] = useState(false); // New state for checkbox
+  const api = "https://localhost:7285/api/Koi";
+  const fishApi = "https://localhost:7285/api/Fish";
 
   const fetchFishs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(api);
-      console.log("data", response.data);
-      setFishs(response.data);
+      const response = await axios.get(showFishOnly ? fishApi : api);
+      const data = response.data;
+  
+      // Kiểm tra nếu dữ liệu là cá hay koi và lưu trữ
+      if (showFishOnly) {
+        setFishs(data.map(fish => ({ ...fish, type: 'fish' }))); // Đánh dấu dữ liệu là cá
+      } else {
+        setFishs(data.map(koi => ({ ...koi, type: 'koi' }))); // Đánh dấu dữ liệu là koi
+      }
     } catch (error) {
       console.error("Error fetching fish data:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchFishs();
-  }, []);
+  }, [showFishOnly]);
 
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
@@ -75,7 +84,7 @@ const ProductPage = () => {
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
-      (selectedBreeder ? fish.breeder === selectedBreeder : true) &&
+      (selectedBreeder ? fish.breed === selectedBreeder : true) &&
       (selectedGender ? fish.gender === selectedGender : true) &&
       (selectedAge ? fish.age === selectedAge : true) &&
       (searchQuery
@@ -83,7 +92,6 @@ const ProductPage = () => {
         : true)
     );
   });
-
   const sortedFishs = [...filteredFishs].sort((a, b) => {
     if (sortOption === "newest") {
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -104,7 +112,7 @@ const ProductPage = () => {
 
   // Extract unique values for filters
   const uniqueCategories = [...new Set(fishs.map((fish) => fish.name))];
-  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breeder))];
+  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breed))];
   const uniqueGenders = [...new Set(fishs.map((fish) => fish.gender))];
   const uniqueAges = [...new Set(fishs.map((fish) => fish.age))];
 
@@ -204,6 +212,16 @@ const ProductPage = () => {
             <Option value="priceHigh">Price: High to Low</Option>
             <Option value="priceLow">Price: Low to High</Option>
           </Select>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={showFishOnly}
+              onChange={(e) => setShowFishOnly(e.target.checked)}
+            />
+            Fish only
+          </label>
+
           <Select
             defaultValue="3 Products Per Page"
             className="w-1/4"

@@ -91,7 +91,9 @@ function App() {
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
-              element={<FishManagement />}
+              element={
+                  <FishManagement />
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}
