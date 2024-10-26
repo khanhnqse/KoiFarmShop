@@ -509,19 +509,14 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     defaultSortOrder: "ascend",
   },
   {
-    title: "User ID",
-    dataIndex: "userId",
-    key: "userId",
+    title: "User name",
+    dataIndex: "username",
+    key: "username",
   },
   {
-    title: "Order ID",
-    dataIndex: "orderId",
-    key: "orderId",
-  },
-  {
-    title: "Koi ID",
-    dataIndex: "koiId",
-    key: "koiId",
+    title: "Koi name",
+    dataIndex: "koiName",
+    key: "koiName",
   },
   {
     title: "Rating",

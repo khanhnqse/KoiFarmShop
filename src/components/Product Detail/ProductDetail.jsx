@@ -26,7 +26,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
     // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.koiId
+      (item) => item.id === product.id
     );
 
     if (existingProductIndex !== -1) {
