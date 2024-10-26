@@ -17,7 +17,7 @@ const ProductGrid = ({ products }) => {
           className="text-center border p-4 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105" // Add hover scaling
         >
           <img
-            src={product.image}
+            src={product.imageKoi}
             alt={product.name}
             className="mb-4 h-64 w-full object-contain rounded"
           />

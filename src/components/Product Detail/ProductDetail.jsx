@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const ProductInfo = ({ product }) => {
+const ProductInfo = ({ product, averageRating }) => {
   const [quantity, setQuantity] = useState(1);
   const { isAuthenticated, addToCart } = useAuth();
   const navigate = useNavigate();
@@ -62,8 +62,8 @@ const ProductInfo = ({ product }) => {
 
       {/* Product Rating */}
       <div className="flex items-center mb-4">
-        <Rate defaultValue={product.rating} disabled allowHalf />
-        <span className="ml-2 text-gray-600">{product.rating}/5</span>
+        <Rate defaultValue={averageRating} disabled allowHalf />
+        <span className="ml-2 text-gray-600">{averageRating}/5</span>
       </div>
 
       {/* Product Price */}
@@ -81,8 +81,8 @@ const ProductInfo = ({ product }) => {
         {/* Column 1: Breeder, Gender, Age, Personality */}
         <div>
           <div className="mb-4">
-            <p className="font-semibold">Breeder:</p>
-            <p>{product.breeder}</p>
+            <p className="font-semibold">Breed:</p>
+            <p>{product.breed}</p>
           </div>
 
           <div className="mb-4">
@@ -105,12 +105,12 @@ const ProductInfo = ({ product }) => {
         <div>
           <div className="mb-4">
             <p className="font-semibold">Size:</p>
-            <p>{product.size}</p>
+            <p>{product.size} cm</p>
           </div>
 
           <div className="mb-4">
             <p className="font-semibold">Feeding Amount:</p>
-            <p>{product.feedingAmount}</p>
+            <p>{product.feedingAmount} kg/day</p>
           </div>
 
           <div className="mb-4">
@@ -121,7 +121,7 @@ const ProductInfo = ({ product }) => {
           <div className="mb-4 flex items-center">
             <p className="font-semibold">Award Certificate:</p>
             <p className="ml-2">
-              {product.awardCertificate ? (
+              {product.awardCertificates ? (
                 <CheckOutlined className="text-green-600" />
               ) : (
                 <CloseOutlined className="text-red-600" />

@@ -1,35 +1,56 @@
 import { useParams } from "react-router-dom";
-import ImageGallery from "../../components/Image Gallery/ImageGallery";
-import ProductInfo from "../../components/Product Detail/ProductDetail";
-import RatingAndReview from "../../components/Review&rating/RatingAndReview";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Col, Row, Spin } from "antd";
+import ImageGallery from "./../../components/Image Gallery/ImageGallery";
+import ProductInfo from "./../../components/Product Detail/ProductDetail";
+import RatingAndReview from "./../../components/Review&rating/RatingAndReview";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const [fishs, setFishs] = useState([]);
+  const [product, setProduct] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
-  const api = "https://66fe0942699369308956d80c.mockapi.io/Koi";
+  const productApi = `https://localhost:7285/api/Koi/${id}`;
+  const feedbackApi = `https://localhost:7285/api/Feedback/getFeedbackbyKoiid/${id}`;
+  const averageRatingApi = `https://localhost:7285/api/Feedback/average-rating-koi/${id}`;
 
-  const fetchFishs = async () => {
+  const fetchProduct = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(api);
-      console.log("data", response.data);
-      setFishs(response.data);
+      const response = await axios.get(productApi);
+      setProduct(response.data);
     } catch (error) {
-      console.error("Error fetching fish data:", error);
+      console.error("Error fetching product data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchFishs();
-  }, []);
+  const fetchFeedbacks = async () => {
+    try {
+      const response = await axios.get(feedbackApi);
+      setFeedbacks(response.data);
+    } catch (error) {
+      console.error("Error fetching feedback data:", error);
+    }
+  };
 
-  const product = fishs.find((p) => p.id === id);
+  const fetchAverageRating = async () => {
+    try {
+      const response = await axios.get(averageRatingApi);
+      setAverageRating(response.data.averageRating);
+    } catch (error) {
+      console.error("Error fetching average rating data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProduct();
+    fetchFeedbacks();
+    fetchAverageRating();
+  }, [id]);
 
   if (loading) {
     return (
@@ -48,12 +69,12 @@ const ProductDetailPage = () => {
       <div className="flex">
         {/* Left Section: Image Gallery */}
         <ImageGallery
-          mainImage={product.image}
-          additionalImages={product.additionalImages}
+          mainImage={product.imageKoi}
+          additionalImages={[product.imageCertificate]}
         />
 
         {/* Right Section: Product Info */}
-        <ProductInfo product={product} />
+        <ProductInfo product={product} averageRating={averageRating} />
       </div>
 
       {/* Product Specifications or Details */}
@@ -67,7 +88,7 @@ const ProductDetailPage = () => {
       </div>
 
       {/* Rating and Review Section */}
-      <RatingAndReview product={product} />
+      <RatingAndReview product={product} feedbacks={feedbacks} />
     </div>
   );
 };
