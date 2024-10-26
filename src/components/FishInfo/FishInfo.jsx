@@ -63,9 +63,7 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
     // Check if the product is already in the cart
-    const existingProductIndex = cart.findIndex(
-      (item) => item.id === fish.fishesId
-    );
+    const existingProductIndex = cart.findIndex((item) => item.id === fish.id);
 
     if (existingProductIndex !== -1) {
       // Update the quantity of the existing product in the cart
