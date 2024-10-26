@@ -24,16 +24,22 @@ const ProductPage = () => {
   const fetchFishs = async () => {
     setLoading(true);
     try {
-      // Use the correct API based on the checkbox
       const response = await axios.get(showFishOnly ? fishApi : api);
-      console.log("data", response.data);
-      setFishs(response.data);
+      const data = response.data;
+  
+      // Kiểm tra nếu dữ liệu là cá hay koi và lưu trữ
+      if (showFishOnly) {
+        setFishs(data.map(fish => ({ ...fish, type: 'fish' }))); // Đánh dấu dữ liệu là cá
+      } else {
+        setFishs(data.map(koi => ({ ...koi, type: 'koi' }))); // Đánh dấu dữ liệu là koi
+      }
     } catch (error) {
       console.error("Error fetching fish data:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchFishs();
@@ -106,7 +112,7 @@ const ProductPage = () => {
 
   // Extract unique values for filters
   const uniqueCategories = [...new Set(fishs.map((fish) => fish.name))];
-  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breeder))];
+  const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breed))];
   const uniqueGenders = [...new Set(fishs.map((fish) => fish.gender))];
   const uniqueAges = [...new Set(fishs.map((fish) => fish.age))];
 

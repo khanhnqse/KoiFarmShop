@@ -590,9 +590,9 @@ export const purchaseHistoryColumns = (
     defaultSortOrder: "ascend",
   },
   {
-    title: "User ID",
-    dataIndex: "userId",
-    key: "userId",
+    title: "User Name",
+    dataIndex: "username",
+    key: "username",
   },
   {
     title: "Purchase Date",
