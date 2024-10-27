@@ -20,6 +20,7 @@ export const PATHS = {
     CHILDREN: {
       OVERVIEW: "/dashboard/overview",
       KOI: "/dashboard/koi",
+      FISH: "/dashboard/fish",
       CONSIGNMENT: "/dashboard/consignment",
       CUSTOMER: "/dashboard/customer",
       STAFF: "/dashboard/staff",

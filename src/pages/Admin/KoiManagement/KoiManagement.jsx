@@ -1,299 +1,88 @@
+import { useState, useEffect } from "react";
 import {
+  Table,
   Button,
+  Modal,
   Form,
-  Image,
   Input,
   InputNumber,
-  message,
-  Modal,
   Row,
   Col,
-  Table,
-  Typography,
   Upload,
-  Tag,
+  Image,
   Select,
-  Tooltip,
+  Typography,
 } from "antd";
-import { useForm } from "antd/es/form/Form";
-import FormItem from "antd/es/form/FormItem";
-import axios from "axios";
-import { useEffect, useState } from "react";
-
 import { PlusOutlined } from "@ant-design/icons";
+import { deleteFish, fetchKoiData, saveFish } from "../../../services/sevice"; // Ensure 'saveKoi' is correctly imported if defined
+import { detailColumns, generalColumns } from "../../../constant/menu-data";
 import uploadFile from "../../../utils/file";
-import Popup from "../../../components/Popup/Popup";
 
-function KoiManagement() {
-  const [kois, setKoi] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [form] = useForm();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+const KoiManagement = () => {
+  const [koiData, setKoiData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [currentKoi, setCurrentKoi] = useState(null);
+  const [form] = Form.useForm();
   const [fileListKoi, setFileListKoi] = useState([]);
   const [fileListCertificate, setFileListCertificate] = useState([]);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [selectedKoi, setSelectedKoi] = useState(null);
-  const api = "https://localhost:7285/api/Koi";
-  const fetchKoi = async () => {
-    const response = await axios.get(api);
-    console.log(response.data);
-    setKoi(response.data);
-  };
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
 
   useEffect(() => {
-    fetchKoi();
+    loadKoiData();
   }, []);
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "koiId",
-      key: "koiId",
-      sorter: {
-        compare: (a, b) => a.koiId - b.koiId,
-      },
-      defaultSortOrder: "ascend",
-      fixed: "left",
-    },
-    {
-      title: "Image",
-      dataIndex: "imageKoi",
-      key: "imageKoi",
-      render: (imageKoi) => {
-        return <Image src={imageKoi} width={50} height={50} />;
-      },
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Origin",
-      dataIndex: "origin",
-      key: "origin",
-    },
-    {
-      title: "Gender",
-      dataIndex: "gender",
-      key: "gender",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Size",
-      dataIndex: "size",
-      key: "size",
-    },
-    {
-      title: "Breed",
-      dataIndex: "breed",
-      key: "breed",
-    },
-    {
-      title: "Personality",
-      dataIndex: "personality",
-      key: "personality",
-    },
-    {
-      title: "Feeding Amount",
-      dataIndex: "feedingAmount",
-      key: "feedingAmount",
-    },
-    {
-      title: "Filter Rate",
-      dataIndex: "filterRate",
-      key: "filterRate",
-    },
-    {
-      title: "Health Status",
-      dataIndex: "healthStatus",
-      key: "healthStatus",
-    },
-    {
-      title: "Award Certificates",
-      dataIndex: "awardCertificates",
-      key: "awardCertificates",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        return (
-          <Tag style={{ color: status === "available" ? "green" : "red" }}>
-            {status}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-    },
-    {
-      title: "Image Certificate",
-      dataIndex: "imageCertificate",
-      key: "imageCertificate",
-      render: (imageCertificate) => {
-        return <Image src={imageCertificate} width={50} height={50} />;
-      },
-    },
-    {
-      tilte: "Description",
-      dataIndex: "description",
-    },
-    {
-      title: "Detail Description",
-      dataIndex: "detailDescription",
-      key: "detailDescription",
-      render: (detailDescription) => (
-        <Tooltip title={detailDescription}>
-          <span
-            style={{
-              display: "inline-block",
-              width: "80px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {detailDescription}
-          </span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: "Additional Image",
-      dataIndex: "additionalImage",
-      key: "additionalImage",
-      render: (additionalImage) => (
-        <div style={{ display: "flex", gap: "8px", overflowX: "auto" }}>
-          {Array.isArray(additionalImage) &&
-            additionalImage.map((imageUrl, index) => (
-              <Image key={index} src={imageUrl} width={50} height={50} />
-            ))}
-        </div>
-      ),
-    },
-    {
-      title: "Action",
-      dataIndex: "koiId",
-      key: "koiId",
-      fixed: "right",
-      render: (koiId, record) => {
-        return (
-          <>
-            <Popup
-              title="Delete"
-              description="Are you sure to delete this koi?"
-              onConfirm={() => handleDeleteKoi(koiId)}
-            >
-              <Button type="primary" danger>
-                Delete
-              </Button>
-            </Popup>
-            <Button
-              type="primary"
-              style={{ marginLeft: 8 }}
-              onClick={() => handleOpenUpdateModal(record)}
-            >
-              Update
-            </Button>
-          </>
-        );
-      },
-    },
-  ];
-  const handleOpenUpdateModal = (koi) => {
-    setSelectedKoi(koi);
-    setUpdateModalOpen(true);
-    form.setFieldsValue(koi); // Set form values to the selected koi's details
+  const loadKoiData = async () => {
+    setLoading(true);
+    const data = await fetchKoiData(); // Fetch data from the koi API
+    setKoiData(data);
+    setLoading(false);
   };
-  const handleOpenModal = () => {
-    setOpenModal(true);
+
+  const handleOpenModal = (koi = null) => {
+    setIsUpdateMode(!!koi);
+    setCurrentKoi(koi);
+    setIsModalVisible(true);
+    if (koi) {
+      form.setFieldsValue(koi);
+    } else {
+      form.resetFields();
+    }
   };
+
   const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-  const handleSubmitKoi = async (koi) => {
-    if (fileListKoi.length > 0) {
-      const file = fileListKoi[0];
-      console.log("file", file);
-      const url = await uploadFile(file.originFileObj);
-      console.log("url", url);
-      koi.imageKoi = url;
-    }
-    if (fileListCertificate.length > 0) {
-      const file = fileListCertificate[0];
-      console.log("file", file);
-      const url = await uploadFile(file.originFileObj);
-      console.log("url", url);
-      koi.imageCertificate = url;
-    }
-    console.log("koiData", koi);
-
-    try {
-      setSubmitting(true);
-      const response = await axios.post(api, koi);
-
-      message.success("Create koi successfully");
-
-      setOpenModal(false);
-      fetchKoi();
-      form.resetFields();
-      console.log("data", response.data);
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setSubmitting(false);
-    }
+    setIsModalVisible(false);
+    setCurrentKoi(null);
+    form.resetFields();
   };
 
-  const handleDeleteKoi = async (koiId) => {
-    try {
-      await axios.delete(`${api}/${koiId}`);
-      message.success("Delete koi successfully");
-      fetchKoi();
-    } catch (error) {
-      message.error("Delete koi failed");
-      console.error("Delete koi error:", error);
-    }
-    console.log("koi", koiId);
-  };
-
-  const handleUpdateKoi = async (koi) => {
+  const handleSaveKoi = async (values) => {
     if (fileListKoi.length > 0) {
       const file = fileListKoi[0];
       const url = await uploadFile(file.originFileObj);
-      koi.imageKoi = url;
+      values.imageKoi = url;
     }
     if (fileListCertificate.length > 0) {
       const file = fileListCertificate[0];
       const url = await uploadFile(file.originFileObj);
-      koi.imageCertificate = url;
+      values.imageCertificate = url;
     }
 
-    try {
-      setSubmitting(true);
-      await axios.put(`${api}/${selectedKoi.koiId}`, koi);
-      message.success("Update koi successfully");
-      setUpdateModalOpen(false);
-      fetchKoi();
-      form.resetFields();
-    } catch (error) {
-      console.error("Update koi error:", error);
-      message.error("Update koi failed");
-    } finally {
-      setSubmitting(false);
+    if (isUpdateMode && currentKoi) {
+      values.koiId = currentKoi.koiId; // Ensure koiId is set
     }
+
+    console.log("Koi data to be saved:", values); // Log the koi object
+
+    setLoading(true);
+    await saveFish(values, isUpdateMode); // Ensure saveFish is defined for saving koi data
+    loadKoiData();
+    handleCloseModal();
+    setLoading(false);
   };
+
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -334,620 +123,229 @@ function KoiManagement() {
     </button>
   );
 
+  const handleDeleteKoi = async (koiId) => {
+    setLoading(true);
+    await deleteFish(koiId); // Delete function should work with koiId
+    loadKoiData();
+    setLoading(false);
+  };
+
   return (
     <div>
       <Typography.Title level={2}>Koi Management</Typography.Title>
-      <Button onClick={handleOpenModal}>
-        <PlusOutlined /> Create new Koi
-      </Button>
-      <Table columns={columns} dataSource={kois} scroll={{ x: 1500, y: 450 }} />
-      <Modal
-        confirmLoading={submitting}
-        title="Update Koi"
-        open={updateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        onOk={() => form.submit()}
+      <Button
+        type="primary"
+        onClick={() => handleOpenModal()}
+        style={{ marginBottom: 16 }}
       >
-        <Form onFinish={handleUpdateKoi} form={form} layout="vertical">
-          {/* Form fields same as in the create modal */}
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="koiId"
-                name="koiId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi type",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Type ID must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-              <FormItem
-                label="Type of Koi"
-                name="koiTypeId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi type",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Type ID must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Name"
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi name",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Origin"
-                name="origin"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi origin",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Gender"
-                name="gender"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi gender",
-                  },
-                ]}
-              >
-                <Select>
-                  <Select.Option value="male" />
-                  <Select.Option value="female" />
-                </Select>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Age"
-                name="age"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi age",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Age must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Size"
-                name="size"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi size",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Size must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Breed"
-                name="breed"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi breed",
-                  },
-                ]}
-              >
-                <Select>
-                  <Select.Option value="F1 hybrid" />
-                  <Select.Option value="Purebred" />
-                </Select>
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Personality"
-                name="personality"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi personality",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Feeding Amount"
-                name="feedingAmount"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input feeding amount",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Feeding amount must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Filter Rate"
-                name="filterRate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input filter rate",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Filter rate must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Health Status"
-                name="healthStatus"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input health status",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Award Certificates"
-                name="awardCertificates"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input award certificates",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Status"
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input status",
-                  },
-                ]}
-              >
-                <Select>
-                  <Select.Option value="available" label="Available" />
-                  <Select.Option value="unavailable" />
-                </Select>
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Price"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input price",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Price must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem label="Image Koi" name="imageKoi">
-                <Upload
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                  listType="picture-card"
-                  fileList={fileListKoi}
-                  onPreview={handlePreview}
-                  onChange={handleChangeKoi}
-                >
-                  {fileListKoi.length >= 8 ? null : uploadButton}
-                </Upload>
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem label="Image Certificate" name="imageCertificate">
-                <Upload
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                  listType="picture-card"
-                  fileList={fileListCertificate}
-                  onPreview={handlePreview}
-                  onChange={handleChangeCertificate}
-                >
-                  {fileListCertificate.length >= 8 ? null : uploadButton}
-                </Upload>
-              </FormItem>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
+        <PlusOutlined /> Add Koi
+      </Button>
+      <Table
+        columns={generalColumns(handleOpenModal, handleDeleteKoi)}
+        dataSource={koiData}
+        loading={loading}
+        rowKey="koiId"
+        scroll={{ x: 1500, y: 450 }}
+        title={() => "General Information"}
+      />
+      <Table
+        columns={detailColumns}
+        dataSource={koiData}
+        loading={loading}
+        rowKey="koiId"
+        scroll={{ x: 1500, y: 450 }}
+        title={() => "Detailed Information"}
+      />
       <Modal
-        confirmLoading={submitting}
-        title="Create new Koi"
-        open={openModal}
+        title={isUpdateMode ? "Update Koi" : "Add Koi"}
+        visible={isModalVisible}
         onCancel={handleCloseModal}
         onOk={() => form.submit()}
       >
-        <Form onFinish={handleSubmitKoi} form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleSaveKoi}>
           <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Type of Koi"
-                name="koiTypeId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi type",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Type ID must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Name"
+              <Form.Item
                 name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi name",
-                  },
-                ]}
+                label="Name"
+                rules={[{ required: true, message: "Please input the name!" }]}
               >
                 <Input />
-              </FormItem>
+              </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Origin"
+              <Form.Item
                 name="origin"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi origin",
-                  },
-                ]}
+                label="Origin"
+                rules={[{ required: true, message: "Please input the origin!" }]}
               >
                 <Input />
-              </FormItem>
+              </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Gender"
+              <Form.Item
                 name="gender"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi gender",
-                  },
-                ]}
+                label="Gender"
+                rules={[{ required: true, message: "Please input the gender!" }]}
               >
                 <Select>
-                  <Select.Option value="male" />
-                  <Select.Option value="female" />
+                  <Select.Option value="Male">Male</Select.Option>
+                  <Select.Option value="Female">Female</Select.Option>
                 </Select>
-              </FormItem>
+              </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Age"
+              <Form.Item
                 name="age"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi age",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Age must be a positive number",
-                  },
-                ]}
+                label="Age"
+                rules={[{ required: true, message: "Please input the age!" }]}
               >
-                <InputNumber />
-              </FormItem>
+                <InputNumber min={0} />
+              </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Size"
+              <Form.Item
                 name="size"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi size",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Size must be a positive number",
-                  },
-                ]}
+                label="Size"
+                rules={[{ required: true, message: "Please input the size!" }]}
               >
-                <InputNumber />
-              </FormItem>
+                <InputNumber min={0} />
+              </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Breed"
+              <Form.Item
                 name="breed"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi breed",
-                  },
-                ]}
+                label="Breed"
+                rules={[{ required: true, message: "Please input the breed!" }]}
               >
                 <Select>
-                  <Select.Option value="Purebred" />
-                  <Select.Option value="F1 hybrid" />
+                  <Select.Option value="F1 hybrid">F1 hybrid</Select.Option>
+                  <Select.Option value="Purebred">Purebred</Select.Option>
                 </Select>
-              </FormItem>
+              </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Personality"
+              <Form.Item
                 name="personality"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input koi personality",
-                  },
-                ]}
+                label="Personality"
+                rules={[{ required: true, message: "Please input the personality!" }]}
               >
                 <Input />
-              </FormItem>
+              </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Feeding Amount"
+              <Form.Item
                 name="feedingAmount"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input feeding amount",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Feeding amount must be a positive number",
-                  },
-                ]}
+                label="Feeding Amount"
+                rules={[{ required: true, message: "Please input the feeding amount!" }]}
               >
-                <InputNumber />
-              </FormItem>
+                <InputNumber min={0} />
+              </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Filter Rate"
+              <Form.Item
                 name="filterRate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input filter rate",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Filter rate must be a positive number",
-                  },
-                ]}
+                label="Filter Rate"
+                rules={[{ required: true, message: "Please input the filter rate!" }]}
               >
-                <InputNumber />
-              </FormItem>
+                <InputNumber min={0} />
+              </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Health Status"
+              <Form.Item
                 name="healthStatus"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input health status",
-                  },
-                ]}
+                label="Health Status"
+                rules={[{ required: true, message: "Please input the health status!" }]}
               >
                 <Input />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Award Certificates"
-                name="awardCertificates"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input award certificates",
-                  },
-                ]}
-              >
-                <Input />
-              </FormItem>
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <FormItem
-                label="Status"
+              <Form.Item
+                name="awardCertificates"
+                label="Award Certificates"
+                rules={[{ required: true, message: "Please input the award certificates!" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
                 name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input status",
-                  },
-                ]}
+                label="Status"
+                rules={[{ required: true, message: "Please input the status!" }]}
               >
                 <Select>
-                  <Select.Option value="Available" />
-                  <Select.Option value="Unavailable" />
+                  <Select.Option value="Available">Available</Select.Option>
+                  <Select.Option value="Sold">Sold</Select.Option>
                 </Select>
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Price"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input price",
-                  },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Price must be a positive number",
-                  },
-                ]}
-              >
-                <InputNumber />
-              </FormItem>
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <FormItem label="Image Koi" name="imageKoi">
+              <Form.Item
+                name="price"
+                label="Price"
+                rules={[{ required: true, message: "Please input the price!" }]}
+              >
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="quantityInStock" label="Quantity In Stock">
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Koi Image">
                 <Upload
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                   listType="picture-card"
                   fileList={fileListKoi}
-                  onPreview={handlePreview}
                   onChange={handleChangeKoi}
+                  onPreview={handlePreview}
                 >
-                  {fileListKoi.length >= 8 ? null : uploadButton}
+                  {fileListKoi.length >= 1 ? null : uploadButton}
                 </Upload>
-              </FormItem>
+              </Form.Item>
             </Col>
             <Col span={12}>
-              <FormItem label="Image Certificate" name="imageCertificate">
+              <Form.Item label="Certificate Image">
                 <Upload
-                  action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                   listType="picture-card"
                   fileList={fileListCertificate}
-                  onPreview={handlePreview}
                   onChange={handleChangeCertificate}
+                  onPreview={handlePreview}
                 >
-                  {fileListCertificate.length >= 8 ? null : uploadButton}
+                  {fileListCertificate.length >= 1 ? null : uploadButton}
                 </Upload>
-              </FormItem>
+              </Form.Item>
             </Col>
           </Row>
         </Form>
       </Modal>
-      {previewImage && (
-        <Image
-          wrapperStyle={{
-            display: "none",
-          }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
-          }}
-          src={previewImage}
-        />
-      )}
+      <Modal
+        open={previewOpen}
+        title="Image Preview"
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        <Image alt="Preview" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
     </div>
   );
-}
+};
 
 export default KoiManagement;

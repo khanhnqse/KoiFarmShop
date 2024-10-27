@@ -25,7 +25,10 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem("Dashboard", "/dashboard/overview", <PieChartOutlined />),
-  getItem("Koi Management", "/dashboard/koi", <ProductOutlined />),
+  getItem("Koi Management", "/dashboard/sub2", <ProductOutlined />,[
+    getItem("Koi Management", "/dashboard/koi"),
+    getItem("Fish Management", "/dashboard/fish"),
+  ]),
   getItem("Consign Management", "/dashboard/consignment", <TagOutlined />),
   getItem("Users Management", "sub1", <UserOutlined />, [
     getItem("Customer Management", "/dashboard/customer"),

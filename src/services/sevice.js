@@ -1,14 +1,14 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "https://localhost:7285/api/Koi";
+const fishApi = "https://localhost:7285/api/Fish";
+const koiApi = "https://localhost:7285/api/Koi";
 const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
 const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
 const promotionApi = "https://localhost:7285/api/Promotion";
 const purchasehistoryApi = "https://localhost:7285/api/PurchaseHistory"; // Updated API endpoint for purchase history
 const feedbackApi = "https://localhost:7285/api/Feedback"; // Updated API endpoint for feedback
-
 
 // Fish management service
 export const fetchFishData = async () => {
@@ -44,6 +44,42 @@ export const deleteFish = async (koiId) => {
   } catch (error) {
     message.error("Failed to delete fish");
     console.error("Error deleting fish:", error);
+  }
+};
+//Koi management service
+export const fetchKoiData = async () => {
+  try {
+    const response = await axios.get(koiApi);
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch koi data");
+    console.error("Error fetching koi data:", error);
+    return [];
+  }
+};
+
+export const saveKoi = async (koi, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${koiApi}/${koi.koiId}`, koi);
+      message.success("Koi updated successfully");
+    } else {
+      await axios.post(koiApi, koi);
+      message.success("Koi created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save koi data");
+    console.error("Error saving koi data:", error);
+  }
+};
+
+export const deleteKoi = async (koiId) => {
+  try {
+    await axios.delete(`${koiApi}/${koiId}`);
+    message.success("Koi deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete koi");
+    console.error("Error deleting koi:", error);
   }
 };
 
