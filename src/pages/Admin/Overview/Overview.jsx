@@ -1,81 +1,138 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Card, Col, Row, Statistic } from "antd";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
   LineChart,
   Line,
-  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
 } from "recharts";
+import CountUp from "react-countup";
+// Dashboard Api
+const dashboardApiU = "https://localhost:7285/api/Dashboard/total-users"; //total users
+const dashboardApiP = "https://localhost:7285/api/Dashboard/total-products"; //total products
+const dashboardApiA = "https://localhost:7285/api/Dashboard/analysis"; //analysis
+const dashboardApiR = "https://localhost:7285/api/Dashboard/total-revenue"; //total revenue
 
-const salesData = [
-  { month: "Jan", Purchase: 30000, Sales: 20000 },
-  { month: "Feb", Purchase: 40000, Sales: 30000 },
-  { month: "Mar", Purchase: 45000, Sales: 35000 },
-  { month: "Apr", Purchase: 50000, Sales: 40000 },
-  { month: "May", Purchase: 42000, Sales: 35000 },
-  { month: "Jun", Purchase: 52000, Sales: 47000 },
-];
+const formatter = (value) => <CountUp end={value} separator="," />;
 
-const orderData = [
-  { month: "Jan", Ordered: 2000, Delivered: 1500 },
-  { month: "Feb", Ordered: 3000, Delivered: 2500 },
-  { month: "Mar", Ordered: 3500, Delivered: 3000 },
-  { month: "Apr", Ordered: 4000, Delivered: 3500 },
-  { month: "May", Ordered: 3200, Delivered: 2700 },
-];
+const Overview = () => {
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalProducts, setTotalProduct] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [analysis, setAnalysis] = useState();
+  const [topSellingKoi, setTopSellingKoi] = useState(); 
+const [topSellingFish, setTopSellingFish] = useState();
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      try {
+        const userResponse = await axios.get(dashboardApiU);
+        setTotalUsers(userResponse.data); // Cập nhật state với dữ liệu từ API
+        console.log(userResponse.data);
+        setTotalUsers(userResponse.data.totalUsers);
+        const productResponse = await axios.get(dashboardApiP);
+        setTotalProduct(productResponse.data); // Cập nhật state với dữ liệu từ API
+        console.log(productResponse.data);
+        setTotalProduct(productResponse.data.totalProducts);
+        const revenueResponse = await axios.get(dashboardApiR);
+        setTotalRevenue(revenueResponse.data); // Cập nhật state với dữ liệu từ API
+        console.log(revenueResponse.data);
+        setTotalRevenue(revenueResponse.data.totalRevenue);
+        const analysisResponse = await axios.get(dashboardApiA); // Cập nhật state với dữ liệu từ API
+        setAnalysis(analysisResponse.data);
+        console.log(analysisResponse.data);
+        setAnalysis(analysisResponse.data.analysis);
+       setTopSellingKoi(analysisResponse.data.topSellingKoi.totalSold);
+       setTopSellingFish(analysisResponse.data.topSellingFish.totalSold);
+        const revenuePerMonth = analysisResponse.data.revenuePerMonth;
+        const chartData = revenuePerMonth.map((item) => ({
+          name: `Month ${item.month}`, // Hoặc có thể sử dụng tên tháng
+          uv: item.totalRevenue,
+        }));
+        setAnalysis(chartData); // Cập nhật state với dữ liệu biểu đồ
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-const SalesAndPurchaseChart = () => {
+    fetchTotalUsers();
+  }, []); // Chỉ chạy một lần khi component được mount
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      {/* Sales and Purchase Bar Chart */}
-      <div
-        style={{
-          backgroundColor: "#fff",
-          padding: "16px",
-          borderRadius: "8px",
-        }}
-      >
-        <h3>Sales & Purchase</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={salesData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="Purchase" fill="#8884d8" />
-            <Bar dataKey="Sales" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Total User Stat */}
+      <Row gutter={16}>
+        <Col span={8}>
+          <Card bordered={true}>
+            <Statistic
+              title="Total Users"
+              value={totalUsers}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+        {/* Total Products Stat */}
+        <Col span={8}>
+          <Card bordered={true}>
+            <Statistic
+              title="Total Products"
+              value={totalProducts}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+        {/* Total Revenues Stat */}
+        <Col span={8}>
+          <Card bordered={true}>
+            <Statistic
+              title="Total Revenues"
+              value={totalRevenue}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+      </Row>
 
-      {/* Order Summary Line Chart */}
-      <div
-        style={{
-          backgroundColor: "#fff",
-          padding: "16px",
-          borderRadius: "8px",
-        }}
+     {/* Row for Top Selling Koi and Fish */}
+     <Row gutter={16} justify="center">
+        <Col span={12}>
+          <Card bordered={true}>
+            <Statistic
+              title="Top Selling Koi"
+              value={topSellingKoi}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card bordered={true}>
+            <Statistic
+              title="Top Selling Fish"
+              value={topSellingFish}
+              formatter={formatter}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Analysis Chart */}
+      <h3>Total Revenue</h3>
+      <LineChart
+        width={600}
+        height={300}
+        data={analysis}
+        margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
       >
-        <h3>Order Summary</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={orderData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="Ordered" stroke="#8884d8" />
-            <Line type="monotone" dataKey="Delivered" stroke="#82ca9d" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+        <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+      </LineChart>
     </div>
   );
 };
 
-export default SalesAndPurchaseChart;
+export default Overview;

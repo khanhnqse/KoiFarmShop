@@ -9,6 +9,7 @@ const promotionApi = "https://localhost:7285/api/Promotion";
 const purchasehistoryApi = "https://localhost:7285/api/PurchaseHistory"; // Updated API endpoint for purchase history
 const feedbackApi = "https://localhost:7285/api/Feedback"; // Updated API endpoint for feedback
 
+
 // Fish management service
 export const fetchFishData = async () => {
   try {
@@ -50,7 +51,9 @@ export const deleteFish = async (koiId) => {
 export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
-    const customerData = response.data.filter((user) => user.role === "customer");
+    const customerData = response.data.filter(
+      (user) => user.role === "customer"
+    );
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -100,7 +103,9 @@ export const deleteCustomer = async (userId) => {
 export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
-    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
+    const staffData = response.data.filter(
+      (user) => user.role === "admin" || user.role === "staff"
+    );
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -122,7 +127,12 @@ export const saveStaff = async (staff, isUpdateMode) => {
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addStaffApi, { userName, password, confirmPassword, email }); // Use the new API endpoint for creating staff
+      await axios.post(addStaffApi, {
+        userName,
+        password,
+        confirmPassword,
+        email,
+      }); // Use the new API endpoint for creating staff
       message.success("Staff created successfully");
     }
   } catch (error) {
@@ -259,3 +269,5 @@ export const deletePurchaseHistory = async (orderId) => {
     console.error("Error deleting purchase history:", error);
   }
 };
+
+// Dashboard Services
