@@ -1,15 +1,33 @@
 import { useState, useEffect } from "react";
-import { Table, Typography, Spin, Tag, Row, Col, Card } from "antd";
+import {
+  Table,
+  Typography,
+  Spin,
+  Tag,
+  Row,
+  Col,
+  Card,
+  Button,
+  Modal,
+  Image,
+  Dropdown,
+  Menu,
+} from "antd";
 import axios from "axios";
 import moment from "moment";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { MoreOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
 const OrderHistoryPage = () => {
   const [orderHistory, setOrderHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -30,6 +48,31 @@ const OrderHistoryPage = () => {
       setLoading(false);
     }
   };
+
+  const handleViewDetails = (record) => {
+    setSelectedOrder(record);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedOrder(null);
+  };
+
+  const handleNavigateToConsignment = () => {
+    navigate("/consignment");
+  };
+
+  const menu = (record) => (
+    <Menu>
+      <Menu.Item key="viewDetails" onClick={() => handleViewDetails(record)}>
+        View Details
+      </Menu.Item>
+      <Menu.Item key="consignment" onClick={handleNavigateToConsignment}>
+        Go to Consignment
+      </Menu.Item>
+    </Menu>
+  );
 
   const columns = [
     {
@@ -112,6 +155,15 @@ const OrderHistoryPage = () => {
       dataIndex: "earnedPoints",
       key: "earnedPoints",
     },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Dropdown overlay={menu(record)} trigger={["click"]}>
+          <Button icon={<MoreOutlined />} />
+        </Dropdown>
+      ),
+    },
   ];
 
   return (
@@ -136,6 +188,50 @@ const OrderHistoryPage = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* Modal for Order Details */}
+      <Modal
+        title="Order Details"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="close" type="primary" onClick={handleCancel}>
+            Close
+          </Button>,
+        ]}
+      >
+        {selectedOrder && (
+          <div>
+            <h3 className="text-lg font-bold mt-4">Koi Details</h3>
+            {selectedOrder.koiDetails &&
+              selectedOrder.koiDetails.map((koi, index) => (
+                <Card key={index} className="mb-4">
+                  <Row gutter={16} align="middle">
+                    <Col span={8}>
+                      <Image
+                        src={koi.imageKoi}
+                        width={100}
+                        height={100}
+                        className="mb-2"
+                      />
+                    </Col>
+                    <Col span={16}>
+                      <p>
+                        <strong>ID:</strong> {koi.koiId}
+                      </p>
+                      <p>
+                        <strong>Name:</strong> {koi.name}
+                      </p>
+                      <p>
+                        <strong>Quantity:</strong> {koi.quantity}
+                      </p>
+                    </Col>
+                  </Row>
+                </Card>
+              ))}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

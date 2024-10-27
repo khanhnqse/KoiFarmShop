@@ -209,7 +209,7 @@ export const saveFeedback = async (feedback, isUpdateMode) => {
 // Delete Feedback
 export const deleteFeedback = async (feedbackId) => {
   try {
-    await axios.delete(`${feedbackApi}/${feedbackId}`);
+    await axios.delete(`${feedbackApi}/delete/${feedbackId}`);
     message.success("Feedback deleted successfully");
   } catch (error) {
     message.error("Failed to delete feedback");
