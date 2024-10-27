@@ -23,7 +23,8 @@ import StaffManagement from "./pages/Admin/Staff/StaffManagement";
 import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
-import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement"
+import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
+import KoiTypeMangement from "./pages/Admin/Koi Type Mangement/KoiTypeManagement";
 import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
 import FeedbackManagement from "./pages/Admin/FeedbackManagement/FeedbackManagement";
 import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement";
@@ -101,6 +102,10 @@ function App() {
             <Route
               path={PATHS.DASHBOARD.CHILDREN.FISH}
               element={<FishManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.KOITYPE}
+              element={<KoiTypeMangement />}
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}

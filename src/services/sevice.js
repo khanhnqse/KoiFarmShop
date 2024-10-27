@@ -306,4 +306,4 @@ export const deletePurchaseHistory = async (orderId) => {
   }
 };
 
-// Dashboard Services
+// Koi Type Management service

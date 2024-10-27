@@ -9,6 +9,7 @@ import {
   PercentageOutlined,
   CommentOutlined,
   PayCircleOutlined,
+  SmileOutlined ,
 } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ const items = [
     getItem("Koi Management", "/dashboard/koi"),
     getItem("Fish Management", "/dashboard/fish"),
   ]),
+  getItem("Koi Type Management", "/dashboard/koitype", <SmileOutlined />),
   getItem("Consign Management", "/dashboard/consignment", <TagOutlined />),
   getItem("Users Management", "sub1", <UserOutlined />, [
     getItem("Customer Management", "/dashboard/customer"),
