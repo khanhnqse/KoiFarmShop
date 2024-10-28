@@ -15,6 +15,7 @@ export const PATHS = {
   VERIFY_OTP: "/verify-otp",
   RESET_PASSWORD: "/reset-password",
   HISTORY: "/history",
+  SUCCESS: "/success",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {

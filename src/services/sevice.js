@@ -100,7 +100,7 @@ export const deleteCustomer = async (userId) => {
 export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
-    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
+    const staffData = response.data.filter((user) => user.role === "manager" || user.role === "staff");
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -259,3 +259,93 @@ export const deletePurchaseHistory = async (orderId) => {
     console.error("Error deleting purchase history:", error);
   }
 };
+
+
+const orderApi = "https://localhost:7285/api/Order";
+
+// Order management service
+// Order management service
+export const fetchOrderData = async (token) => {
+  try {
+    const response = await axios.get(orderApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch order data");
+    console.error("Error fetching order data:", error);
+    return [];
+  }
+};
+
+export const updateOrderStatus = async (orderId, newStatus, token) => {
+  try {
+    await axios.put(
+      `${orderApi}/${orderId}/update-status-staff&manager?newStatus=${newStatus}`,
+      
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    message.success("Order status updated successfully");
+  } catch (error) {
+    message.error("Failed to update order status");
+    console.error("Error updating order status:", error);
+  }
+};
+// export const fetchOrderData = async (token) => {
+//   try {
+//     const response = await axios.get(orderApi, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     message.error("Failed to fetch order data");
+//     console.error("Error fetching order data:", error);
+//     return [];
+//   }
+// };
+
+// export const saveOrder = async (order, isUpdateMode, token) => {
+//   try {
+//     if (isUpdateMode) {
+//       await axios.put(`${orderApi}/${order.orderId}`, order, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       message.success("Order updated successfully");
+//     } else {
+//       await axios.post(orderApi, order, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       message.success("Order created successfully");
+//     }
+//   } catch (error) {
+//     message.error("Failed to save order data");
+//     console.error("Error saving order data:", error);
+//   }
+// };
+
+// export const deleteOrder = async (orderId, token) => {
+//   try {
+//     await axios.delete(`${orderApi}/${orderId}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     message.success("Order deleted successfully");
+//   } catch (error) {
+//     message.error("Failed to delete order");
+//     console.error("Error deleting order:", error);
+//   }
+// };

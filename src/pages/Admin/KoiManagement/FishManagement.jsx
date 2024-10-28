@@ -385,27 +385,12 @@ const FishManagement = () => {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="description"
-                label="Description"
-                rules={[
-                  { required: true, message: "Please input the description!" },
-                ]}
-              >
+              <Form.Item name="description" label="Description">
                 <Input />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item
-            name="detailDescription"
-            label="Detail Description"
-            rules={[
-              {
-                required: true,
-                message: "Please input the detail description!",
-              },
-            ]}
-          >
+          <Form.Item name="detailDescription" label="Detail Description">
             <Input.TextArea />
           </Form.Item>
         </Form>

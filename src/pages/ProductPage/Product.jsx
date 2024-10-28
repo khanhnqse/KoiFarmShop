@@ -11,7 +11,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
-  const [priceRange, setPriceRange] = useState([0, 2250]);
+  const [priceRange, setPriceRange] = useState([0, 999999]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedBreeder, setSelectedBreeder] = useState(null);
   const [selectedGender, setSelectedGender] = useState(null);
@@ -131,8 +131,8 @@ const ProductPage = () => {
           <h2 className="font-semibold">FILTER BY PRICE</h2>
           <Slider
             range
-            defaultValue={[0, 500]}
-            max={500}
+            defaultValue={[0, 999999]}
+            max={999999}
             onChange={handlePriceChange}
           />
         </div>

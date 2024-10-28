@@ -1,6 +1,11 @@
 import { PATHS } from "./path";
 import { Tag, Image, Button, Dropdown, Menu } from "antd";
-import { MoreOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  MoreOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 
 export const MenuItems = [
   {
@@ -671,6 +676,137 @@ export const purchaseHistoryColumns = (
           record,
           handleOpenModal,
           handleDeletePurchaseHistory
+        )}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
+
+// Order management Table columns
+
+const handleOrderMenuClick = (
+  e,
+  record,
+  handleOpenModal,
+  handleDeleteOrder,
+  handleShowDetails
+) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteOrder(record.orderId);
+  } else if (e.key === "details") {
+    handleShowDetails(record);
+  }
+};
+
+const orderMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteOrder,
+  handleShowDetails
+) => (
+  <Menu
+    onClick={(e) =>
+      handleOrderMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteOrder,
+        handleShowDetails
+      )
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+    <Menu.Item key="details" icon={<EyeOutlined />}>
+      View Details
+    </Menu.Item>
+  </Menu>
+);
+
+export const orderColumns = (
+  handleOpenModal,
+  handleDeleteOrder,
+  handleShowDetails
+) => [
+  {
+    title: "Order ID",
+    dataIndex: "orderId",
+    key: "orderId",
+    sorter: {
+      compare: (a, b) => a.orderId - b.orderId,
+    },
+    defaultSortOrder: "ascend",
+  },
+  {
+    title: "User ID",
+    dataIndex: "userId",
+    key: "userId",
+  },
+  {
+    title: "Order Date",
+    dataIndex: "orderDate",
+    key: "orderDate",
+  },
+  {
+    title: "Total Money",
+    dataIndex: "totalMoney",
+    key: "totalMoney",
+    render: (money) => `$${money.toFixed(2)}`,
+  },
+  {
+    title: "Final Money",
+    dataIndex: "finalMoney",
+    key: "finalMoney",
+    render: (money) => `$${money.toFixed(2)}`,
+  },
+  {
+    title: "Discount Money",
+    dataIndex: "discountMoney",
+    key: "discountMoney",
+    render: (money) => `$${money.toFixed(2)}`,
+  },
+  {
+    title: "Earned Points",
+    dataIndex: "earnedPoints",
+    key: "earnedPoints",
+  },
+  {
+    title: "Order Status",
+    dataIndex: "orderStatus",
+    key: "orderStatus",
+    render: (status) => (
+      <Tag color={status === "completed" ? "green" : "red"}>{status}</Tag>
+    ),
+  },
+  {
+    title: "Payment Method",
+    dataIndex: "paymentMethod",
+    key: "paymentMethod",
+  },
+  {
+    title: "Delivery Status",
+    dataIndex: "deliveryStatus",
+    key: "deliveryStatus",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={orderMenu(
+          record,
+          handleOpenModal,
+          handleDeleteOrder,
+          handleShowDetails
         )}
         trigger={["click"]}
       >

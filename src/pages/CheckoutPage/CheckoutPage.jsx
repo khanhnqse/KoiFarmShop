@@ -1,4 +1,13 @@
-import { Tabs, Form, Input, Button, Select, notification, Spin } from "antd";
+import {
+  Tabs,
+  Form,
+  Input,
+  Button,
+  Select,
+  notification,
+  Spin,
+  Table,
+} from "antd";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -10,11 +19,12 @@ const { Option } = Select;
 const CheckoutTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [form] = Form.useForm();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("VN Pay");
   const [promotions, setPromotions] = useState([]);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState([]);
   const location = useLocation();
   const { cart } = location.state;
 
@@ -61,6 +71,34 @@ const CheckoutTabs = () => {
 
     fetchUserData();
   }, [user, form]);
+
+  useEffect(() => {
+    const fetchUserOrders = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://localhost:7285/api/Order/my-orders`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setOrders(response.data);
+      } catch (error) {
+        notification.error({
+          message: "Failed to fetch user orders",
+          description: "There was an error fetching your orders.",
+        });
+        console.error("Error fetching user orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserOrders();
+  }, [user, token]);
 
   const handleSubmit = async (values) => {
     console.log("Form data:", values);
@@ -116,6 +154,26 @@ const CheckoutTabs = () => {
     }
   };
 
+  const handlePayNow = async (orderId) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `https://localhost:7285/api/VNPay/Payment?orderId=${orderId}`
+      );
+      const { paymentUrl } = response.data;
+      window.location.href = paymentUrl;
+    } catch (error) {
+      console.error("Failed to initiate payment:", error);
+      notification.error({
+        message: "Payment Failed",
+        description:
+          "There was an error initiating the payment. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const delivery = 0.0; // Free shipping
 
   const subtotal = cart.reduce(
@@ -127,6 +185,66 @@ const CheckoutTabs = () => {
     ? (subtotal * selectedPromotion.discountRate) / 100
     : 0;
   const total = subtotal - discount + delivery;
+
+  const orderColumns = [
+    {
+      title: "Order ID",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
+    {
+      title: "Order Date",
+      dataIndex: "orderDate",
+      key: "orderDate",
+    },
+    {
+      title: "Total Money",
+      dataIndex: "totalMoney",
+      key: "totalMoney",
+      render: (money) => `$${money.toFixed(2)}`,
+    },
+    {
+      title: "Final Money",
+      dataIndex: "finalMoney",
+      key: "finalMoney",
+      render: (money) => `$${money.toFixed(2)}`,
+    },
+    {
+      title: "Discount Money",
+      dataIndex: "discountMoney",
+      key: "discountMoney",
+      render: (money) => `$${money.toFixed(2)}`,
+    },
+    {
+      title: "Earned Points",
+      dataIndex: "earnedPoints",
+      key: "earnedPoints",
+    },
+    {
+      title: "Order Status",
+      dataIndex: "orderStatus",
+      key: "orderStatus",
+    },
+    {
+      title: "Payment Method",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+    },
+    {
+      title: "Delivery Status",
+      dataIndex: "deliveryStatus",
+      key: "deliveryStatus",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Button type="primary" onClick={() => handlePayNow(record.orderId)}>
+          Pay Now
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
@@ -283,11 +401,13 @@ const CheckoutTabs = () => {
                 style={{ width: "200px" }}
               >
                 <Option value={null}>None</Option>
-                {promotions.map((promo) => (
-                  <Option key={promo.promotionId} value={promo.promotionId}>
-                    {promo.promotionName}
-                  </Option>
-                ))}
+                {promotions
+                  .filter((promo) => promo.status === true)
+                  .map((promo) => (
+                    <Option key={promo.promotionId} value={promo.promotionId}>
+                      {promo.promotionName}
+                    </Option>
+                  ))}
               </Select>
             </div>
             <hr className="my-2" />
@@ -305,6 +425,10 @@ const CheckoutTabs = () => {
               <p>${total.toFixed(2)}</p>
             </div>
           </div>
+        </div>
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">Your Orders</h3>
+          <Table columns={orderColumns} dataSource={orders} rowKey="orderId" />
         </div>
       </Spin>
     </div>

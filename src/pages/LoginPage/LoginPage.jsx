@@ -31,7 +31,7 @@ const LoginPage = () => {
         login(token, user); // Update auth context with token and user info
         console.log("Logged in user:", user);
         // Redirect based on user role
-        if (user.role === "admin") {
+        if (user.role === "manager" || user.role === "staff") {
           navigate(PATHS.DASHBOARD.CHILDREN.OVERVIEW); // Navigate to dashboard if user is admin
         } else {
           navigate(PATHS.HOME); // Navigate to home page for other users
