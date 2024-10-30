@@ -25,7 +25,8 @@ const FishManagement = () => {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [currentFish, setCurrentFish] = useState(null);
   const [form] = Form.useForm();
-  const [fileListFishes, setFileListFishes] = useState([]);
+  const [fileListKoi, setFileListKoi] = useState([]);
+  const [fileListCertificate, setFileListCertificate] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
@@ -58,14 +59,19 @@ const FishManagement = () => {
   };
 
   const handleSaveFish = async (values) => {
-    if (fileListFishes.length > 0) {
-      const file = fileListFishes[0];
+    if (fileListKoi.length > 0) {
+      const file = fileListKoi[0];
       const url = await uploadFile(file.originFileObj);
-      values.imageFishes = url; // Update to use imageFishes
+      values.imageKoi = url;
+    }
+    if (fileListCertificate.length > 0) {
+      const file = fileListCertificate[0];
+      const url = await uploadFile(file.originFileObj);
+      values.imageCertificate = url;
     }
 
     if (isUpdateMode && currentFish) {
-      values.fishesId = currentFish.fishesId; // Ensure fishesId is set
+      values.koiId = currentFish.koiId; // Ensure koiId is set
     }
 
     console.log("Fish data to be saved:", values); // Log the fish object
@@ -93,8 +99,10 @@ const FishManagement = () => {
     setPreviewOpen(true);
   };
 
-  const handleChangeFishes = ({ fileList: newFileList }) =>
-    setFileListFishes(newFileList);
+  const handleChangeKoi = ({ fileList: newFileList }) =>
+    setFileListKoi(newFileList);
+  const handleChangeCertificate = ({ fileList: newFileList }) =>
+    setFileListCertificate(newFileList);
 
   const uploadButton = (
     <button
@@ -115,16 +123,16 @@ const FishManagement = () => {
     </button>
   );
 
-  const handleDeleteFish = async (fishesId) => {
+  const handleDeleteFish = async (koiId) => {
     setLoading(true);
-    await deleteFish(fishesId);
+    await deleteFish(koiId);
     loadFishData();
     setLoading(false);
   };
 
   return (
     <div>
-      <Typography.Title level={2}>Fish Management</Typography.Title>
+      <Typography.Title level={2}>Koi Management</Typography.Title>
       <Button
         type="primary"
         onClick={() => handleOpenModal()}
@@ -136,7 +144,7 @@ const FishManagement = () => {
         columns={generalColumns(handleOpenModal, handleDeleteFish)}
         dataSource={fishData}
         loading={loading}
-        rowKey="fishesId" // Update to fishesId
+        rowKey="koiId"
         scroll={{ x: 1500, y: 450 }}
         title={() => "General Information"}
       />
@@ -144,7 +152,7 @@ const FishManagement = () => {
         columns={detailColumns}
         dataSource={fishData}
         loading={loading}
-        rowKey="fishesId" // Update to fishesId
+        rowKey="koiId"
         scroll={{ x: 1500, y: 450 }}
         title={() => "Detailed Information"}
       />
@@ -167,10 +175,85 @@ const FishManagement = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                name="quantity"
-                label="Quantity"
+                name="origin"
+                label="Origin"
                 rules={[
-                  { required: true, message: "Please input the quantity!" },
+                  { required: true, message: "Please input the origin!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="gender"
+                label="Gender"
+                rules={[
+                  { required: true, message: "Please input the gender!" },
+                ]}
+              >
+                <Select>
+                  <Select.Option value="Male" />
+                  <Select.Option value="Female" />
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="age"
+                label="Age"
+                rules={[{ required: true, message: "Please input the age!" }]}
+              >
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="size"
+                label="Size"
+                rules={[{ required: true, message: "Please input the size!" }]}
+              >
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="breed"
+                label="Breed"
+                rules={[{ required: true, message: "Please input the breed!" }]}
+              >
+                <Select>
+                  <Select.Option value="F1 hybrid" />
+                  <Select.Option value="Purebred" />
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="personality"
+                label="Personality"
+                rules={[
+                  { required: true, message: "Please input the personality!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="feedingAmount"
+                label="Feeding Amount"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the feeding amount!",
+                  },
                 ]}
               >
                 <InputNumber min={0} />
@@ -180,10 +263,40 @@ const FishManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="koiTypeId"
-                label="Koi Type ID"
+                name="filterRate"
+                label="Filter Rate"
                 rules={[
-                  { required: true, message: "Please input the koi type ID!" },
+                  { required: true, message: "Please input the filter rate!" },
+                ]}
+              >
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="healthStatus"
+                label="Health Status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the health status!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="awardCertificates"
+                label="Award Certificates"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the award certificates!",
+                  },
                 ]}
               >
                 <Input />
@@ -198,8 +311,8 @@ const FishManagement = () => {
                 ]}
               >
                 <Select>
-                  <Select.Option value="available">Available</Select.Option>
-                  <Select.Option value="unavailable">Unavailable</Select.Option>
+                  <Select.Option value="Available" />
+                  <Select.Option value="Unavailable" />
                 </Select>
               </Form.Item>
             </Col>
@@ -216,33 +329,56 @@ const FishManagement = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                name="quantityInStock"
-                label="Quantity In Stock"
+                name="koiTypeId"
+                label="Koi Type ID"
                 rules={[
-                  {
-                    required: true,
-                    message: "Please input the quantity in stock!",
-                  },
+                  { required: true, message: "Please input the koi type ID!" },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="imageFishes"
-                label="Image Fishes"
-                rules={[{ required: true, message: "Please upload an image!" }]}
+                name="imageKoi"
+                label="Image Koi"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the image koi URL!",
+                  },
+                ]}
               >
                 <Upload
                   listType="picture-card"
-                  fileList={fileListFishes}
+                  fileList={fileListKoi}
                   onPreview={handlePreview}
-                  onChange={handleChangeFishes}
+                  onChange={handleChangeKoi}
                 >
-                  {fileListFishes.length >= 8 ? null : uploadButton}
+                  {fileListKoi.length >= 8 ? null : uploadButton}
+                </Upload>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="imageCertificate"
+                label="Image Certificate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the image certificate URL!",
+                  },
+                ]}
+              >
+                <Upload
+                  listType="picture-card"
+                  fileList={fileListCertificate}
+                  onPreview={handlePreview}
+                  onChange={handleChangeCertificate}
+                >
+                  {fileListCertificate.length >= 8 ? null : uploadButton}
                 </Upload>
               </Form.Item>
             </Col>
