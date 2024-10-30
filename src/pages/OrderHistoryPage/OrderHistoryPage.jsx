@@ -59,17 +59,15 @@ const OrderHistoryPage = () => {
     setSelectedOrder(null);
   };
 
-  const handleNavigateToConsignment = () => {
-    navigate("/consignment");
+  const handleNavigateToConsignment = (koiId) => {
+    console.log("Navigating with koiId:", koiId); // Log koiId before navigating
+    navigate("/consignment", { state: { koiId } });
   };
 
   const menu = (record) => (
     <Menu>
       <Menu.Item key="viewDetails" onClick={() => handleViewDetails(record)}>
         View Details
-      </Menu.Item>
-      <Menu.Item key="consignment" onClick={handleNavigateToConsignment}>
-        Go to Consignment
       </Menu.Item>
     </Menu>
   );
@@ -127,24 +125,7 @@ const OrderHistoryPage = () => {
       key: "shippingDate",
       render: (date) => moment(date).format("YYYY-MM-DD"),
     },
-    {
-      title: "Delivery Status",
-      dataIndex: "deliveryStatus",
-      key: "deliveryStatus",
-      render: (deliveryStatus) => (
-        <Tag
-          color={
-            deliveryStatus === "delivered"
-              ? "green"
-              : deliveryStatus === "shipping"
-              ? "blue"
-              : "red"
-          }
-        >
-          {deliveryStatus}
-        </Tag>
-      ),
-    },
+
     {
       title: "Promotion ID",
       dataIndex: "promotionId",
@@ -172,7 +153,7 @@ const OrderHistoryPage = () => {
         <Col span={24}>
           <Card>
             <Title className="text-center" level={2}>
-              Order History
+              Purchase History
             </Title>
             {loading ? (
               <Spin size="large" />
@@ -225,6 +206,12 @@ const OrderHistoryPage = () => {
                       <p>
                         <strong>Quantity:</strong> {koi.quantity}
                       </p>
+                      <Button
+                        type="primary"
+                        onClick={() => handleNavigateToConsignment(koi.koiId)}
+                      >
+                        Go to Consignment
+                      </Button>
                     </Col>
                   </Row>
                 </Card>

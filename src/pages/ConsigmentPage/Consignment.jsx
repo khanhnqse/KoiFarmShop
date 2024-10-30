@@ -1,25 +1,44 @@
-import { useState } from "react";
-import { Input, Button, Select, Typography, Upload, message } from "antd";
+import { useState, useEffect } from "react";
+import {
+  Input,
+  Button,
+  Select,
+  Typography,
+  Upload,
+  message,
+  DatePicker,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useLocation } from "react-router-dom";
 import "./Consignment.css";
 
 const { Option } = Select;
 const { Title } = Typography;
 
 const Consignment = () => {
+  const { token } = useAuth();
+  const location = useLocation();
   const [productInfo, setProductInfo] = useState({
-    origin: "",
-    gender: "",
-    age: "",
-    size: "",
-    breed: "",
-    title: "",
-    description: "",
-    careInstructions: "",
-    userType: "individual",
-    consignmentType: "sale",
-    price: "",
+    koiID: "",
+    consignmentType: "",
+    consignmentPrice: "",
+    consignmentDateTo: "",
+    consignmentTitle: "",
+    consignmentDetail: "",
   });
+  const [fileList, setFileList] = useState([]);
+
+  useEffect(() => {
+    if (location.state?.koiId) {
+      console.log("koiId from location state:", location.state.koiId); // Log koiId
+      setProductInfo((prev) => ({
+        ...prev,
+        koiID: location.state.koiId,
+      }));
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,25 +55,61 @@ const Consignment = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    if (!productInfo.title || !productInfo.description) {
-      message.error("Vui lòng điền tất cả các trường cần thiết.");
+  const handleDateChange = (date, dateString) => {
+    setProductInfo((prev) => ({
+      ...prev,
+      consignmentDateTo: dateString,
+    }));
+  };
+
+  const handleUploadChange = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
+  const handleSubmit = async () => {
+    if (!productInfo.consignmentTitle || !productInfo.consignmentDetail) {
+      message.error("Please fill in all required fields.");
       return;
     }
 
-    console.log("Product Info Submitted:", productInfo);
-    message.success("Thông tin sản phẩm đã được gửi thành công!");
+    const formData = new FormData();
+    formData.append("koiID", productInfo.koiID);
+    formData.append("consignmentType", productInfo.consignmentType);
+    formData.append("consignmentPrice", productInfo.consignmentPrice);
+    formData.append("consignmentDateTo", productInfo.consignmentDateTo);
+    formData.append("consignmentTitle", productInfo.consignmentTitle);
+    formData.append("consignmentDetail", productInfo.consignmentDetail);
+
+    if (fileList.length > 0) {
+      const file = fileList[0].originFileObj;
+      formData.append("userImage", file);
+    }
+
+    const url = `https://localhost:7285/api/Consignment/create-consignmentCustomer?koiID=${productInfo.koiID}&consignmentType=${productInfo.consignmentType}&consignmentPrice=${productInfo.consignmentPrice}&consignmentDateTo=${productInfo.consignmentDateTo}&consignmentTitle=${productInfo.consignmentTitle}&consignmentDetail=${productInfo.consignmentDetail}`;
+
+    try {
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Product Info Submitted:", response.data);
+      message.success("Product information submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting product info:", error);
+      message.error("An error occurred while submitting product information.");
+    }
   };
 
   return (
     <div
       className="consignment-background"
       style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1522567659205-ee20ba167aaa?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')", // Thay đổi đường dẫn tới hình ảnh của bạn
+        backgroundImage: "url('')", // Change the path to your image
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "50px", // Điều chỉnh khoảng cách theo nhu cầu
+        padding: "50px", // Adjust the padding as needed
       }}
     >
       <div
@@ -66,27 +121,32 @@ const Consignment = () => {
         }}
       >
         <Title level={3} className="form-title">
-          Ký Gửi Bán Cá Koi
+          Consignment Sale
         </Title>
-        <Upload className="upload-section" beforeUpload={() => false}>
-          <Button icon={<UploadOutlined />}>Thêm ảnh/video</Button>
+        <Upload
+          className="upload-section"
+          beforeUpload={() => false}
+          fileList={fileList}
+          onChange={handleUploadChange}
+        >
+          <Button icon={<UploadOutlined />}>Add Image/Video</Button>
         </Upload>
 
         <div className="consignment-form">
           <Title level={4} className="section-title">
-            Thông tin chi tiết
+            Detailed Information
           </Title>
 
           <form className="form-grid">
             <div className="form-group">
               <Title level={5} className="input-label">
-                Nguồn gốc xuất xứ
+                Koi ID
               </Title>
               <Input
-                name="origin"
-                placeholder="Nguồn gốc xuất xứ"
-                value={productInfo.origin}
-                onChange={handleInputChange}
+                name="koiID"
+                placeholder="Koi ID"
+                value={productInfo.koiID}
+                readOnly
                 className="input-field"
                 required
               />
@@ -94,105 +154,10 @@ const Consignment = () => {
 
             <div className="form-group">
               <Title level={5} className="input-label">
-                Giới tính
+                Consignment Type
               </Title>
               <Select
-                placeholder="Giới tính"
-                value={productInfo.gender}
-                onChange={(value) => handleSelectChange(value, "gender")}
-                className="input-field"
-                required
-              >
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
-              </Select>
-            </div>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Tuổi
-              </Title>
-              <Input
-                name="age"
-                placeholder="Tuổi"
-                value={productInfo.age}
-                onChange={handleInputChange}
-                className="input-field"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Kích thước (cm)
-              </Title>
-              <Input
-                name="size"
-                placeholder="Kích thước"
-                value={productInfo.size}
-                onChange={handleInputChange}
-                className="input-field"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Giống cá Koi
-              </Title>
-              <Input
-                name="breed"
-                placeholder="Giống"
-                value={productInfo.breed}
-                onChange={handleInputChange}
-                className="input-field"
-                required
-              />
-            </div>
-
-            <Title level={4} className="section-title">
-              Tiêu đề tin đăng và mô tả chi tiết
-            </Title>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Tiêu đề tin đăng
-              </Title>
-              <Input
-                name="title"
-                placeholder="Tiêu đề tin đăng"
-                value={productInfo.title}
-                onChange={handleInputChange}
-                className="input-field"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Mô tả chi tiết
-              </Title>
-              <Input.TextArea
-                name="description"
-                placeholder="Mô tả chi tiết về cá Koi"
-                value={productInfo.description}
-                onChange={handleInputChange}
-                className="input-field"
-                rows={4}
-                required
-              />
-            </div>
-
-            <Title level={4} className="section-title">
-              Thông tin người bán
-            </Title>
-
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Loại ký gửi
-              </Title>
-              <Select
-                placeholder="Loại ký gửi"
+                placeholder="Consignment Type"
                 value={productInfo.consignmentType}
                 onChange={(value) =>
                   handleSelectChange(value, "consignmentType")
@@ -200,33 +165,72 @@ const Consignment = () => {
                 className="input-field"
                 required
               >
-                <Option value="sale">Bán</Option>
-                <Option value="care">Chăm sóc</Option>
+                <Option value="online">Online</Option>
+                <Option value="offline">Offline</Option>
               </Select>
             </div>
 
-            {productInfo.consignmentType === "sale" && (
-              <div className="form-group">
-                <Title level={5} className="input-label">
-                  Giá bán mong muốn (VNĐ)
-                </Title>
-                <Input
-                  name="price"
-                  placeholder="Giá bán mong muốn"
-                  value={productInfo.price}
-                  onChange={handleInputChange}
-                  className="input-field"
-                  required
-                />
-              </div>
-            )}
+            <div className="form-group">
+              <Title level={5} className="input-label">
+                Consignment Price
+              </Title>
+              <Input
+                name="consignmentPrice"
+                placeholder="Consignment Price"
+                value={productInfo.consignmentPrice}
+                onChange={handleInputChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <Title level={5} className="input-label">
+                Consignment Date To
+              </Title>
+              <DatePicker
+                placeholder="Consignment Date To"
+                onChange={handleDateChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <Title level={5} className="input-label">
+                Consignment Title
+              </Title>
+              <Input
+                name="consignmentTitle"
+                placeholder="Consignment Title"
+                value={productInfo.consignmentTitle}
+                onChange={handleInputChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <Title level={5} className="input-label">
+                Consignment Detail
+              </Title>
+              <Input.TextArea
+                name="consignmentDetail"
+                placeholder="Consignment Detail"
+                value={productInfo.consignmentDetail}
+                onChange={handleInputChange}
+                className="input-field"
+                rows={4}
+                required
+              />
+            </div>
 
             <Button
               type="primary"
               onClick={handleSubmit}
               className="submit-btn"
             >
-              Đăng sản phẩm
+              Submit Product
             </Button>
           </form>
         </div>

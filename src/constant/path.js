@@ -7,6 +7,7 @@ const CART = "/cart";
 const PROFILE = "/profile";
 const CHECKOUT = "/checkout";
 const FISH = "/fish";
+
 export const PATHS = {
   HOME: "/",
   LOGIN: "/login",
@@ -16,6 +17,7 @@ export const PATHS = {
   RESET_PASSWORD: "/reset-password",
   HISTORY: "/history",
   SUCCESS: "/success",
+  ORDER: "/orders",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {
@@ -64,4 +66,5 @@ export const PATHS = {
     DETAIL: `fish/:id`,
     
   },
+
 };

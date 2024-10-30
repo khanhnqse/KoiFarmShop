@@ -213,8 +213,7 @@ const ConsignmentManagement = () => {
           >
             <Select>
               <Option value="awaiting inspection">Awaiting Inspection</Option>
-              <Option value="approved">Approved</Option>
-              <Option value="rejected">Rejected</Option>
+              <Option value="consigned">Consigned</Option>
             </Select>
           </Form.Item>
           <Form.Item

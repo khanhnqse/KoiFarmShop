@@ -36,7 +36,7 @@ const FishInfo = ({ fish, averageRating }) => {
         fishesId: fish.fishesId,
         name: fish.name,
         price: fish.price,
-        fishesQuantity: quantity,
+        quantity: quantity,
         image: fish.imageFishes,
       };
 
@@ -81,7 +81,7 @@ const FishInfo = ({ fish, averageRating }) => {
         fishesId: fish.fishesId,
         name: fish.name,
         price: fish.price,
-        fishesQuantity: quantity,
+        quantity: quantity,
         image: fish.imageKoi,
       };
 
