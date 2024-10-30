@@ -459,3 +459,35 @@ export const deleteConsignment = async (consignmentId, token) => {
     console.error("Error deleting consignment:", error);
   }
 };
+
+const koiTypeApi = "https://localhost:7285/api/Koi/koitypes";
+
+// KoiType management service
+export const fetchKoiTypeData = async (token) => {
+  try {
+    const response = await axios.get(koiTypeApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch KoiType data");
+    console.error("Error fetching KoiType data:", error);
+    return [];
+  }
+};
+
+export const saveKoiType = async (koiType, token) => {
+  try {
+    await axios.post(`https://localhost:7285/api/Koi/createKoiType`, koiType, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("KoiType created successfully");
+  } catch (error) {
+    message.error("Failed to save KoiType data");
+    console.error("Error saving KoiType data:", error);
+  }
+};
