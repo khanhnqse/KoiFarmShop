@@ -1,7 +1,8 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "https://localhost:7285/api/Koi";
+const fishApi = "https://localhost:7285/api/Fish";
+const koiApi = "https://localhost:7285/api/Koi";
 const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
 const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
@@ -45,12 +46,50 @@ export const deleteFish = async (koiId) => {
     console.error("Error deleting fish:", error);
   }
 };
+//Koi management service
+export const fetchKoiData = async () => {
+  try {
+    const response = await axios.get(koiApi);
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch koi data");
+    console.error("Error fetching koi data:", error);
+    return [];
+  }
+};
+
+export const saveKoi = async (koi, isUpdateMode) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${koiApi}/${koi.koiId}`, koi);
+      message.success("Koi updated successfully");
+    } else {
+      await axios.post(koiApi, koi);
+      message.success("Koi created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save koi data");
+    console.error("Error saving koi data:", error);
+  }
+};
+
+export const deleteKoi = async (koiId) => {
+  try {
+    await axios.delete(`${koiApi}/${koiId}`);
+    message.success("Koi deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete koi");
+    console.error("Error deleting koi:", error);
+  }
+};
 
 // Customer management service
 export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
-    const customerData = response.data.filter((user) => user.role === "customer");
+    const customerData = response.data.filter(
+      (user) => user.role === "customer"
+    );
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -122,7 +161,12 @@ export const saveStaff = async (staff, isUpdateMode) => {
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addStaffApi, { userName, password, confirmPassword, email }); // Use the new API endpoint for creating staff
+      await axios.post(addStaffApi, {
+        userName,
+        password,
+        confirmPassword,
+        email,
+      }); // Use the new API endpoint for creating staff
       message.success("Staff created successfully");
     }
   } catch (error) {
