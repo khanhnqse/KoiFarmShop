@@ -349,3 +349,69 @@ export const updateOrderStatus = async (orderId, newStatus, token) => {
 //     console.error("Error deleting order:", error);
 //   }
 // };
+const consignmentApi = "https://localhost:7285/api/Consignment";
+
+// Consignment management service
+export const fetchConsignmentData = async (token) => {
+  try {
+    const response = await axios.get(`${consignmentApi}/get-consignments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch consignment data");
+    console.error("Error fetching consignment data:", error);
+    return [];
+  }
+};
+
+export const saveConsignment = async (consignment, isUpdateMode, token) => {
+  const payload = {
+    consignmentId: consignment.consignmentId,
+    koiId: consignment.koiId,
+    consignmentType: consignment.consignmentType,
+    consignmentPrice: consignment.consignmentPrice,
+    consignmentDateTo: consignment.consignmentDateTo,
+    consignmentTitle: consignment.consignmentTitle,
+    consignmentDetail: consignment.consignmentDetail,
+    status: consignment.status,
+  };
+
+  try {
+    if (isUpdateMode) {
+      const url = `${consignmentApi}/update-consignmentByAdmin_Staff/${consignment.consignmentId}?koiID=${payload.koiId}&consignmentType=${payload.consignmentType}&consignmentPrice=${payload.consignmentPrice}&consignmentDateTo=${payload.consignmentDateTo}&consignmentTitle=${payload.consignmentTitle}&consignmentDetail=${payload.consignmentDetail}&status=${payload.status}`;
+      await axios.put(url, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Consignment updated successfully");
+    } else {
+      await axios.post(consignmentApi, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Consignment created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save consignment data");
+    console.error("Error saving consignment data:", error);
+  }
+};
+
+export const deleteConsignment = async (consignmentId, token) => {
+  try {
+    await axios.delete(`${consignmentApi}/delete-consignment/${consignmentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Consignment deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete consignment");
+    console.error("Error deleting consignment:", error);
+  }
+};
