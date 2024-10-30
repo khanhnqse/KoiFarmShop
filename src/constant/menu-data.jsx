@@ -192,7 +192,95 @@ export const detailColumns = [
         : "No details available",
   },
 ];
+// Koi management Table columns
+const handleMenuKoiClick = (e, record, handleOpenModal, handleDeleteKoi) => {
+  if (e.key === "edit") {
+    handleOpenModal(record);
+  } else if (e.key === "delete") {
+    handleDeleteKoi(record.fishesId);
+  }
+};
 
+const koiMenu = (record, handleOpenModal, handleDeleteKoi) => (
+  <Menu
+    onClick={(e) =>
+      handleMenuKoiClick(e, record, handleOpenModal, handleDeleteKoi)
+    }
+  >
+    <Menu.Item key="edit" icon={<EditOutlined />}>
+      Edit
+    </Menu.Item>
+    <Menu.Item key="delete" icon={<DeleteOutlined />}>
+      Delete
+    </Menu.Item>
+  </Menu>
+);
+
+export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
+  {
+    title: "Fishes ID",
+    dataIndex: "fishesId",
+    key: "fishesId",
+  },
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "Koi Type ID",
+    dataIndex: "koiTypeId",
+    key: "koiTypeId",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+  },
+  {
+    title: "Price",
+    dataIndex: "price",
+    key: "price",
+  },
+  {
+    title: "Quantity",
+    dataIndex: "quantity",
+    key: "quantity",
+  },
+  {
+    title: "Quantity In Stock",
+    dataIndex: "quantityInStock",
+    key: "quantityInStock",
+  },
+  {
+    title: "Image",
+    dataIndex: "imageFishes",
+    key: "imageFishes",
+    render: (text) => <Image width={100} src={text} />,
+  },
+  {
+    title: "Description",
+    dataIndex: "description",
+    key: "description",
+  },
+  {
+    title: "Detail Description",
+    dataIndex: "detailDescription",
+    key: "detailDescription",
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (text, record) => (
+      <Dropdown
+        overlay={koiMenu(record, handleOpenModal, handleDeleteKoi)}
+        trigger={["click"]}
+      >
+        <Button icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
+  },
+];
 // Customer management Table columns
 
 const handleCustomerMenuClick = (

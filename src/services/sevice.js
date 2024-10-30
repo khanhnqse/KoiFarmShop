@@ -47,6 +47,61 @@ export const deleteFish = async (koiId) => {
   }
 };
 
+const koiApi = "https://localhost:7285/api/Fish";
+
+// Koi management service
+export const fetchKoiData = async (token) => {
+  try {
+    const response = await axios.get(koiApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch Koi data");
+    console.error("Error fetching Koi data:", error);
+    return [];
+  }
+};
+
+export const saveKoi = async (koi, isUpdateMode, token) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${koiApi}/${koi.fishesId}`, koi, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Koi updated successfully");
+    } else {
+      await axios.post(koiApi, koi, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Koi created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save Koi data");
+    console.error("Error saving Koi data:", error);
+  }
+};
+
+export const deleteKoi = async (fishesId, token) => {
+  try {
+    await axios.delete(`${koiApi}/${fishesId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Koi deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete Koi");
+    console.error("Error deleting Koi:", error);
+  }
+};
+
 
 // Customer management service
 export const fetchCustomerData = async () => {
