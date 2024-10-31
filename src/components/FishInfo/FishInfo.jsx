@@ -20,7 +20,9 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
 
-    const existingFishIndex = cart.findIndex((item) => item.id === fish.id);
+    const existingFishIndex = cart.findIndex(
+      (item) => item.id === fish.fishesId
+    );
 
     if (existingFishIndex !== -1) {
       // Update the quantity of the existing product in the cart
@@ -31,7 +33,7 @@ const FishInfo = ({ fish, averageRating }) => {
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: fish.fishesId,
+        fishesId: fish.fishesId,
         name: fish.name,
         price: fish.price,
         quantity: quantity,
@@ -63,7 +65,9 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
     // Check if the product is already in the cart
-    const existingProductIndex = cart.findIndex((item) => item.id === fish.id);
+    const existingProductIndex = cart.findIndex(
+      (item) => item.id === fish.fishesId
+    );
 
     if (existingProductIndex !== -1) {
       // Update the quantity of the existing product in the cart
@@ -74,7 +78,7 @@ const FishInfo = ({ fish, averageRating }) => {
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: fish.fishesId,
+        fishesId: fish.fishesId,
         name: fish.name,
         price: fish.price,
         quantity: quantity,

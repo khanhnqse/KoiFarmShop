@@ -3,7 +3,11 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PATHS } from "../../constant/path";
 
-const PrivateRoute = ({ children, requiredRole, restrictedToAdmin }) => {
+const PrivateRoute = ({
+  children,
+  requiredRole,
+  restrictedToManagerOrStaff,
+}) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
@@ -13,9 +17,15 @@ const PrivateRoute = ({ children, requiredRole, restrictedToAdmin }) => {
   if (requiredRole && user.role !== requiredRole) {
     return <Navigate to={PATHS.HOME} />;
   }
-  if (restrictedToAdmin && user.role === "admin") {
-    return <Navigate to={PATHS.DASHBOARD.INDEX} />;
+
+  if (
+    restrictedToManagerOrStaff &&
+    user.role !== "manager" &&
+    user.role !== "staff"
+  ) {
+    return <Navigate to={PATHS.HOME} />;
   }
+
   return children;
 };
 

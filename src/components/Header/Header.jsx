@@ -44,8 +44,11 @@ function Header() {
       <Menu.Item key="profile" onClick={() => navigate("/profile")}>
         Profile
       </Menu.Item>
-      <Menu.Item key="order-history" onClick={() => navigate("/history")}>
-        Order History
+      <Menu.Item key="purchase-history" onClick={() => navigate("/history")}>
+        Purchase History
+      </Menu.Item>
+      <Menu.Item key="my-order" onClick={() => navigate("/orders")}>
+        My Orders
       </Menu.Item>
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
@@ -53,7 +56,7 @@ function Header() {
     </Menu>
   );
 
-  // Conditionally create menu items for admin
+  // Conditionally create menu items for manager or staff
   const adminMenuItems = [
     {
       key: "/dashboard",
@@ -79,12 +82,18 @@ function Header() {
           width: "100%",
           paddingLeft: "120px",
         }}
-        items={user?.role === "admin" ? adminMenuItems : MenuItems} // Conditionally render menu items
+        items={
+          user?.role === "manager" || user?.role === "staff"
+            ? adminMenuItems
+            : MenuItems
+        } // Conditionally render menu items
       />
 
       <div className="cart pt-3">
-        {user?.role === "admin" ? (
-          <Typography>Welcome Admin</Typography>
+        {user?.role === "manager" || user?.role === "staff" ? (
+          <Typography>
+            Welcome {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+          </Typography>
         ) : (
           <Link to="/cart">
             <Badge count={cart.length} showZero className="pb-1">

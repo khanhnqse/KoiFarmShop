@@ -58,7 +58,7 @@ const AboutUs = () => {
         <Col xs={24} md={12}>
           <img
             src={
-              "https://exclusivelykoi.co.uk/themes/exclusively-koi/assets/img/about/fish.jpg"
+              "https://images.unsplash.com/photo-1727696726111-b20cfcb027bb?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             }
             alt="Our Story"
             style={{ width: "100%" }}

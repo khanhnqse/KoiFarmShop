@@ -23,6 +23,8 @@ import StaffManagement from "./pages/Admin/Staff/StaffManagement";
 import CustomerManagement from "./pages/Admin/Customer/CustomerManagement";
 import OrderKoiManagement from "./pages/Admin/Order/OrderKoiManagement";
 import FishManagement from "./pages/Admin/KoiManagement/FishManagement";
+import KoiManagement from "./pages/Admin/KoiManagement/KoiManagement";
+import KoiTypeMangement from "./pages/Admin/Koi Type Mangement/KoiTypeManagement";
 import PromotionManagement from "./pages/Admin/Promotion Management/PromotionManagement";
 import FeedbackManagement from "./pages/Admin/FeedbackManagement/FeedbackManagement";
 import PurchaseHistoryManagement from "./pages/Admin/Purchase History Management/purchaseHistoryManagement";
@@ -30,6 +32,9 @@ import Overview from "./pages/Admin/Overview/Overview";
 import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import FishProductPage from "./pages/FishPage/FishPage";
 import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
+import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import OrdersPage from "./pages/OrderPage/OrderPage";
+
 function App() {
   return (
     <AuthProvider>
@@ -54,7 +59,7 @@ function App() {
           <Route
             path={PATHS.CART.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <CartPage />
               </PrivateRoute>
             }
@@ -63,7 +68,7 @@ function App() {
           <Route
             path={PATHS.PROFILE.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <UserProfile />
               </PrivateRoute>
             }
@@ -71,7 +76,7 @@ function App() {
           <Route
             path={PATHS.CHECKOUT.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <CheckoutPage />
               </PrivateRoute>
             }
@@ -79,10 +84,11 @@ function App() {
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
           <Route path={PATHS.HISTORY} element={<OrderHistoryPage />} />
+          <Route path={PATHS.ORDER} element={<OrdersPage />} />
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
-              <PrivateRoute requiredRole="admin">
+              <PrivateRoute restrictedToManagerOrStaff>
                 <Dashboard />
               </PrivateRoute>
             }
@@ -95,7 +101,15 @@ function App() {
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
+              element={<KoiManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.FISH}
               element={<FishManagement />}
+            />
+            <Route
+              path={PATHS.DASHBOARD.CHILDREN.KOITYPE}
+              element={<KoiTypeMangement />}
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}
@@ -131,7 +145,7 @@ function App() {
             />
           </Route>
         </Route>
-
+        <Route path={PATHS.SUCCESS} element={<PaymentSuccess />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>

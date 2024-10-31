@@ -1,65 +1,113 @@
+import { useState, useEffect } from "react";
 import {
-  Button,
+  Table,
+  Modal,
   Form,
   Input,
-  InputNumber,
-  message,
-  Modal,
-  Row,
-  Col,
-  Table,
-  Typography,
-  Upload,
   Select,
+  Button,
+  Dropdown,
+  Menu,
 } from "antd";
-import { useForm } from "antd/es/form/Form";
-import FormItem from "antd/es/form/FormItem";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
-import uploadFile from "../../../utils/file";
+import { MoreOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-function Consignment() {
+import { useAuth } from "../../../context/AuthContext";
+import {
+  deleteConsignment,
+  fetchConsignmentData,
+  saveConsignment,
+} from "../../../services/sevice";
+
+const { Option } = Select;
+
+const ConsignmentManagement = () => {
+  const { token } = useAuth();
   const [consignments, setConsignments] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [form] = useForm();
-  const [fileListConsignment, setFileListConsignment] = useState([]);
-  const api = "https://localhost:7285/api/Consignment";
-
-  const fetchConsignment = async () => {
-    const response = await axios.get(api);
-    console.log(response.data);
-    setConsignments(response.data);
-  };
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentConsignment, setCurrentConsignment] = useState(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchConsignment();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await fetchConsignmentData(token);
+      setConsignments(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [token]);
+
+  const handleOpenModal = (consignment) => {
+    setCurrentConsignment(consignment);
+    form.setFieldsValue(consignment || {});
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setCurrentConsignment(null);
+    form.resetFields();
+  };
+
+  const handleSaveConsignment = async (values) => {
+    setLoading(true);
+    const consignmentData = {
+      ...values,
+      consignmentId: currentConsignment
+        ? currentConsignment.consignmentId
+        : undefined,
+    };
+    await saveConsignment(consignmentData, !!currentConsignment, token);
+    const data = await fetchConsignmentData(token);
+    setConsignments(data);
+    setLoading(false);
+    handleCloseModal();
+  };
+
+  const handleDeleteConsignment = async (consignmentId) => {
+    setLoading(true);
+    await deleteConsignment(consignmentId, token);
+    const data = await fetchConsignmentData(token);
+    setConsignments(data);
+    setLoading(false);
+  };
+
+  const consignmentMenu = (record) => (
+    <Menu>
+      <Menu.Item
+        key="edit"
+        icon={<EditOutlined />}
+        onClick={() => handleOpenModal(record)}
+      >
+        Edit
+      </Menu.Item>
+      <Menu.Item
+        key="delete"
+        icon={<DeleteOutlined />}
+        onClick={() => handleDeleteConsignment(record.consignmentId)}
+      >
+        Delete
+      </Menu.Item>
+    </Menu>
+  );
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "consignmentID",
-      key: "consignmentID",
-      sorter: {
-        compare: (a, b) => a.consignmentID - b.consignmentID,
-      },
-      defaultSortOrder: "ascend",
-      fixed: "left",
-    },
-    {
-      title: "User Image",
-      dataIndex: "userImage",
-      key: "userImage",
-      render: (userImage) => {
-        return <img src={userImage} width={50} height={50} alt="user" />;
-      },
+      title: "Consignment ID",
+      dataIndex: "consignmentId",
+      key: "consignmentId",
     },
     {
       title: "User ID",
-      dataIndex: "userID",
-      key: "userID",
+      dataIndex: "userId",
+      key: "userId",
+    },
+    {
+      title: "Koi ID",
+      dataIndex: "koiId",
+      key: "koiId",
     },
     {
       title: "Consignment Type",
@@ -77,142 +125,166 @@ function Consignment() {
       key: "consignmentPrice",
     },
     {
-      title: "Consignment Date",
-      dataIndex: "consignmentDate",
-      key: "consignmentDate",
+      title: "Consignment Date From",
+      dataIndex: "consignmentDateFrom",
+      key: "consignmentDateFrom",
+    },
+    {
+      title: "Consignment Date To",
+      dataIndex: "consignmentDateTo",
+      key: "consignmentDateTo",
+    },
+    {
+      title: "Consignment Title",
+      dataIndex: "consignmentTitle",
+      key: "consignmentTitle",
+    },
+    {
+      title: "Consignment Detail",
+      dataIndex: "consignmentDetail",
+      key: "consignmentDetail",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Dropdown overlay={consignmentMenu(record)} trigger={["click"]}>
+          <Button icon={<MoreOutlined />} />
+        </Dropdown>
+      ),
     },
   ];
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const handleSubmitConsignment = async (consignment) => {
-    consignment.consignmentDate = new Date().toISOString();
-    if (fileListConsignment.length > 0) {
-      const file = fileListConsignment[0];
-      const url = await uploadFile(file.originFileObj);
-      consignment.imageConsignment = url;
-    }
-
-    try {
-      setSubmitting(true);
-      const response = await axios.post(api, consignment);
-      message.success("Created consignment successfully");
-      setOpenModal(false);
-      fetchConsignment();
-      form.resetFields();
-      console.log("data", response.data);
-    } catch (error) {
-      console.log("error", error);
-      message.error("Failed to create consignment");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleChangeConsignmentImage = ({ fileList: newFileList }) =>
-    setFileListConsignment(newFileList);
-
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
-
   return (
     <div>
-      <Typography.Title level={2}>Consignment Management</Typography.Title>
-      <Button onClick={handleOpenModal}>
-        <PlusOutlined /> Create new Consignment
+      <Button
+        type="primary"
+        onClick={() => handleOpenModal(null)}
+        style={{ marginBottom: 16 }}
+      >
+        Add Consignment
       </Button>
       <Table
         columns={columns}
         dataSource={consignments}
-        scroll={{ x: 1500, y: 450 }}
+        loading={loading}
+        rowKey="consignmentId"
       />
       <Modal
-        confirmLoading={submitting}
-        title="Create new Consignment"
-        open={openModal}
+        title={currentConsignment ? "Edit Consignment" : "Add Consignment"}
+        visible={isModalVisible}
         onCancel={handleCloseModal}
-        onOk={() => form.submit()}
+        footer={null}
       >
-        <Form onFinish={handleSubmitConsignment} form={form} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="Type of Consignment"
-                name="consignmentType"
-                rules={[
-                  { required: true, message: "Please input consignment type" },
-                ]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                label="Price"
-                name="consignmentPrice"
-                rules={[
-                  { required: true, message: "Please input consignment price" },
-                ]}
-              >
-                <InputNumber min={0} />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormItem
-                label="User ID"
-                name="userID"
-                rules={[{ required: true, message: "Please input User ID" }]}
-              >
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem
-                label="Status"
-                name="status"
-                rules={[{ required: true, message: "Please select status" }]}
-              >
-                <Select>
-                  <Select.Option value="available">Available</Select.Option>
-                  <Select.Option value="unavailable">Unavailable</Select.Option>
-                </Select>
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label="User Image" name="userImage">
-                <Upload
-                  action="https://localhost:7285/api/upload"
-                  listType="picture-card"
-                  fileList={fileListConsignment}
-                  onChange={handleChangeConsignmentImage}
-                >
-                  {fileListConsignment.length >= 8 ? null : uploadButton}
-                </Upload>
-              </FormItem>
-            </Col>
-          </Row>
+        <Form form={form} layout="vertical" onFinish={handleSaveConsignment}>
+          <Form.Item
+            label="User ID"
+            name="userId"
+            rules={[{ required: true, message: "Please input the user ID!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Koi ID"
+            name="koiId"
+            rules={[{ required: true, message: "Please input the koi ID!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Consignment Type"
+            name="consignmentType"
+            rules={[
+              {
+                required: true,
+                message: "Please select the consignment type!",
+              },
+            ]}
+          >
+            <Select>
+              <Option value="online">Online</Option>
+              <Option value="offline">Offline</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[{ required: true, message: "Please select the status!" }]}
+          >
+            <Select>
+              <Option value="awaiting inspection">Awaiting Inspection</Option>
+              <Option value="consigned">Consigned</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Consignment Price"
+            name="consignmentPrice"
+            rules={[
+              {
+                required: true,
+                message: "Please input the consignment price!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Consignment Date From"
+            name="consignmentDateFrom"
+            rules={[
+              {
+                required: true,
+                message: "Please input the consignment date from!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Consignment Date To"
+            name="consignmentDateTo"
+            rules={[
+              {
+                required: true,
+                message: "Please input the consignment date to!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Consignment Title"
+            name="consignmentTitle"
+            rules={[
+              {
+                required: true,
+                message: "Please input the consignment title!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Consignment Detail"
+            name="consignmentDetail"
+            rules={[
+              {
+                required: true,
+                message: "Please input the consignment detail!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              {currentConsignment ? "Update" : "Add"}
+            </Button>
+          </Form.Item>
         </Form>
       </Modal>
     </div>
   );
-}
+};
 
-export default Consignment;
+export default ConsignmentManagement;

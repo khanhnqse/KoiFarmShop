@@ -8,7 +8,7 @@ const AboutUsSection = () => {
     <div
       style={{
         height: "60vh",
-        backgroundImage: `url("https://exclusivelykoi.co.uk/themes/exclusively-koi/assets/img/landing-page-intro.jpg")`,
+        backgroundImage: `url("https://images.unsplash.com/photo-1532563026501-f00b6f187c42?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { message } from "antd";
 
-const fishApi = "https://localhost:7285/api/Koi";
+const fishApi = "https://localhost:7285/api/koi";
+
 const userApi = "https://localhost:7285/api/User";
 const addUserApi = "https://localhost:7285/api/User/register";
 const addStaffApi = "https://localhost:7285/api/User/registerForStaff"; // New API endpoint for creating staff
@@ -46,11 +47,69 @@ export const deleteFish = async (koiId) => {
   }
 };
 
+const koiApi = "https://localhost:7285/api/Fish";
+
+// Koi management service
+export const fetchKoiData = async (token) => {
+  try {
+    const response = await axios.get(koiApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch Koi data");
+    console.error("Error fetching Koi data:", error);
+    return [];
+  }
+};
+
+export const saveKoi = async (koi, isUpdateMode, token) => {
+  try {
+    if (isUpdateMode) {
+      await axios.put(`${koiApi}/${koi.fishesId}`, koi, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Koi updated successfully");
+    } else {
+      await axios.post(koiApi, koi, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Koi created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save Koi data");
+    console.error("Error saving Koi data:", error);
+  }
+};
+
+export const deleteKoi = async (fishesId, token) => {
+  try {
+    await axios.delete(`${koiApi}/${fishesId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Koi deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete Koi");
+    console.error("Error deleting Koi:", error);
+  }
+};
+
+
 // Customer management service
 export const fetchCustomerData = async () => {
   try {
     const response = await axios.get(userApi);
-    const customerData = response.data.filter((user) => user.role === "customer");
+    const customerData = response.data.filter(
+      (user) => user.role === "customer"
+    );
     return customerData;
   } catch (error) {
     message.error("Failed to fetch customer data");
@@ -100,7 +159,7 @@ export const deleteCustomer = async (userId) => {
 export const fetchStaffData = async () => {
   try {
     const response = await axios.get(userApi);
-    const staffData = response.data.filter((user) => user.role === "admin" || user.role === "staff");
+    const staffData = response.data.filter((user) => user.role === "manager" || user.role === "staff");
     return staffData;
   } catch (error) {
     message.error("Failed to fetch staff data");
@@ -122,7 +181,12 @@ export const saveStaff = async (staff, isUpdateMode) => {
       message.success("Staff updated successfully");
     } else {
       const { userName, password, confirmPassword, email } = staff;
-      await axios.post(addStaffApi, { userName, password, confirmPassword, email }); // Use the new API endpoint for creating staff
+      await axios.post(addStaffApi, {
+        userName,
+        password,
+        confirmPassword,
+        email,
+      }); // Use the new API endpoint for creating staff
       message.success("Staff created successfully");
     }
   } catch (error) {
@@ -209,7 +273,7 @@ export const saveFeedback = async (feedback, isUpdateMode) => {
 // Delete Feedback
 export const deleteFeedback = async (feedbackId) => {
   try {
-    await axios.delete(`${feedbackApi}/${feedbackId}`);
+    await axios.delete(`${feedbackApi}/delete/${feedbackId}`);
     message.success("Feedback deleted successfully");
   } catch (error) {
     message.error("Failed to delete feedback");
@@ -257,5 +321,193 @@ export const deletePurchaseHistory = async (orderId) => {
   } catch (error) {
     message.error("Failed to delete purchase history");
     console.error("Error deleting purchase history:", error);
+  }
+};
+
+
+const orderApi = "https://localhost:7285/api/Order";
+
+// Order management service
+// Order management service
+export const fetchOrderData = async (token) => {
+  try {
+    const response = await axios.get(orderApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch order data");
+    console.error("Error fetching order data:", error);
+    return [];
+  }
+};
+
+export const updateOrderStatus = async (orderId, newStatus, token) => {
+  try {
+    await axios.put(
+      `${orderApi}/${orderId}/update-status-staff&manager?newStatus=${newStatus}`,
+      
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    message.success("Order status updated successfully");
+  } catch (error) {
+    message.error("Failed to update order status");
+    console.error("Error updating order status:", error);
+  }
+};
+// export const fetchOrderData = async (token) => {
+//   try {
+//     const response = await axios.get(orderApi, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     message.error("Failed to fetch order data");
+//     console.error("Error fetching order data:", error);
+//     return [];
+//   }
+// };
+
+// export const saveOrder = async (order, isUpdateMode, token) => {
+//   try {
+//     if (isUpdateMode) {
+//       await axios.put(`${orderApi}/${order.orderId}`, order, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       message.success("Order updated successfully");
+//     } else {
+//       await axios.post(orderApi, order, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       message.success("Order created successfully");
+//     }
+//   } catch (error) {
+//     message.error("Failed to save order data");
+//     console.error("Error saving order data:", error);
+//   }
+// };
+
+// export const deleteOrder = async (orderId, token) => {
+//   try {
+//     await axios.delete(`${orderApi}/${orderId}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     message.success("Order deleted successfully");
+//   } catch (error) {
+//     message.error("Failed to delete order");
+//     console.error("Error deleting order:", error);
+//   }
+// };
+const consignmentApi = "https://localhost:7285/api/Consignment";
+
+// Consignment management service
+export const fetchConsignmentData = async (token) => {
+  try {
+    const response = await axios.get(`${consignmentApi}/get-consignments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch consignment data");
+    console.error("Error fetching consignment data:", error);
+    return [];
+  }
+};
+
+export const saveConsignment = async (consignment, isUpdateMode, token) => {
+  const payload = {
+    consignmentId: consignment.consignmentId,
+    koiId: consignment.koiId,
+    consignmentType: consignment.consignmentType,
+    consignmentPrice: consignment.consignmentPrice,
+    consignmentDateTo: consignment.consignmentDateTo,
+    consignmentTitle: consignment.consignmentTitle,
+    consignmentDetail: consignment.consignmentDetail,
+    status: consignment.status,
+  };
+
+  try {
+    if (isUpdateMode) {
+      const url = `${consignmentApi}/update-consignmentByAdmin_Staff/${consignment.consignmentId}?koiID=${payload.koiId}&consignmentType=${payload.consignmentType}&consignmentPrice=${payload.consignmentPrice}&consignmentDateTo=${payload.consignmentDateTo}&consignmentTitle=${payload.consignmentTitle}&consignmentDetail=${payload.consignmentDetail}&status=${payload.status}`;
+      await axios.put(url, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Consignment updated successfully");
+    } else {
+      await axios.post(consignmentApi, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Consignment created successfully");
+    }
+  } catch (error) {
+    message.error("Failed to save consignment data");
+    console.error("Error saving consignment data:", error);
+  }
+};
+
+export const deleteConsignment = async (consignmentId, token) => {
+  try {
+    await axios.delete(`${consignmentApi}/delete-consignment/${consignmentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Consignment deleted successfully");
+  } catch (error) {
+    message.error("Failed to delete consignment");
+    console.error("Error deleting consignment:", error);
+  }
+};
+
+const koiTypeApi = "https://localhost:7285/api/Koi/koitypes";
+
+// KoiType management service
+export const fetchKoiTypeData = async (token) => {
+  try {
+    const response = await axios.get(koiTypeApi, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    message.error("Failed to fetch KoiType data");
+    console.error("Error fetching KoiType data:", error);
+    return [];
+  }
+};
+
+export const saveKoiType = async (koiType, token) => {
+  try {
+    await axios.post(`https://localhost:7285/api/Koi/createKoiType`, koiType, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("KoiType created successfully");
+  } catch (error) {
+    message.error("Failed to save KoiType data");
+    console.error("Error saving KoiType data:", error);
   }
 };

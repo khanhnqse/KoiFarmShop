@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Button, InputNumber, Divider, Image } from "antd";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const CartPage = () => {
   const { cart, setCart } = useAuth();
+  const navigate = useNavigate();
 
   const handleQuantityChange = (index, value) => {
     // Update the quantity of the cart item
@@ -23,6 +24,10 @@ const CartPage = () => {
 
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  const handleCheckout = () => {
+    navigate("/checkout", { state: { cart } });
   };
 
   return (
@@ -90,15 +95,14 @@ const CartPage = () => {
 
       {/* Checkout Button */}
       <div className="text-right">
-        <Link to="/checkout">
-          <Button
-            type="primary"
-            size="large"
-            className="bg-red-600 hover:bg-red-500"
-          >
-            Proceed to checkout
-          </Button>
-        </Link>
+        <Button
+          type="primary"
+          size="large"
+          className="bg-red-600 hover:bg-red-500"
+          onClick={handleCheckout}
+        >
+          Proceed to checkout
+        </Button>
       </div>
     </div>
   );
