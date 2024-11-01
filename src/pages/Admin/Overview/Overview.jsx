@@ -23,8 +23,8 @@ const Overview = () => {
   const [totalProducts, setTotalProduct] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [analysis, setAnalysis] = useState();
-  const [topSellingKoi, setTopSellingKoi] = useState(); 
-const [topSellingFish, setTopSellingFish] = useState();
+  const [topSellingKoi, setTopSellingKoi] = useState();
+  const [topSellingFish, setTopSellingFish] = useState();
   useEffect(() => {
     const fetchTotalUsers = async () => {
       try {
@@ -44,8 +44,8 @@ const [topSellingFish, setTopSellingFish] = useState();
         setAnalysis(analysisResponse.data);
         console.log(analysisResponse.data);
         setAnalysis(analysisResponse.data.analysis);
-       setTopSellingKoi(analysisResponse.data.topSellingKoi.totalSold);
-       setTopSellingFish(analysisResponse.data.topSellingFish.totalSold);
+        setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
+        setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
         const revenuePerMonth = analysisResponse.data.revenuePerMonth;
         const chartData = revenuePerMonth.map((item) => ({
           name: `Month ${item.month}`, // Hoặc có thể sử dụng tên tháng
@@ -95,42 +95,35 @@ const [topSellingFish, setTopSellingFish] = useState();
         </Col>
       </Row>
 
-     {/* Row for Top Selling Koi and Fish */}
-     <Row gutter={16} justify="center">
-        <Col span={12}>
-          <Card bordered={true}>
-            <Statistic
-              title="Top Selling Koi"
-              value={topSellingKoi}
-              formatter={formatter}
-            />
+      {/* Row for Top Selling Koi and Fish and Analysis */}
+      <Row gutter={16} >
+        <Col span={8}>
+          <h3>Total Revenue</h3>
+          <LineChart
+            width={600}
+            height={300}
+            data={analysis}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            style={{ width: '100%' }}
+          >
+            <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+          </LineChart>
+        </Col>
+        <Col span={8}>
+          <Card title="Top Selling Koi" bordered={true} style={{ width: '100%' }}>
+            <p>{topSellingKoi}</p>
           </Card>
         </Col>
-        <Col span={12}>
-          <Card bordered={true}>
-            <Statistic
-              title="Top Selling Fish"
-              value={topSellingFish}
-              formatter={formatter}
-            />
+        <Col span={8}>
+          <Card title="Top Selling Fish" bordered={true} style={{ width: '100%' }}>
+            <p>{topSellingFish}</p>
           </Card>
         </Col>
       </Row>
-
-      {/* Analysis Chart */}
-      <h3>Total Revenue</h3>
-      <LineChart
-        width={600}
-        height={300}
-        data={analysis}
-        margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-      >
-        <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-      </LineChart>
     </div>
   );
 };
