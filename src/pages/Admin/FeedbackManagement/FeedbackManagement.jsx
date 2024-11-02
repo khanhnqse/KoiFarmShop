@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+// eslint-disable-next-line no-unused-vars
 import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
+// eslint-disable-next-line no-unused-vars
 import { PlusOutlined } from "@ant-design/icons";
 import {
   fetchFeedbackData,
@@ -78,13 +80,13 @@ const FeedbackManagement = () => {
   return (
     <div>
       <Typography.Title level={2}>Feedback Management</Typography.Title>
-      <Button
+      {/* <Button
         type="primary"
         onClick={() => handleOpenModal()}
         style={{ marginBottom: 16 }}
       >
         <PlusOutlined /> Add Feedback
-      </Button>
+      </Button> */}
       <Table
         columns={feedbackColumns(handleOpenModal, handleDeleteFeedback)}
         dataSource={feedbacks}

@@ -37,6 +37,7 @@ const UserProfile = () => {
         email: userData.email,
         phoneNumber: userData.phoneNumber || "",
         address: userData.address || "",
+        point: userData.totalPoints,
       });
     } catch (error) {
       message.error("Failed to fetch user data");

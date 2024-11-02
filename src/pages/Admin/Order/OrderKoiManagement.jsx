@@ -1,175 +1,202 @@
+import { useState, useEffect } from "react";
 import {
-  Button,
-  Form,
-  InputNumber,
-  message,
+  Table,
   Modal,
+  Form,
+  Input,
+  Select,
+  Button,
+  Dropdown,
+  Menu,
+  Image,
+  Card,
   Row,
   Col,
-  Table,
-  Typography,
-  Select,
 } from "antd";
-import { useForm } from "antd/es/form/Form";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { orderColumns } from "../../../constant/menu-data";
+import { useAuth } from "../../../context/AuthContext";
+import { fetchOrderData, updateOrderStatus } from "../../../services/sevice";
 
-function OrderKoiManagement() {
+const { Option } = Select;
+
+const OrderKoiManagement = () => {
+  const { token } = useAuth();
   const [orders, setOrders] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [form] = useForm();
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const api = "https://localhost:5090/api/Order";
-
-  const fetchOrders = async () => {
-    const response = await axios.get(api);
-    setOrders(response.data);
-  };
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await fetchOrderData(token);
+      setOrders(data);
+      setLoading(false);
+    };
 
-  const columns = [
-    {
-      title: "Order ID",
-      dataIndex: "orderId",
-      key: "orderId",
-    },
-    {
-      title: "Koi ID",
-      dataIndex: "koiId",
-      key: "koiId",
-    },
-    {
-      title: "Quantity",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Action",
-      dataIndex: "orderId",
-      key: "orderId",
-      render: (orderId, record) => (
-        <>
-          <Button type="primary" onClick={() => handleOpenUpdateModal(record)}>
-            Update
-          </Button>
-        </>
-      ),
-    },
-  ];
+    fetchData();
+  }, [token]);
 
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const handleSubmitOrder = async (order) => {
-    try {
-      setSubmitting(true);
-      await axios.post(api, order);
-      message.success("Order created successfully");
-      setOpenModal(false);
-      fetchOrders();
-      form.resetFields();
-    } catch (error) {
-      message.error("Failed to create order");
-      console.error("Create order error:", error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleUpdateOrder = async (order) => {
-    try {
-      setSubmitting(true);
-      await axios.put(`${api}/${selectedOrder.orderId}`, order);
-      message.success("Order updated successfully");
-      setUpdateModalOpen(false);
-      fetchOrders();
-      form.resetFields();
-    } catch (error) {
-      message.error("Failed to update order");
-      console.error("Delete order error:", error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleOpenUpdateModal = (order) => {
-    setSelectedOrder(order);
-    setUpdateModalOpen(true);
+  const handleOpenModal = (order) => {
+    setCurrentOrder(order);
     form.setFieldsValue(order);
+    setIsModalVisible(true);
   };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setCurrentOrder(null);
+    form.resetFields();
+  };
+
+  const handleShowDetails = (order) => {
+    setCurrentOrder(order);
+    setIsDetailModalVisible(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalVisible(false);
+    setCurrentOrder(null);
+  };
+
+  const handleUpdateStatus = async (newStatus) => {
+    if (!currentOrder) return;
+    setLoading(true);
+    await updateOrderStatus(currentOrder.orderId, newStatus, token);
+    const data = await fetchOrderData(token);
+    setOrders(data);
+    setLoading(false);
+    handleCloseModal();
+  };
+
+  const statusMenu = (
+    <Menu onClick={({ key }) => handleUpdateStatus(key)}>
+      <Menu.Item key="completed">Completed</Menu.Item>
+      <Menu.Item key="processing">Processing</Menu.Item>
+      <Menu.Item key="canceled">Canceled</Menu.Item>
+      <Menu.Item key="remittance">Remittance</Menu.Item>
+    </Menu>
+  );
 
   return (
     <div>
-      <Typography.Title level={2}>Order Management</Typography.Title>
-      <Button onClick={handleOpenModal}>Create New Order</Button>
-      <Table columns={columns} dataSource={orders} />
-
-      {/* Create Order Modal */}
+      <Table
+        columns={orderColumns(handleOpenModal, null, handleShowDetails)}
+        dataSource={orders}
+        loading={loading}
+        rowKey="orderId"
+      />
       <Modal
-        confirmLoading={submitting}
-        title="Create Order"
-        open={openModal}
+        title="Order Details"
+        visible={isModalVisible}
         onCancel={handleCloseModal}
-        onOk={() => form.submit()}
+        footer={[
+          <Dropdown overlay={statusMenu} key="statusDropdown">
+            <Button>Update Status</Button>
+          </Dropdown>,
+        ]}
       >
-        <Form onFinish={handleSubmitOrder} form={form} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Order ID"
-                name="orderId"
-                rules={[{ required: true }]}
-              >
-                <InputNumber />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Koi ID"
-                name="koiId"
-                rules={[{ required: true }]}
-              >
-                <Select>
-                  {/* Populate options with available Koi */}
-                  <Select.Option value={1}>Koi 1</Select.Option>
-                  <Select.Option value={2}>Koi 2</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Quantity"
-                name="quantity"
-                rules={[{ required: true }]}
-              >
-                <InputNumber />
-              </Form.Item>
-            </Col>
-          </Row>
+        <Form form={form} layout="vertical">
+          <Form.Item label="User ID" name="userId">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Order Date" name="orderDate">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Total Money" name="totalMoney">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Final Money" name="finalMoney">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Discount Money" name="discountMoney">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Earned Points" name="earnedPoints">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Order Status" name="orderStatus">
+            <Select disabled>
+              <Option value="completed">Completed</Option>
+              <Option value="processing">Processing</Option>
+              <Option value="canceled">Canceled</Option>
+              <Option value="remittance">Remittance</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Payment Method" name="paymentMethod">
+            <Select disabled>
+              <Option value="Credit Card">Credit Card</Option>
+              <Option value="VN Pay">VN Pay</Option>
+              <Option value="Bank Transfer">Bank Transfer</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Delivery Status" name="deliveryStatus">
+            <Select disabled>
+              <Option value="delivered">Delivered</Option>
+              <Option value="pending">Pending</Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
-
-      {/* Update Order Modal */}
       <Modal
-        confirmLoading={submitting}
-        title="Update Order"
-        open={updateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        onOk={() => form.submit()}
+        title="Order Item Details"
+        visible={isDetailModalVisible}
+        onCancel={handleCloseDetailModal}
+        footer={null}
       >
-        <Form onFinish={handleUpdateOrder} form={form} layout="vertical">
-          {/* Similar to Create Form */}
-        </Form>
+        {currentOrder && (
+          <>
+            <h3>Order Kois</h3>
+            <Row gutter={[16, 16]}>
+              {currentOrder.orderKois.map((koi) => (
+                <Col span={12} key={koi.koiId}>
+                  <Card hoverable>
+                    <Image src={koi.koiDetails.imageKoi} width={100} />
+                    <p>
+                      <strong>Name:</strong> {koi.koiDetails.name}
+                    </p>
+                    <p>
+                      <strong>Gender:</strong> {koi.koiDetails.gender}
+                    </p>
+                    <p>
+                      <strong>Price:</strong> ${koi.koiDetails.price}
+                    </p>
+                    <p>
+                      <strong>Size:</strong> {koi.koiDetails.size} cm
+                    </p>
+                    <p>
+                      <strong>Quantity:</strong> {koi.quantity}
+                    </p>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            <h3>Order Fishes</h3>
+            <Row gutter={[16, 16]}>
+              {currentOrder.orderFishes.length > 0 ? (
+                currentOrder.orderFishes.map((fish) => (
+                  <Col span={12} key={fish.fishId}>
+                    <Card hoverable>
+                      <p>
+                        <strong>Fish ID:</strong> {fish.fishId}
+                      </p>
+                      <p>
+                        <strong>Quantity:</strong> {fish.quantity}
+                      </p>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <p>No fishes in this order.</p>
+              )}
+            </Row>
+          </>
+        )}
       </Modal>
     </div>
   );
-}
+};
 
 export default OrderKoiManagement;

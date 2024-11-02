@@ -7,6 +7,7 @@ const CART = "/cart";
 const PROFILE = "/profile";
 const CHECKOUT = "/checkout";
 const FISH = "/fish";
+
 export const PATHS = {
   HOME: "/",
   LOGIN: "/login",
@@ -15,6 +16,9 @@ export const PATHS = {
   VERIFY_OTP: "/verify-otp",
   RESET_PASSWORD: "/reset-password",
   HISTORY: "/history",
+  SUCCESS: "/success",
+  UNSUCCESS: "/unsuccess",
+  ORDER: "/orders",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {
@@ -63,4 +67,5 @@ export const PATHS = {
     DETAIL: `fish/:id`,
     
   },
+
 };

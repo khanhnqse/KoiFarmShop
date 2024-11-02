@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Divider, Input, Rate, notification } from "antd";
+import { Button, Divider, Input, Rate, notification, Modal } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const ProductInfo = ({ product, averageRating }) => {
   const [quantity, setQuantity] = useState(1);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { isAuthenticated, cart, setCart } = useAuth();
   const navigate = useNavigate();
 
@@ -26,7 +27,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
     // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.id
+      (item) => item.id === product.koiId
     );
 
     if (existingProductIndex !== -1) {
@@ -38,7 +39,7 @@ const ProductInfo = ({ product, averageRating }) => {
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: product.koiId,
+        KoiId: product.koiId,
         name: product.name,
         price: product.price,
         quantity: quantity,
@@ -72,8 +73,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
     // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.id
-      //koiId to id
+      (item) => item.id === product.koiId
     );
 
     if (existingProductIndex !== -1) {
@@ -85,7 +85,7 @@ const ProductInfo = ({ product, averageRating }) => {
     } else {
       // Add the new product to the cart
       const cartItem = {
-        id: product.koiId,
+        KoiId: product.koiId,
         name: product.name,
         price: product.price,
         quantity: quantity,
@@ -99,6 +99,18 @@ const ProductInfo = ({ product, averageRating }) => {
 
     // Navigate to the cart page
     navigate("/cart");
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -167,7 +179,16 @@ const ProductInfo = ({ product, averageRating }) => {
             <p className="font-semibold">Award Certificate:</p>
             <p className="ml-2">
               {product.awardCertificates ? (
-                <CheckOutlined className="text-green-600" />
+                <>
+                  <CheckOutlined className="text-green-600" />
+                  <Button
+                    type="default"
+                    onClick={showModal}
+                    className="ml-2 p-1"
+                  >
+                    View Certificate
+                  </Button>
+                </>
               ) : (
                 <CloseOutlined className="text-red-600" />
               )}
@@ -209,6 +230,25 @@ const ProductInfo = ({ product, averageRating }) => {
           Add to Cart
         </Button>
       </div>
+
+      {/* Modal for Certificate Image */}
+      <Modal
+        title="Award Certificate"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="ok" type="primary" onClick={handleOk}>
+            OK
+          </Button>,
+        ]}
+      >
+        <img
+          src={product.imageCertificate}
+          alt="Certificate"
+          className="w-full h-auto"
+        />
+      </Modal>
     </div>
   );
 };

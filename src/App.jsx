@@ -32,6 +32,10 @@ import Overview from "./pages/Admin/Overview/Overview";
 import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import FishProductPage from "./pages/FishPage/FishPage";
 import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
+import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import PaymentUnsuccess from "./pages/PaymenntUnsuccess/PaymentUnsuccess";
+import OrdersPage from "./pages/OrderPage/OrderPage";
+
 function App() {
   return (
     <AuthProvider>
@@ -56,7 +60,7 @@ function App() {
           <Route
             path={PATHS.CART.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <CartPage />
               </PrivateRoute>
             }
@@ -65,7 +69,7 @@ function App() {
           <Route
             path={PATHS.PROFILE.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <UserProfile />
               </PrivateRoute>
             }
@@ -73,7 +77,7 @@ function App() {
           <Route
             path={PATHS.CHECKOUT.INDEX}
             element={
-              <PrivateRoute restrictedToAdmin>
+              <PrivateRoute requiredRole="customer">
                 <CheckoutPage />
               </PrivateRoute>
             }
@@ -81,10 +85,11 @@ function App() {
           <Route path={PATHS.LOGIN} element={<LoginPage />} />
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
           <Route path={PATHS.HISTORY} element={<OrderHistoryPage />} />
+          <Route path={PATHS.ORDER} element={<OrdersPage />} />
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={
-              <PrivateRoute requiredRole="admin">
+              <PrivateRoute restrictedToManagerOrStaff>
                 <Dashboard />
               </PrivateRoute>
             }
@@ -141,7 +146,8 @@ function App() {
             />
           </Route>
         </Route>
-
+        <Route path={PATHS.SUCCESS} element={<PaymentSuccess />} />
+        <Route path={PATHS.UNSUCCESS} element={<PaymentUnsuccess />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>

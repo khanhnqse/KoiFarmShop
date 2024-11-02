@@ -1,319 +1,316 @@
-import { Tabs, Form, Input, Button, Select } from "antd";
-import { useState } from "react";
+import { Tabs, Form, Input, Button, Select, notification, Spin } from "antd";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 
 const CheckoutTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
+  const [form] = Form.useForm();
+  const { user } = useAuth();
+  const [paymentMethod, setPaymentMethod] = useState("VN Pay");
+  const [promotions, setPromotions] = useState([]);
+  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const { cart } = location.state;
+  const navigate = useNavigate();
 
-  const handleSubmit = (values) => {
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await axios.get(
+          "https://localhost:7285/api/Promotion"
+        );
+        setPromotions(response.data);
+      } catch (error) {
+        console.error("Failed to fetch promotions:", error);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://localhost:7285/api/User/${user.userId}`
+        );
+        const userData = response.data;
+        form.setFieldsValue({
+          email: userData.email,
+          fullname: userData.userName,
+          phone: userData.phoneNumber || "",
+          address: userData.address || "",
+        });
+      } catch (error) {
+        notification.error({
+          message: "Failed to fetch user data",
+          description: "There was an error fetching your user data.",
+        });
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user, form]);
+
+  const handleSubmit = async (values) => {
     console.log("Form data:", values);
-    // Move to the next tab
+
     if (activeTabKey === "1") {
       setActiveTabKey("2");
     } else if (activeTabKey === "2") {
       setActiveTabKey("3");
+    } else if (activeTabKey === "3") {
+      // Prepare the request body
+      const orderFishes = cart
+        .filter((item) => item.fishesId && item.fishesQuantity)
+        .map((item) => ({
+          fishesId: item.fishesId,
+          quantity: item.fishesQuantity,
+        }));
+      console.log("orderFishes", orderFishes);
+
+      const orderKois = cart
+        .filter((item) => item.KoiId && item.quantity)
+        .map((item) => ({
+          koiId: item.KoiId,
+          quantity: item.quantity,
+        }));
+      console.log("orderKois", orderKois);
+      const requestBody = {
+        userId: user.userId,
+        paymentMethod: paymentMethod,
+        promotionId: selectedPromotion?.promotionId,
+        ...(orderFishes.length > 0 && { orderFishes }),
+        ...(orderKois.length > 0 && { orderKois }),
+      };
+
+      try {
+        // Send the request to the API endpoint
+        const response = await axios.post(
+          "https://localhost:7285/api/Order",
+          requestBody
+        );
+        console.log("Order created:", response.data);
+        notification.success({
+          message: "Order Created",
+          description: "Your order has been created successfully!",
+        });
+        navigate("/orders"); // Redirect to the orders page
+      } catch (error) {
+        console.error("Failed to create order:", error);
+        notification.error({
+          message: "Order Creation Failed",
+          description:
+            "There was an error creating your order. Please try again.",
+        });
+      }
     }
   };
 
-  // Sample data for order summary
-  const orderData = [
-    {
-      title: "Product 1",
-      price: 100.0,
-      imageUrl:
-        "https://bizweb.dktcdn.net/100/307/111/files/ca-koi-showa-sankoku1.jpg?v=1534352487117",
-    },
-    {
-      title: "Product 2",
-      price: 200.0,
-      imageUrl:
-        "https://visinhcakoi.com/wp-content/uploads/2021/07/ca-koi-showa-2-600x874-1.jpg",
-    },
-  ];
+  const delivery = 0.0; // Free shipping
 
-  const discount = 10.0;
-  const giftCard = 5.0;
-  const delivery = 15.0;
-  const taxes = 20.0;
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
-  const subtotal = orderData.reduce((sum, item) => sum + item.price, 0);
-  const total = subtotal - discount - giftCard + delivery + taxes;
+  const discount = selectedPromotion
+    ? (subtotal * selectedPromotion.discountRate) / 100
+    : 0;
+  const total = subtotal - discount + delivery;
 
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
-      <div className="flex justify-between">
-        {/* Left side - Checkout Form */}
-        <div className="w-2/4">
-          <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
-            {/* Shipping Tab */}
-            <TabPane tab="1. Shipping" key="1">
-              <Form layout="vertical" onFinish={handleSubmit}>
-                <Form.Item
-                  label="Email address"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Please input your email!" },
-                  ]}
-                >
-                  <Input placeholder="youremail@gmail.com" />
-                </Form.Item>
-                <div className="flex space-x-4">
+      <Spin spinning={loading}>
+        <div className="flex justify-between">
+          {/* Left side - Checkout Form */}
+          <div className="w-2/4">
+            <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
+              {/* Shipping Tab */}
+              <TabPane tab="1. Shipping" key="1">
+                <Form layout="vertical" onFinish={handleSubmit} form={form}>
                   <Form.Item
-                    label="First Name"
-                    name="firstName"
-                    className="flex-1"
+                    label="Email address"
+                    name="email"
+                    rules={[
+                      { required: true, message: "Please input your email!" },
+                    ]}
+                  >
+                    <Input placeholder="youremail@gmail.com" />
+                  </Form.Item>
+                  <div className="flex space-x-4">
+                    <Form.Item
+                      label="Full Name"
+                      name="fullname"
+                      className="flex-1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your full name!",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Full name" />
+                    </Form.Item>
+                  </div>
+                  <Form.Item
+                    label="Phone Number"
+                    name="phone"
                     rules={[
                       {
                         required: true,
-                        message: "Please input your first name!",
+                        message: "Please input your phone number!",
                       },
                     ]}
                   >
-                    <Input placeholder="First Name" />
+                    <Input placeholder="Phone Number" />
                   </Form.Item>
                   <Form.Item
-                    label="Last Name"
-                    name="lastName"
-                    className="flex-1"
+                    label="Street address"
+                    name="address"
+                    rules={[
+                      { required: true, message: "Please input your address!" },
+                    ]}
+                  >
+                    <Input placeholder="Street Address" />
+                  </Form.Item>
+
+                  <Button type="primary" htmlType="submit" block>
+                    Continue to Delivery
+                  </Button>
+                </Form>
+              </TabPane>
+
+              {/* Delivery Tab */}
+              <TabPane tab="2. Delivery" key="2">
+                <Form layout="vertical" onFinish={handleSubmit} form={form}>
+                  <Form.Item
+                    label="Delivery Option"
+                    name="deliveryOption"
                     rules={[
                       {
                         required: true,
-                        message: "Please input your last name!",
+                        message: "Please select a delivery option!",
                       },
                     ]}
                   >
-                    <Input placeholder="Last Name" />
+                    <Select placeholder="Select Delivery Option">
+                      <Option value="standard">
+                        Standard Delivery (3-5 days)
+                      </Option>
+                    </Select>
                   </Form.Item>
+                  <Button type="primary" htmlType="submit" block>
+                    Continue to Payment
+                  </Button>
+                </Form>
+              </TabPane>
+
+              {/* Payment Tab */}
+              <TabPane tab="3. Payment" key="3">
+                <Form layout="vertical" onFinish={handleSubmit} form={form}>
+                  <Form.Item
+                    label="Payment Method"
+                    name="paymentMethod"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please select a payment method!",
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Select Payment Method"
+                      onChange={(value) => setPaymentMethod(value)}
+                    >
+                      <Option value="VN Pay">VN Pay</Option>
+                    </Select>
+                  </Form.Item>
+
+                  <Button type="primary" htmlType="submit" block>
+                    Place Order
+                  </Button>
+                </Form>
+              </TabPane>
+            </Tabs>
+          </div>
+
+          {/* Right side - Order Summary */}
+          <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md ">
+            <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+            {cart.map((item, index) => (
+              <div
+                className="flex justify-between items-center mb-2"
+                key={index}
+              >
+                <div className="flex items-center">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-12 h-12 mr-4"
+                  />
+                  <p>{item.name}</p>
                 </div>
-                <Form.Item
-                  label="Street address"
-                  name="address"
-                  rules={[
-                    { required: true, message: "Please input your address!" },
-                  ]}
-                >
-                  <Input placeholder="Street Address" />
-                </Form.Item>
-                <Form.Item
-                  label="Apartment, Building, Floor (optional)"
-                  name="apartment"
-                >
-                  <Input placeholder="Apartment, Building, Floor" />
-                </Form.Item>
-
-                <Form.Item
-                  label="Location"
-                  name="location"
-                  rules={[
-                    { required: true, message: "Please select your country!" },
-                  ]}
-                >
-                  <Select placeholder="Select Location">
-                    <Option value="TP.Ho Chi Minh">TP.Ho Chi Minh</Option>
-                    <Option value="Ha Noi">Ha Noi</Option>
-                    <Option value="Da Nang">Da Nang</Option>
-                    {/* Add more countries as options */}
-                  </Select>
-                </Form.Item>
-                <Button type="primary" htmlType="submit" block>
-                  Continue to Delivery
-                </Button>
-              </Form>
-            </TabPane>
-
-            {/* Delivery Tab */}
-            <TabPane tab="2. Delivery" key="2">
-              <Form layout="vertical" onFinish={handleSubmit}>
-                <Form.Item
-                  label="Delivery Option"
-                  name="deliveryOption"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select a delivery option!",
-                    },
-                  ]}
-                >
-                  <Select placeholder="Select Delivery Option">
-                    <Option value="standard">
-                      Standard Delivery (3-5 days)
-                    </Option>
-                    <Option value="express">Express Delivery (1-2 days)</Option>
-                  </Select>
-                </Form.Item>
-                <Button type="primary" htmlType="submit" block>
-                  Continue to Payment
-                </Button>
-              </Form>
-            </TabPane>
-
-            {/* Payment Tab */}
-            <TabPane tab="3. Payment" key="3">
-              <Tabs defaultActiveKey="1">
-                {/* Credit Card Tab */}
-                <TabPane tab="Credit Card" key="1">
-                  <Form layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                      label="Card Number"
-                      name="cardNumber"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your card number!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="XXXX XXXX XXXX XXXX" />
-                    </Form.Item>
-                    <div className="flex space-x-4">
-                      <Form.Item
-                        label="Expiry Date"
-                        name="expiryDate"
-                        className="flex-1"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input expiry date!",
-                          },
-                        ]}
-                      >
-                        <Input placeholder="MM/YY" />
-                      </Form.Item>
-                      <Form.Item
-                        label="CVV"
-                        name="cvv"
-                        className="flex-1"
-                        rules={[
-                          { required: true, message: "Please input CVV!" },
-                        ]}
-                      >
-                        <Input placeholder="XXX" />
-                      </Form.Item>
-                    </div>
-                    <Button type="primary" htmlType="submit" block>
-                      Pay with Credit Card
-                    </Button>
-                  </Form>
-                </TabPane>
-
-                {/* VN Pay Tab */}
-                <TabPane tab="VN Pay" key="2">
-                  <Form layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                      label="VN Pay Account"
-                      name="vnPayAccount"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your VN Pay account!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Your VN Pay Account" />
-                    </Form.Item>
-                    <Button type="primary" htmlType="submit" block>
-                      Pay with VN Pay
-                    </Button>
-                  </Form>
-                </TabPane>
-
-                {/* Bank Transfer Tab */}
-                <TabPane tab="Bank Transfer" key="3">
-                  <Form layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                      label="Bank Name"
-                      name="bankName"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your bank name!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Your Bank Name" />
-                    </Form.Item>
-                    <Form.Item
-                      label="Account Number"
-                      name="accountNumber"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your account number!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Your Account Number" />
-                    </Form.Item>
-                    <Form.Item
-                      label="Routing Number"
-                      name="routingNumber"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your routing number!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Your Routing Number" />
-                    </Form.Item>
-                    <Button type="primary" htmlType="submit" block>
-                      Pay with Bank Transfer
-                    </Button>
-                  </Form>
-                </TabPane>
-              </Tabs>
-            </TabPane>
-          </Tabs>
-        </div>
-
-        {/* Right side - Order Summary */}
-        <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md ">
-          <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
-          {orderData.map((item, index) => (
-            <div className="flex justify-between items-center mb-2" key={index}>
-              <div className="flex items-center">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-12 h-12 mr-4"
-                />
-                <p>{item.title}</p>
+                <p>${item.price.toFixed(2)}</p>
               </div>
-              <p>${item.price.toFixed(2)}</p>
+            ))}
+            <hr className="my-2" />
+            <div className="flex justify-between items-center mb-2">
+              <p>Promotion</p>
+              <Select
+                placeholder="Select Promotion"
+                onChange={(value) =>
+                  setSelectedPromotion(
+                    promotions.find((promo) => promo.promotionId === value) ||
+                      null
+                  )
+                }
+                style={{ width: "200px" }}
+              >
+                <Option value={null}>None</Option>
+                {promotions
+                  .filter((promo) => promo.status === true)
+                  .map((promo) => (
+                    <Option key={promo.promotionId} value={promo.promotionId}>
+                      {promo.promotionName}
+                    </Option>
+                  ))}
+              </Select>
             </div>
-          ))}
-          <hr className="my-2" />
-          <div className="flex justify-between items-center mb-2">
-            <p>Discount</p>
-            <p>-${discount.toFixed(2)}</p>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <p>Giftcard</p>
-            <p>-${giftCard.toFixed(2)}</p>
-          </div>
-          <hr className="my-2" />
-          <div className="flex justify-between items-center mb-2">
-            <p>Subtotal</p>
-            <p>${subtotal.toFixed(2)}</p>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <p>Delivery</p>
-            <p>${delivery.toFixed(2)}</p>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <p>Taxes</p>
-            <p>${taxes.toFixed(2)}</p>
-          </div>
-          <hr className="my-2" />
-          <div className="flex justify-between items-center font-semibold">
-            <p>Total</p>
-            <p>${total.toFixed(2)}</p>
+            <hr className="my-2" />
+            <div className="flex justify-between items-center mb-2">
+              <p>Subtotal</p>
+              <p>${subtotal.toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <p>Delivery</p>
+              <p>${delivery.toFixed(2)}</p>
+            </div>
+            <hr className="my-2" />
+            <div className="flex justify-between items-center font-semibold">
+              <p>Total</p>
+              <p>${total.toFixed(2)}</p>
+            </div>
           </div>
         </div>
-      </div>
+        {/* <div className="mt-8">
+          <Link to="/orders">
+            <Button type="primary">View Your Orders</Button>
+          </Link>
+        </div> */}
+      </Spin>
     </div>
   );
 };
