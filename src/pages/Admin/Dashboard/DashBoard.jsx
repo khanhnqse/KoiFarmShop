@@ -5,7 +5,6 @@ import {
   ProductOutlined,
   TagOutlined,
   UnorderedListOutlined,
-  LogoutOutlined,
   PercentageOutlined,
   CommentOutlined,
   PayCircleOutlined,
@@ -44,7 +43,6 @@ const items = [
     "/dashboard/purchasehistory",
     <PayCircleOutlined />
   ),
-  getItem("Setting", "6", <LogoutOutlined />),
 ];
 
 const Dashboard = () => {
