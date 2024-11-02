@@ -125,7 +125,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
       {/* Product Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
-        ${product.price}.00
+        {product.price}VND
       </p>
 
       {/* Product Description */}

@@ -91,19 +91,19 @@ const OrdersPage = () => {
       title: "Total Money",
       dataIndex: "totalMoney",
       key: "totalMoney",
-      render: (money) => `$${money.toFixed(2)}`,
+      render: (money) => `${money.toLocaleString()} VND`,
     },
     {
       title: "Final Money",
       dataIndex: "finalMoney",
       key: "finalMoney",
-      render: (money) => `$${money.toFixed(2)}`,
+      render: (money) => `${money.toLocaleString()} VND`,
     },
     {
       title: "Discount Money",
       dataIndex: "discountMoney",
       key: "discountMoney",
-      render: (money) => `$${money.toFixed(2)}`,
+      render: (money) => `${money.toLocaleString()} VND`,
     },
     {
       title: "Earned Points",

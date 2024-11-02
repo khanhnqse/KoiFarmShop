@@ -23,7 +23,7 @@ const ProductGrid = ({ products }) => {
           />
           <p className="text-sm text-gray-500">{product.koiId}</p>
           <h3 className="text-lg font-semibold">{product.name}</h3>
-          <p className="text-red-600 font-bold">{product.price}</p>
+          <p className="text-red-600 font-bold">{product.price}VND</p>
 
           {/* Buy Button */}
           <Button

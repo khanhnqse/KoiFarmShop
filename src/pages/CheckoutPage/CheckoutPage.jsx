@@ -73,10 +73,10 @@ const CheckoutTabs = () => {
     } else if (activeTabKey === "3") {
       // Prepare the request body
       const orderFishes = cart
-        .filter((item) => item.fishesId && item.fishesQuantity)
+        .filter((item) => item.fishesId && item.quantity)
         .map((item) => ({
           fishesId: item.fishesId,
-          quantity: item.fishesQuantity,
+          quantity: item.quantity,
         }));
       console.log("orderFishes", orderFishes);
 

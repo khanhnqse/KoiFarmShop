@@ -22,7 +22,7 @@ const FishGrid = ({ fishes }) => {
             className="mb-4 h-64 w-full object-contain rounded"
           />
           <h3 className="text-lg font-semibold">{fish.name}</h3>
-          <p className="text-red-600 font-bold">${fish.price}.00</p>
+          <p className="text-red-600 font-bold">{fish.price}VND</p>
           <p className="text-gray-600">Quantity: {fish.quantity}</p>
 
           {/* View Button */}

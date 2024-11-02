@@ -58,10 +58,10 @@ const CartPage = () => {
             />
             <div>
               <p className="font-bold">{item.name}</p>
-              <p className="text-gray-600">${item.price}.00</p>
+              <p className="text-gray-600">{item.price}VND</p>
             </div>
           </div>
-          <div className="text-red-600 font-bold">${item.price}.00</div>
+          <div className="text-red-600 font-bold">{item.price}VND</div>
           <InputNumber
             min={1}
             value={item.quantity}
