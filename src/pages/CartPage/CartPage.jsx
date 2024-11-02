@@ -30,6 +30,13 @@ const CartPage = () => {
     navigate("/checkout", { state: { cart } });
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
     <div className="max-w-5xl mx-auto py-10">
       <h1 className="text-4xl font-bold mb-8">Cart</h1>
@@ -58,16 +65,20 @@ const CartPage = () => {
             />
             <div>
               <p className="font-bold">{item.name}</p>
-              <p className="text-gray-600">${item.price}.00</p>
+              <p className="text-gray-600">{formatPrice(item.price)}</p>
             </div>
           </div>
-          <div className="text-red-600 font-bold">${item.price}.00</div>
+          <div className="text-red-600 font-bold">
+            {formatPrice(item.price)}
+          </div>
           <InputNumber
             min={1}
             value={item.quantity}
             onChange={(value) => handleQuantityChange(index, value)}
           />
-          <div className="font-bold">${item.price * item.quantity}.00</div>
+          <div className="font-bold">
+            {formatPrice(item.price * item.quantity)}
+          </div>
           <Button type="danger" onClick={() => handleDelete(index)}>
             Delete
           </Button>
@@ -79,7 +90,7 @@ const CartPage = () => {
       {/* Subtotal and Shipping */}
       <div className="flex justify-between mb-4">
         <p className="font-semibold">SUBTOTAL</p>
-        <p className="font-bold">${calculateTotal()}.00</p>
+        <p className="font-bold">{formatPrice(calculateTotal())}</p>
       </div>
 
       <div className="flex justify-between mb-6">
@@ -90,7 +101,7 @@ const CartPage = () => {
       {/* Total */}
       <div className="flex justify-between text-lg font-bold mb-6">
         <p>TOTAL</p>
-        <p className="text-red-600">${calculateTotal()}.00</p>
+        <p className="text-red-600">{formatPrice(calculateTotal())}</p>
       </div>
 
       {/* Checkout Button */}

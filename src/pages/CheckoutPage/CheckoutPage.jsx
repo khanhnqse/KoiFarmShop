@@ -10,8 +10,8 @@ const { Option } = Select;
 const CheckoutTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [form] = Form.useForm();
-  const { user } = useAuth();
-  const [paymentMethod, setPaymentMethod] = useState("VN Pay");
+  const { user, setCart } = useAuth();
+  const [paymentMethod] = useState("VN Pay");
   const [promotions, setPromotions] = useState([]);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -48,6 +48,8 @@ const CheckoutTabs = () => {
           fullname: userData.userName,
           phone: userData.phoneNumber || "",
           address: userData.address || "",
+          deliveryOption: "standard", // Set default delivery option
+          paymentMethod: "VN Pay", // Set default payment method
         });
       } catch (error) {
         notification.error({
@@ -73,10 +75,10 @@ const CheckoutTabs = () => {
     } else if (activeTabKey === "3") {
       // Prepare the request body
       const orderFishes = cart
-        .filter((item) => item.fishesId && item.fishesQuantity)
+        .filter((item) => item.fishesId && item.quantity)
         .map((item) => ({
           fishesId: item.fishesId,
-          quantity: item.fishesQuantity,
+          quantity: item.quantity,
         }));
       console.log("orderFishes", orderFishes);
 
@@ -106,6 +108,9 @@ const CheckoutTabs = () => {
           message: "Order Created",
           description: "Your order has been created successfully!",
         });
+        // Clear the cart
+        setCart([]);
+        localStorage.removeItem("cart");
         navigate("/orders"); // Redirect to the orders page
       } catch (error) {
         console.error("Failed to create order:", error);
@@ -130,6 +135,13 @@ const CheckoutTabs = () => {
     : 0;
   const total = subtotal - discount + delivery;
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
@@ -140,7 +152,15 @@ const CheckoutTabs = () => {
             <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
               {/* Shipping Tab */}
               <TabPane tab="1. Shipping" key="1">
-                <Form layout="vertical" onFinish={handleSubmit} form={form}>
+                <Form
+                  layout="vertical"
+                  onFinish={handleSubmit}
+                  form={form}
+                  initialValues={{
+                    deliveryOption: "standard", // Set default delivery option
+                    paymentMethod: "VN Pay", // Set default payment method
+                  }}
+                >
                   <Form.Item
                     label="Email address"
                     name="email"
@@ -195,7 +215,14 @@ const CheckoutTabs = () => {
 
               {/* Delivery Tab */}
               <TabPane tab="2. Delivery" key="2">
-                <Form layout="vertical" onFinish={handleSubmit} form={form}>
+                <Form
+                  layout="vertical"
+                  onFinish={handleSubmit}
+                  form={form}
+                  initialValues={{
+                    deliveryOption: "standard", // Set default delivery option
+                  }}
+                >
                   <Form.Item
                     label="Delivery Option"
                     name="deliveryOption"
@@ -206,7 +233,7 @@ const CheckoutTabs = () => {
                       },
                     ]}
                   >
-                    <Select placeholder="Select Delivery Option">
+                    <Select placeholder="Select Delivery Option" readOnly>
                       <Option value="standard">
                         Standard Delivery (3-5 days)
                       </Option>
@@ -220,7 +247,14 @@ const CheckoutTabs = () => {
 
               {/* Payment Tab */}
               <TabPane tab="3. Payment" key="3">
-                <Form layout="vertical" onFinish={handleSubmit} form={form}>
+                <Form
+                  layout="vertical"
+                  onFinish={handleSubmit}
+                  form={form}
+                  initialValues={{
+                    paymentMethod: "VN Pay", // Set default payment method
+                  }}
+                >
                   <Form.Item
                     label="Payment Method"
                     name="paymentMethod"
@@ -231,10 +265,7 @@ const CheckoutTabs = () => {
                       },
                     ]}
                   >
-                    <Select
-                      placeholder="Select Payment Method"
-                      onChange={(value) => setPaymentMethod(value)}
-                    >
+                    <Select placeholder="Select Payment Method" readOnly>
                       <Option value="VN Pay">VN Pay</Option>
                     </Select>
                   </Form.Item>
@@ -263,7 +294,7 @@ const CheckoutTabs = () => {
                   />
                   <p>{item.name}</p>
                 </div>
-                <p>${item.price.toFixed(2)}</p>
+                <p>{formatPrice(item.price)}</p>
               </div>
             ))}
             <hr className="my-2" />
@@ -292,24 +323,19 @@ const CheckoutTabs = () => {
             <hr className="my-2" />
             <div className="flex justify-between items-center mb-2">
               <p>Subtotal</p>
-              <p>${subtotal.toFixed(2)}</p>
+              <p>{formatPrice(subtotal)}</p>
             </div>
             <div className="flex justify-between items-center mb-2">
               <p>Delivery</p>
-              <p>${delivery.toFixed(2)}</p>
+              <p>{formatPrice(delivery)}</p>
             </div>
             <hr className="my-2" />
             <div className="flex justify-between items-center font-semibold">
               <p>Total</p>
-              <p>${total.toFixed(2)}</p>
+              <p>{formatPrice(total)}</p>
             </div>
           </div>
         </div>
-        {/* <div className="mt-8">
-          <Link to="/orders">
-            <Button type="primary">View Your Orders</Button>
-          </Link>
-        </div> */}
       </Spin>
     </div>
   );

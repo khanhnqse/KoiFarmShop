@@ -63,8 +63,8 @@ const [topSellingFish, setTopSellingFish] = useState();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {/* Total User Stat */}
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row gutter={12}>
+        <Col span={4}>
           <Card bordered={true}>
             <Statistic
               title="Total Users"
@@ -74,7 +74,7 @@ const [topSellingFish, setTopSellingFish] = useState();
           </Card>
         </Col>
         {/* Total Products Stat */}
-        <Col span={8}>
+        <Col span={4}>
           <Card bordered={true}>
             <Statistic
               title="Total Products"
@@ -84,7 +84,7 @@ const [topSellingFish, setTopSellingFish] = useState();
           </Card>
         </Col>
         {/* Total Revenues Stat */}
-        <Col span={8}>
+        <Col span={4}>
           <Card bordered={true}>
             <Statistic
               title="Total Revenues"
@@ -96,8 +96,8 @@ const [topSellingFish, setTopSellingFish] = useState();
       </Row>
 
      {/* Row for Top Selling Koi and Fish */}
-     <Row gutter={16} justify="center">
-        <Col span={12}>
+     <Row gutter={10} justify="center">
+        <Col span={5}>
           <Card bordered={true}>
             <Statistic
               title="Top Selling Koi"
@@ -106,7 +106,7 @@ const [topSellingFish, setTopSellingFish] = useState();
             />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={5}>
           <Card bordered={true}>
             <Statistic
               title="Top Selling Fish"
@@ -120,8 +120,8 @@ const [topSellingFish, setTopSellingFish] = useState();
       {/* Analysis Chart */}
       <h3>Total Revenue</h3>
       <LineChart
-        width={600}
-        height={300}
+        width={800}
+        height={400}
         data={analysis}
         margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
       >

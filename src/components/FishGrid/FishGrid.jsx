@@ -9,6 +9,13 @@ const FishGrid = ({ fishes }) => {
     navigate(`/fish/${fishesId}`);
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
     <div className="grid grid-cols-3 gap-6">
       {fishes.map((fish) => (
@@ -22,7 +29,7 @@ const FishGrid = ({ fishes }) => {
             className="mb-4 h-64 w-full object-contain rounded"
           />
           <h3 className="text-lg font-semibold">{fish.name}</h3>
-          <p className="text-red-600 font-bold">${fish.price}.00</p>
+          <p className="text-red-600 font-bold">{formatPrice(fish.price)}</p>
           <p className="text-gray-600">Quantity: {fish.quantity}</p>
 
           {/* View Button */}
