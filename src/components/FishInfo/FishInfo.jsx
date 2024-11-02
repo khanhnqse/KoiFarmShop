@@ -82,7 +82,7 @@ const FishInfo = ({ fish, averageRating }) => {
         name: fish.name,
         price: fish.price,
         quantity: quantity,
-        image: fish.imageKoi,
+        image: fish.imageFishes,
       };
 
       const newCart = [...cart, cartItem];
@@ -92,6 +92,13 @@ const FishInfo = ({ fish, averageRating }) => {
 
     // Navigate to the cart page
     navigate("/cart");
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
   };
 
   return (
@@ -106,7 +113,7 @@ const FishInfo = ({ fish, averageRating }) => {
 
       {/* Fish Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
-        ${fish.price}.00
+        {formatPrice(fish.price)}
       </p>
 
       <Divider />
@@ -140,7 +147,7 @@ const FishInfo = ({ fish, averageRating }) => {
 
           <div className="mb-4">
             <p className="font-semibold">Price:</p>
-            <p>${fish.price}.00</p>
+            <p>{formatPrice(fish.price)}</p>
           </div>
 
           <div className="mb-4">

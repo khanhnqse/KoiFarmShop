@@ -121,7 +121,6 @@ const OrdersPage = () => {
       dataIndex: "paymentMethod",
       key: "paymentMethod",
     },
-
     {
       title: "Action",
       key: "action",
@@ -134,13 +133,22 @@ const OrdersPage = () => {
     },
   ];
 
+  // Filter out orders with orderStatus "completed"
+  const filteredOrders = orders.filter(
+    (order) => order.orderStatus !== "completed"
+  );
+
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <Title className="text-center" level={2}>
         Your Orders
       </Title>
       <Spin spinning={loading}>
-        <Table columns={orderColumns} dataSource={orders} rowKey="orderId" />
+        <Table
+          columns={orderColumns}
+          dataSource={filteredOrders}
+          rowKey="orderId"
+        />
       </Spin>
     </div>
   );

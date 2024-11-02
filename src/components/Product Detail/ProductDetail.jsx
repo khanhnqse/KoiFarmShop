@@ -113,6 +113,13 @@ const ProductInfo = ({ product, averageRating }) => {
     setIsModalVisible(false);
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
   return (
     <div className="w-1/2">
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
@@ -125,7 +132,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
       {/* Product Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
-        {product.price}VND
+        {formatPrice(product.price)}
       </p>
 
       {/* Product Description */}
