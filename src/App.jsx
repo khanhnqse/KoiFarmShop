@@ -33,6 +33,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import FishProductPage from "./pages/FishPage/FishPage";
 import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
 import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import PaymentUnsuccess from "./pages/PaymenntUnsuccess/PaymentUnsuccess";
 import OrdersPage from "./pages/OrderPage/OrderPage";
 
 function App() {
@@ -146,6 +147,7 @@ function App() {
           </Route>
         </Route>
         <Route path={PATHS.SUCCESS} element={<PaymentSuccess />} />
+        <Route path={PATHS.UNSUCCESS} element={<PaymentUnsuccess />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>

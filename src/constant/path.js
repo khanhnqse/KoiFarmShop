@@ -17,6 +17,7 @@ export const PATHS = {
   RESET_PASSWORD: "/reset-password",
   HISTORY: "/history",
   SUCCESS: "/success",
+  UNSUCCESS: "/unsuccess",
   ORDER: "/orders",
   DASHBOARD: {
     INDEX: "/dashboard",
