@@ -21,7 +21,6 @@ const ProductGrid = ({ products }) => {
             alt={product.name}
             className="mb-4 h-64 w-full object-contain rounded"
           />
-          <p className="text-sm text-gray-500">{product.koiId}</p>
           <h3 className="text-lg font-semibold">{product.name}</h3>
           <p className="text-red-600 font-bold">{product.price}</p>
 
