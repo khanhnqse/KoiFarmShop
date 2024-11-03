@@ -7,6 +7,7 @@ import {
   Upload,
   message,
   DatePicker,
+  Form,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -29,6 +30,7 @@ const Consignment = () => {
     consignmentDetail: "",
   });
   const [fileList, setFileList] = useState([]);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (location.state?.koiId) {
@@ -37,8 +39,9 @@ const Consignment = () => {
         ...prev,
         koiID: location.state.koiId,
       }));
+      form.setFieldsValue({ koiID: location.state.koiId });
     }
-  }, [location.state]);
+  }, [location.state, form]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +70,10 @@ const Consignment = () => {
   };
 
   const handleSubmit = async () => {
-    if (!productInfo.consignmentTitle || !productInfo.consignmentDetail) {
+    try {
+      await form.validateFields();
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
       message.error("Please fill in all required fields.");
       return;
     }
@@ -97,14 +103,7 @@ const Consignment = () => {
       console.log("Product Info Submitted:", response.data);
       message.success("Product information submitted successfully!");
       // Reset form
-      setProductInfo({
-        koiID: "",
-        consignmentType: "",
-        consignmentPrice: "",
-        consignmentDateTo: "",
-        consignmentTitle: "",
-        consignmentDetail: "",
-      });
+      form.resetFields();
       setFileList([]);
     } catch (error) {
       console.error("Error submitting product info:", error);
@@ -161,25 +160,31 @@ const Consignment = () => {
             </Button>
           </div>
 
-          <form className="form-grid">
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Koi ID
-              </Title>
+          <Form form={form} layout="vertical" className="form-grid">
+            <Form.Item
+              label="Koi ID"
+              name="koiID"
+              rules={[{ required: true, message: "Please input the Koi ID!" }]}
+            >
               <Input
                 name="koiID"
                 placeholder="Koi ID"
                 value={productInfo.koiID}
                 readOnly
                 className="input-field"
-                required
               />
-            </div>
+            </Form.Item>
 
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Consignment Type
-              </Title>
+            <Form.Item
+              label="Consignment Type"
+              name="consignmentType"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the consignment type!",
+                },
+              ]}
+            >
               <Select
                 placeholder="Consignment Type"
                 value={productInfo.consignmentType}
@@ -187,84 +192,98 @@ const Consignment = () => {
                   handleSelectChange(value, "consignmentType")
                 }
                 className="input-field"
-                required
               >
                 <Option value="online">Online</Option>
                 <Option value="offline">Offline</Option>
               </Select>
-            </div>
+            </Form.Item>
 
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Consignment Price
-              </Title>
+            <Form.Item
+              label="Consignment Price"
+              name="consignmentPrice"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the consignment price!",
+                },
+              ]}
+            >
               <Input
                 name="consignmentPrice"
                 placeholder="Consignment Price"
                 value={productInfo.consignmentPrice}
                 onChange={handleInputChange}
                 className="input-field"
-                required
               />
-            </div>
+            </Form.Item>
 
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Consignment Date To
-              </Title>
+            <Form.Item
+              label="Consignment Date To"
+              name="consignmentDateTo"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the consignment date!",
+                },
+              ]}
+            >
               <DatePicker
                 placeholder="Consignment Date To"
                 onChange={handleDateChange}
                 className="input-field"
-                required
               />
-            </div>
+            </Form.Item>
 
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Consignment Title
-              </Title>
+            <Form.Item
+              label="Consignment Title"
+              name="consignmentTitle"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the consignment title!",
+                },
+              ]}
+            >
               <Input
                 name="consignmentTitle"
                 placeholder="Consignment Title"
                 value={productInfo.consignmentTitle}
                 onChange={handleInputChange}
                 className="input-field"
-                required
               />
-            </div>
+            </Form.Item>
 
-            <div className="form-group">
-              <Title level={5} className="input-label">
-                Consignment Detail
-              </Title>
+            <Form.Item
+              label="Consignment Detail"
+              name="consignmentDetail"
+              rules={[
+                {
+                  type: "url",
+                  required: true,
+                  message:
+                    "Please input a valid URL for the consignment contract!",
+                },
+              ]}
+            >
               <Input
-                rules={[
-                  {
-                    type: "url",
-                    required: true,
-                    message:
-                      "Please input a valid URL for the consignment contract!",
-                  },
-                ]}
                 name="consignmentDetail"
                 placeholder="Consignment Detail"
                 value={productInfo.consignmentDetail}
                 onChange={handleInputChange}
                 className="input-field"
-                rows={4}
-                required
               />
-            </div>
+            </Form.Item>
 
-            <Button
-              type="primary"
-              onClick={handleSubmit}
-              className="submit-btn"
-            >
-              Submit Product
-            </Button>
-          </form>
+            <Form.Item>
+              <Button
+                type="primary"
+                onClick={handleSubmit}
+                className="submit-btn"
+              >
+                Submit Product
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       </div>
     </div>

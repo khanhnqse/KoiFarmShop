@@ -85,7 +85,7 @@ const ProductGrid = ({ products }) => {
               type={selectedKoi.includes(product) ? "primary" : "default"}
               onClick={() => handleSelectKoi(product)}
             >
-              {selectedKoi.includes(product) ? "Selected" : "Select"}
+              {selectedKoi.includes(product) ? "Selected" : "Select to compare"}
             </Button>
           </div>
         ))}

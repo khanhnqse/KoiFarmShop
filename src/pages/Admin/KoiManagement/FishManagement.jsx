@@ -138,7 +138,7 @@ const FishManagement = () => {
         onClick={() => handleOpenModal()}
         style={{ marginBottom: 16 }}
       >
-        <PlusOutlined /> Add Fish
+        <PlusOutlined /> Add Koi
       </Button>
       <Table
         columns={generalColumns(handleOpenModal, handleDeleteFish)}

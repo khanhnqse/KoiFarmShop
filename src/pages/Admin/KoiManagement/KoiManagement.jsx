@@ -116,7 +116,7 @@ const KoiManagement = () => {
         onClick={() => handleOpenModal(null)}
         style={{ marginBottom: 16 }}
       >
-        Add Koi
+        Add Fish
       </Button>
       <Table
         columns={koiColumns(handleOpenModal, handleDeleteKoi)}

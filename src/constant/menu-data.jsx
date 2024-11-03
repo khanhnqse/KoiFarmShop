@@ -353,6 +353,7 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     title: "Register Date",
     dataIndex: "registerDate",
     key: "registerDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Points",
@@ -450,6 +451,7 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     title: "Register Date",
     dataIndex: "registerDate",
     key: "registerDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Action",
@@ -530,11 +532,12 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Start Date",
     dataIndex: "startDate",
     key: "startDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "End Date",
     dataIndex: "endDate",
-    key: "endDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Status",
@@ -633,6 +636,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Feedback Date",
     dataIndex: "feedbackDate",
     key: "feedbackDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Action",
@@ -692,19 +696,31 @@ export const purchaseHistoryColumns = (
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Order Status",
@@ -736,14 +752,9 @@ export const purchaseHistoryColumns = (
     render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
   },
   {
-    title: "Delivery Status",
-    dataIndex: "deliveryStatus",
-    key: "deliveryStatus",
-  },
-  {
-    title: "Promotion ID",
-    dataIndex: "promotionId",
-    key: "promotionId",
+    title: "Promotion Name",
+    dataIndex: "promotionName",
+    key: "promotionName",
   },
   {
     title: "Earned Points",
@@ -843,24 +854,37 @@ export const orderColumns = (
     title: "Order Date",
     dataIndex: "orderDate",
     key: "orderDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Earned Points",
@@ -871,6 +895,13 @@ export const orderColumns = (
     title: "Order Status",
     dataIndex: "orderStatus",
     key: "orderStatus",
+    filters: [
+      { text: "Processing", value: "processing" },
+      { text: "Canceled", value: "canceled" },
+      { text: "Remittance", value: "remittance" },
+      { text: "Delivering", value: "delivering" },
+    ],
+    onFilter: (value, record) => record.orderStatus === value,
     render: (orderStatus) => {
       let color;
       switch (orderStatus) {
@@ -881,9 +912,6 @@ export const orderColumns = (
           color = "orange";
           break;
         case "canceled":
-          color = "red";
-          break;
-        case "Canceled":
           color = "red";
           break;
         case "remittance":
