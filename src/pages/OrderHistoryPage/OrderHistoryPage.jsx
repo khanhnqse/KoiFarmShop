@@ -263,12 +263,13 @@ const OrderHistoryPage = () => {
                             <strong>Quantity:</strong> {koi.quantity}
                           </p>
                           <Button
+                            className="mt-2"
                             type="primary"
                             onClick={() =>
                               handleNavigateToConsignment(koi.koiId)
                             }
                           >
-                            Go to Consignment
+                            Consignment
                           </Button>
                           <Button
                             type="default"

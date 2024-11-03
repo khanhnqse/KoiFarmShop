@@ -13,7 +13,7 @@ const PaymentSuccess = () => {
       <Result
         status="success"
         title="Payment Successful"
-        subTitle="Thank you for your payment. Your transaction has been completed successfully."
+        subTitle="Thank you for your payment. Your transaction has been completed successfully, check your email to get billing."
         extra={[
           <Button type="primary" key="home" onClick={handleBackToHome}>
             Back to Home

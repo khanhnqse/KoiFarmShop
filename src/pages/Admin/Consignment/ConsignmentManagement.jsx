@@ -93,6 +93,16 @@ const ConsignmentManagement = () => {
     </Menu>
   );
 
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      return false;
+    }
+  };
+
   const columns = [
     {
       title: "Consignment ID",
@@ -143,6 +153,14 @@ const ConsignmentManagement = () => {
       title: "Consignment Detail",
       dataIndex: "consignmentDetail",
       key: "consignmentDetail",
+      render: (text) =>
+        isValidUrl(text) ? (
+          <a href={text} target="_blank" rel="noopener noreferrer">
+            View Detail
+          </a>
+        ) : (
+          text
+        ),
     },
     {
       title: "Action",

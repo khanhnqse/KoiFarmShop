@@ -58,17 +58,58 @@ const OrdersPage = () => {
     }
   };
 
+  const handleReceived = async (orderId) => {
+    setLoading(true);
+    try {
+      await axios.put(
+        `https://localhost:7285/api/Order/${orderId}/update-status-COMPLETED`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      notification.success({
+        message: "Order has been received",
+        description: "Your order has been marked as received.",
+      });
+      // Refresh orders
+      const response = await axios.get(
+        `https://localhost:7285/api/Order/my-orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Failed to update order status:", error);
+      notification.error({
+        message: "Update Failed",
+        description:
+          "There was an error updating the order status. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getOrderStatusTag = (status) => {
     let color;
     switch (status) {
-      case "completed":
-        color = "green";
+      case "delivering":
+        color = "purple";
         break;
       case "processing":
         color = "orange";
         break;
       case "cancelled":
         color = "red";
+        break;
+      case "completed":
+        color = "green";
         break;
       default:
         color = "blue";
@@ -124,12 +165,23 @@ const OrdersPage = () => {
     {
       title: "Action",
       key: "action",
-      render: (text, record) =>
-        record.orderStatus === "processing" && (
-          <Button type="primary" onClick={() => handlePayNow(record.orderId)}>
-            Pay Now
-          </Button>
-        ),
+      render: (text, record) => (
+        <>
+          {record.orderStatus === "processing" && (
+            <Button type="primary" onClick={() => handlePayNow(record.orderId)}>
+              Pay Now
+            </Button>
+          )}
+          {record.orderStatus === "delivering" && (
+            <Button
+              type="default"
+              onClick={() => handleReceived(record.orderId)}
+            >
+              Received
+            </Button>
+          )}
+        </>
+      ),
     },
   ];
 
