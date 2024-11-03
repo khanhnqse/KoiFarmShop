@@ -287,19 +287,33 @@ const handleCustomerMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteCustomer
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteCustomer(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateCustomerStatus(record.userId);
   }
 };
 
-const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
+const customerMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleCustomerMenuClick(e, record, handleOpenModal, handleDeleteCustomer)
+      handleCustomerMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteCustomer,
+        handleUpdateCustomerStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
@@ -308,10 +322,17 @@ const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
       Delete
     </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Update Status
+    </Menu.Item>
   </Menu>
 );
 
-export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
+export const customerColumns = (
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
@@ -365,7 +386,12 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={customerMenu(record, handleOpenModal, handleDeleteCustomer)}
+        overlay={customerMenu(
+          record,
+          handleOpenModal,
+          handleDeleteCustomer,
+          handleUpdateCustomerStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -380,19 +406,33 @@ const handleStaffMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteStaff
+  handleDeleteStaff,
+  handleUpdateStaffStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteStaff(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateStaffStatus(record.userId);
   }
 };
 
-const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
+const staffMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleStaffMenuClick(e, record, handleOpenModal, handleDeleteStaff)
+      handleStaffMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteStaff,
+        handleUpdateStaffStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
@@ -401,10 +441,17 @@ const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
       Delete
     </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Update Status
+    </Menu.Item>
   </Menu>
 );
 
-export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
+export const staffColumns = (
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
@@ -425,19 +472,14 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     key: "email",
   },
   {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
-  },
-  {
     title: "Phone Number",
     dataIndex: "phoneNumber",
     key: "phoneNumber",
   },
   {
-    title: "Role",
-    dataIndex: "role",
-    key: "role",
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
   },
   {
     title: "Status",
@@ -448,17 +490,16 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     ),
   },
   {
-    title: "Register Date",
-    dataIndex: "registerDate",
-    key: "registerDate",
-    render: (date) => new Date(date).toLocaleDateString(), // Format date
-  },
-  {
     title: "Action",
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={staffMenu(record, handleOpenModal, handleDeleteStaff)}
+        overlay={staffMenu(
+          record,
+          handleOpenModal,
+          handleDeleteStaff,
+          handleUpdateStaffStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />

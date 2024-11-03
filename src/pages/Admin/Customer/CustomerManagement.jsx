@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+
+import { customerColumns } from "../../../constant/menu-data";
 import {
+  deleteCustomer,
   fetchCustomerData,
   saveCustomer,
-  deleteCustomer,
+  updateCustomerStatus,
 } from "../../../services/sevice";
-import { customerColumns } from "../../../constant/menu-data";
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
@@ -74,6 +76,13 @@ const CustomerManagement = () => {
     setLoading(false);
   };
 
+  const handleUpdateCustomerStatus = async (userId) => {
+    setLoading(true);
+    await updateCustomerStatus(userId);
+    loadCustomerData();
+    setLoading(false);
+  };
+
   return (
     <div>
       <Typography.Title level={2}>Customer Management</Typography.Title>
@@ -85,7 +94,11 @@ const CustomerManagement = () => {
         <PlusOutlined /> Add Customer
       </Button>
       <Table
-        columns={customerColumns(handleOpenModal, handleDeleteCustomer)}
+        columns={customerColumns(
+          handleOpenModal,
+          handleDeleteCustomer,
+          handleUpdateCustomerStatus
+        )}
         dataSource={customers}
         loading={loading}
         rowKey="userId"
