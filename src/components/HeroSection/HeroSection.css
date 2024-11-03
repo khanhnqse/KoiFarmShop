@@ -1,0 +1,31 @@
+.hero {
+    text-align: center;
+    padding: 280px 0;
+    /* background-image: url('src/assets/hero.png'); */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .hero h1 {
+    font-size: 48px;
+    color: #fff;
+  }
+  
+  .hero p {
+    font-size: 24px;
+    color: #fff;
+  }
+  
+  .hero button {
+    padding: 15px 30px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .east-sea-dokdo-regular {
+    font-family: "East Sea Dokdo", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  

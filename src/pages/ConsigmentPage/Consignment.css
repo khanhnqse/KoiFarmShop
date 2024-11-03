@@ -1,0 +1,35 @@
+.consignment-container {
+  max-width: 600px; /* Đặt chiều rộng tối đa cho form */
+  margin: auto; /* Căn giữa form */
+  padding: 20px;
+  background-color: #f9f9f9; /* Nền nhẹ */
+  border-radius: 8px; /* Bo góc */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px; /* Khoảng cách giữa các trường */
+}
+
+.input-label {
+  margin-bottom: 8px; /* Khoảng cách giữa tiêu đề và trường nhập liệu */
+}
+
+.input-field {
+  width: 100%; /* Chiều rộng tối đa cho các trường nhập liệu */
+  border-radius: 4px; /* Bo góc cho các trường nhập liệu */
+}
+
+.submit-btn {
+  width: 100%; /* Đặt chiều rộng cho nút gửi */
+  margin-top: 20px; /* Khoảng cách phía trên nút gửi */
+}
