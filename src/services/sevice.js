@@ -155,6 +155,16 @@ export const deleteCustomer = async (userId) => {
   }
 };
 
+export const updateCustomerStatus = async (userId) => {
+  try {
+    await axios.put(`https://localhost:7285/api/User/restore/${userId}`);
+    message.success("Customer status updated successfully");
+  } catch (error) {
+    message.error("Failed to update customer status");
+    console.error("Error updating customer status:", error);
+  }
+};
+
 // Staff management service
 export const fetchStaffData = async () => {
   try {
@@ -202,6 +212,16 @@ export const deleteStaff = async (userId) => {
   } catch (error) {
     message.error("Failed to delete staff");
     console.error("Error deleting staff:", error);
+  }
+};
+
+export const updateStaffStatus = async (userId) => {
+  try {
+    await axios.put(`https://localhost:7285/api/User/restore/${userId}`);
+    message.success("Staff status updated successfully");
+  } catch (error) {
+    message.error("Failed to update staff status");
+    console.error("Error updating staff status:", error);
   }
 };
 

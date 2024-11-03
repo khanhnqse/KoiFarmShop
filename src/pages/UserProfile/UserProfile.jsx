@@ -94,7 +94,7 @@ const UserProfile = () => {
         "https://localhost:7285/api/User/ChangePassword",
         {
           userName: formData.userName,
-
+          currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
           confirmPassword: passwordData.confirmPassword,
         }
@@ -142,7 +142,7 @@ const UserProfile = () => {
                 value={formData.userName}
                 placeholder="Your Name"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Email">
@@ -151,7 +151,7 @@ const UserProfile = () => {
                 value={formData.email}
                 placeholder="youremail@gmail.com"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Phone Number">
@@ -160,7 +160,7 @@ const UserProfile = () => {
                 value={formData.phoneNumber}
                 placeholder="Your Phone Number"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Address">
@@ -169,7 +169,7 @@ const UserProfile = () => {
                 value={formData.address}
                 placeholder="Your Address"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Point">
@@ -177,7 +177,7 @@ const UserProfile = () => {
                 name="point"
                 value={formData.point}
                 placeholder="Your point"
-                disabled={true}
+                readOnly={true}
               />
             </Form.Item>
             {isEditing && (
@@ -206,6 +206,13 @@ const UserProfile = () => {
             <Input
               name="userName"
               value={formData.userName}
+              onChange={handlePasswordChange}
+            />
+          </Form.Item>
+          <Form.Item label="Current Password">
+            <Input.Password
+              name="currentPassword"
+              value={passwordData.currentPassword}
               onChange={handlePasswordChange}
             />
           </Form.Item>

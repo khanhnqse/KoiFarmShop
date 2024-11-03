@@ -287,19 +287,33 @@ const handleCustomerMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteCustomer
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteCustomer(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateCustomerStatus(record.userId);
   }
 };
 
-const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
+const customerMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleCustomerMenuClick(e, record, handleOpenModal, handleDeleteCustomer)
+      handleCustomerMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteCustomer,
+        handleUpdateCustomerStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
@@ -308,10 +322,17 @@ const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
       Delete
     </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Update Status
+    </Menu.Item>
   </Menu>
 );
 
-export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
+export const customerColumns = (
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
@@ -353,6 +374,7 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     title: "Register Date",
     dataIndex: "registerDate",
     key: "registerDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Points",
@@ -364,7 +386,12 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={customerMenu(record, handleOpenModal, handleDeleteCustomer)}
+        overlay={customerMenu(
+          record,
+          handleOpenModal,
+          handleDeleteCustomer,
+          handleUpdateCustomerStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -379,19 +406,33 @@ const handleStaffMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteStaff
+  handleDeleteStaff,
+  handleUpdateStaffStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteStaff(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateStaffStatus(record.userId);
   }
 };
 
-const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
+const staffMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleStaffMenuClick(e, record, handleOpenModal, handleDeleteStaff)
+      handleStaffMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteStaff,
+        handleUpdateStaffStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
@@ -400,10 +441,17 @@ const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
       Delete
     </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Update Status
+    </Menu.Item>
   </Menu>
 );
 
-export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
+export const staffColumns = (
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
@@ -424,19 +472,14 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     key: "email",
   },
   {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
-  },
-  {
     title: "Phone Number",
     dataIndex: "phoneNumber",
     key: "phoneNumber",
   },
   {
-    title: "Role",
-    dataIndex: "role",
-    key: "role",
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
   },
   {
     title: "Status",
@@ -447,16 +490,16 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     ),
   },
   {
-    title: "Register Date",
-    dataIndex: "registerDate",
-    key: "registerDate",
-  },
-  {
     title: "Action",
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={staffMenu(record, handleOpenModal, handleDeleteStaff)}
+        overlay={staffMenu(
+          record,
+          handleOpenModal,
+          handleDeleteStaff,
+          handleUpdateStaffStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -530,11 +573,12 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Start Date",
     dataIndex: "startDate",
     key: "startDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "End Date",
     dataIndex: "endDate",
-    key: "endDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Status",
@@ -633,6 +677,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Feedback Date",
     dataIndex: "feedbackDate",
     key: "feedbackDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Action",
@@ -692,19 +737,31 @@ export const purchaseHistoryColumns = (
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Order Status",
@@ -736,14 +793,9 @@ export const purchaseHistoryColumns = (
     render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
   },
   {
-    title: "Delivery Status",
-    dataIndex: "deliveryStatus",
-    key: "deliveryStatus",
-  },
-  {
-    title: "Promotion ID",
-    dataIndex: "promotionId",
-    key: "promotionId",
+    title: "Promotion Name",
+    dataIndex: "promotionName",
+    key: "promotionName",
   },
   {
     title: "Earned Points",
@@ -843,24 +895,37 @@ export const orderColumns = (
     title: "Order Date",
     dataIndex: "orderDate",
     key: "orderDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Earned Points",
@@ -871,6 +936,13 @@ export const orderColumns = (
     title: "Order Status",
     dataIndex: "orderStatus",
     key: "orderStatus",
+    filters: [
+      { text: "Processing", value: "processing" },
+      { text: "Canceled", value: "canceled" },
+      { text: "Remittance", value: "remittance" },
+      { text: "Delivering", value: "delivering" },
+    ],
+    onFilter: (value, record) => record.orderStatus === value,
     render: (orderStatus) => {
       let color;
       switch (orderStatus) {
@@ -881,9 +953,6 @@ export const orderColumns = (
           color = "orange";
           break;
         case "canceled":
-          color = "red";
-          break;
-        case "Canceled":
           color = "red";
           break;
         case "remittance":

@@ -10,6 +10,7 @@ import {
   Menu,
 } from "antd";
 import { MoreOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -133,16 +134,23 @@ const ConsignmentManagement = () => {
       title: "Consignment Price",
       dataIndex: "consignmentPrice",
       key: "consignmentPrice",
+      render: (money) =>
+        `${money.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        })}`,
     },
     {
       title: "Consignment Date From",
       dataIndex: "consignmentDateFrom",
       key: "consignmentDateFrom",
+      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       title: "Consignment Date To",
       dataIndex: "consignmentDateTo",
       key: "consignmentDateTo",
+      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       title: "Consignment Title",

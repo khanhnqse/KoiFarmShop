@@ -7,6 +7,8 @@ const PrivateRoute = ({
   children,
   requiredRole,
   restrictedToManagerOrStaff,
+  restrictedToManager,
+  restrictedToStaff,
 }) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -23,6 +25,14 @@ const PrivateRoute = ({
     user.role !== "manager" &&
     user.role !== "staff"
   ) {
+    return <Navigate to={PATHS.HOME} />;
+  }
+
+  if (restrictedToManager && user.role !== "manager") {
+    return <Navigate to={PATHS.HOME} />;
+  }
+
+  if (restrictedToStaff && user.role !== "staff") {
     return <Navigate to={PATHS.HOME} />;
   }
 

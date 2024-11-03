@@ -5,7 +5,6 @@ import {
   ProductOutlined,
   TagOutlined,
   UnorderedListOutlined,
-  LogoutOutlined,
   PercentageOutlined,
   CommentOutlined,
   PayCircleOutlined,
@@ -13,6 +12,8 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
+
 const { Content, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -24,8 +25,7 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const items = [
-  getItem("Dashboard", "/dashboard/overview", <PieChartOutlined />),
+const staffItems = [
   getItem("Koi Management", "/dashboard/sub2", <ProductOutlined />, [
     getItem("Fish Management", "/dashboard/koi"),
     getItem("Koi Management", "/dashboard/fish"),
@@ -34,17 +34,24 @@ const items = [
   getItem("Consign Management", "/dashboard/consignment", <TagOutlined />),
   getItem("Users Management", "sub1", <UserOutlined />, [
     getItem("Customer Management", "/dashboard/customer"),
-    getItem("Staff Management", "/dashboard/staff"),
   ]),
   getItem("Orders Management", "/dashboard/order", <UnorderedListOutlined />),
-  getItem("Promotion ", "/dashboard/promotion", <PercentageOutlined />),
+
   getItem("Feedback Management", "/dashboard/feedback", <CommentOutlined />),
   getItem(
     "Purchase History Management",
     "/dashboard/purchasehistory",
     <PayCircleOutlined />
   ),
-  getItem("Setting", "6", <LogoutOutlined />),
+];
+
+const managerItems = [
+  getItem("Dashboard", "/dashboard/overview", <PieChartOutlined />),
+  getItem("Users Management", "sub1", <UserOutlined />, [
+    getItem("Customer Management", "/dashboard/customer"),
+    getItem("Staff Management", "/dashboard/staff"),
+  ]),
+  getItem("Promotion ", "/dashboard/promotion", <PercentageOutlined />),
 ];
 
 const Dashboard = () => {
@@ -53,10 +60,13 @@ const Dashboard = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleMenuClick = ({ key }) => {
     navigate(key);
   };
+
+  const items = user.role === "manager" ? managerItems : staffItems;
 
   return (
     <Layout

@@ -77,11 +77,16 @@ const OrderKoiManagement = () => {
     </Menu>
   );
 
+  // Filter out orders with orderStatus "completed"
+  const filteredOrders = orders.filter(
+    (order) => order.orderStatus !== "completed"
+  );
+
   return (
     <div>
       <Table
         columns={orderColumns(handleOpenModal, null, handleShowDetails)}
-        dataSource={orders}
+        dataSource={filteredOrders}
         loading={loading}
         rowKey="orderId"
       />

@@ -33,6 +33,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import FishProductPage from "./pages/FishPage/FishPage";
 import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
 import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import PaymentUnsuccess from "./pages/PaymenntUnsuccess/PaymentUnsuccess";
 import OrdersPage from "./pages/OrderPage/OrderPage";
 
 function App() {
@@ -101,51 +102,96 @@ function App() {
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOI}
-              element={<KoiManagement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <KoiManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.FISH}
-              element={<FishManagement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <FishManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.KOITYPE}
-              element={<KoiTypeMangement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <KoiTypeMangement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CONSIGNMENT}
-              element={<ConsignmentManage />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <ConsignmentManage />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.CUSTOMER}
-              element={<CustomerManagement />}
+              element={
+                <PrivateRoute restrictedToManagerOrStaff>
+                  <CustomerManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.STAFF}
-              element={<StaffManagement />}
+              element={
+                <PrivateRoute restrictedToManager>
+                  <StaffManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.ORDER}
-              element={<OrderKoiManagement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <OrderKoiManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.FEEDBACK}
-              element={<FeedbackManagement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <FeedbackManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.PROMOTION}
-              element={<PromotionManagement />}
+              element={
+                <PrivateRoute restrictedToManager>
+                  <PromotionManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.PURCHASEHISTORY}
-              element={<PurchaseHistoryManagement />}
+              element={
+                <PrivateRoute restrictedToStaff>
+                  <PurchaseHistoryManagement />
+                </PrivateRoute>
+              }
             />
             <Route
               path={PATHS.DASHBOARD.CHILDREN.OVERVIEW}
-              element={<Overview />}
+              element={
+                <PrivateRoute restrictedToManager>
+                  <Overview />
+                </PrivateRoute>
+              }
             />
           </Route>
         </Route>
         <Route path={PATHS.SUCCESS} element={<PaymentSuccess />} />
+        <Route path={PATHS.UNSUCCESS} element={<PaymentUnsuccess />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AuthProvider>
