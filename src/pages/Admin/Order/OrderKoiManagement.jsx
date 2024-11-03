@@ -73,10 +73,7 @@ const OrderKoiManagement = () => {
 
   const statusMenu = (
     <Menu onClick={({ key }) => handleUpdateStatus(key)}>
-      <Menu.Item key="completed">Completed</Menu.Item>
-      <Menu.Item key="processing">Processing</Menu.Item>
-      <Menu.Item key="canceled">Canceled</Menu.Item>
-      <Menu.Item key="remittance">Remittance</Menu.Item>
+      <Menu.Item key="delivering">Delivering</Menu.Item>
     </Menu>
   );
 

@@ -96,6 +96,16 @@ const Consignment = () => {
       });
       console.log("Product Info Submitted:", response.data);
       message.success("Product information submitted successfully!");
+      // Reset form
+      setProductInfo({
+        koiID: "",
+        consignmentType: "",
+        consignmentPrice: "",
+        consignmentDateTo: "",
+        consignmentTitle: "",
+        consignmentDetail: "",
+      });
+      setFileList([]);
     } catch (error) {
       console.error("Error submitting product info:", error);
       message.error("An error occurred while submitting product information.");
@@ -121,7 +131,7 @@ const Consignment = () => {
         }}
       >
         <Title level={3} className="form-title">
-          Consignment Sale
+          Consignment Koi
         </Title>
         <Upload
           className="upload-section"
@@ -136,6 +146,20 @@ const Consignment = () => {
           <Title level={4} className="section-title">
             Detailed Information
           </Title>
+
+          <div className="mt-4 text-right">
+            <Button
+              type="default"
+              onClick={() =>
+                window.open(
+                  "https://docs.google.com/document/d/1xdbrSZMbdxcW5i8LMrqzJNXJ_8CrKdv9XobRaIeVWwY/edit?usp=sharing",
+                  "_blank"
+                )
+              }
+            >
+              Consignment agreement
+            </Button>
+          </div>
 
           <form className="form-grid">
             <div className="form-group">
@@ -214,7 +238,15 @@ const Consignment = () => {
               <Title level={5} className="input-label">
                 Consignment Detail
               </Title>
-              <Input.TextArea
+              <Input
+                rules={[
+                  {
+                    type: "url",
+                    required: true,
+                    message:
+                      "Please input a valid URL for the consignment contract!",
+                  },
+                ]}
                 name="consignmentDetail"
                 placeholder="Consignment Detail"
                 value={productInfo.consignmentDetail}

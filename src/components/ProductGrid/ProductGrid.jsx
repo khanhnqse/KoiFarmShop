@@ -41,6 +41,7 @@ const ProductGrid = ({ products }) => {
 
   const handleModalClose = () => {
     setIsModalVisible(false);
+    setSelectedKoi([]); // Reset selected Koi fish
   };
 
   return (

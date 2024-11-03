@@ -871,9 +871,32 @@ export const orderColumns = (
     title: "Order Status",
     dataIndex: "orderStatus",
     key: "orderStatus",
-    render: (status) => (
-      <Tag color={status === "completed" ? "green" : "red"}>{status}</Tag>
-    ),
+    render: (orderStatus) => {
+      let color;
+      switch (orderStatus) {
+        case "completed":
+          color = "green";
+          break;
+        case "processing":
+          color = "orange";
+          break;
+        case "canceled":
+          color = "red";
+          break;
+        case "Canceled":
+          color = "red";
+          break;
+        case "remittance":
+          color = "blue";
+          break;
+        case "delivering":
+          color = "purple";
+          break;
+        default:
+          color = "gray";
+      }
+      return <Tag color={color}>{orderStatus}</Tag>;
+    },
   },
   {
     title: "Payment Method",
