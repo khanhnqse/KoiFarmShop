@@ -8,63 +8,73 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
 } from "recharts";
 import CountUp from "react-countup";
-// Dashboard Api
-const dashboardApiU = "https://localhost:7285/api/Dashboard/total-users"; //total users
-const dashboardApiP = "https://localhost:7285/api/Dashboard/total-products"; //total products
-const dashboardApiA = "https://localhost:7285/api/Dashboard/analysis"; //analysis
-const dashboardApiR = "https://localhost:7285/api/Dashboard/total-revenue"; //total revenue
+
+// Dashboard API endpoints
+const dashboardApiU = "https://localhost:7285/api/Dashboard/total-users";
+const dashboardApiP = "https://localhost:7285/api/Dashboard/total-products";
+const dashboardApiA = "https://localhost:7285/api/Dashboard/analysis";
+const dashboardApiR = "https://localhost:7285/api/Dashboard/total-revenue";
+const dashboardApiTO = "https://localhost:7285/api/Dashboard/order-analysis";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const Overview = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalProducts, setTotalProduct] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [analysis, setAnalysis] = useState();
-  const [topSellingKoi, setTopSellingKoi] = useState();
-  const [topSellingFish, setTopSellingFish] = useState();
+  const [analysis, setAnalysis] = useState([]);
+  const [topSellingKoi, setTopSellingKoi] = useState("");
+  const [topSellingFish, setTopSellingFish] = useState("");
+  const [totalOrders, setTotalOrders] = useState([]);
+
   useEffect(() => {
-    const fetchTotalUsers = async () => {
+    const fetchData = async () => {
       try {
         const userResponse = await axios.get(dashboardApiU);
-        setTotalUsers(userResponse.data); // Cập nhật state với dữ liệu từ API
-        console.log(userResponse.data);
         setTotalUsers(userResponse.data.totalUsers);
+
         const productResponse = await axios.get(dashboardApiP);
-        setTotalProduct(productResponse.data); // Cập nhật state với dữ liệu từ API
-        console.log(productResponse.data);
         setTotalProduct(productResponse.data.totalProducts);
+
         const revenueResponse = await axios.get(dashboardApiR);
-        setTotalRevenue(revenueResponse.data); // Cập nhật state với dữ liệu từ API
-        console.log(revenueResponse.data);
         setTotalRevenue(revenueResponse.data.totalRevenue);
-        const analysisResponse = await axios.get(dashboardApiA); // Cập nhật state với dữ liệu từ API
-        setAnalysis(analysisResponse.data);
-        console.log(analysisResponse.data);
-        setAnalysis(analysisResponse.data.analysis);
+
+        const analysisResponse = await axios.get(dashboardApiA);
+        const revenuePerMonth = analysisResponse.data.revenuePerMonth.map(
+          (item) => ({
+            name: `Month ${item.month}`,
+            uv: item.totalRevenue,
+          })
+        );
+        setAnalysis(revenuePerMonth);
         setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
         setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
-        const revenuePerMonth = analysisResponse.data.revenuePerMonth;
-        const chartData = revenuePerMonth.map((item) => ({
-          name: `Month ${item.month}`, // Hoặc có thể sử dụng tên tháng
-          uv: item.totalRevenue,
+
+        const totalOrderResponse = await axios.get(dashboardApiTO);
+        const orderData = totalOrderResponse.data.statusCounts.map((order) => ({
+          name: order.status,
+          value: order.quantity,
         }));
-        setAnalysis(chartData); // Cập nhật state với dữ liệu biểu đồ
+        setTotalOrders(orderData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    fetchTotalUsers();
-  }, []); // Chỉ chạy một lần khi component được mount
+    fetchData();
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      {/* Total User Stat */}
       <Row gutter={12}>
-        <Col span={4}>
+        <Col span={8}>
           <Card bordered={true}>
             <Statistic
               title="Total Users"
@@ -73,8 +83,7 @@ const Overview = () => {
             />
           </Card>
         </Col>
-        {/* Total Products Stat */}
-        <Col span={4}>
+        <Col span={8}>
           <Card bordered={true}>
             <Statistic
               title="Total Products"
@@ -83,11 +92,10 @@ const Overview = () => {
             />
           </Card>
         </Col>
-        {/* Total Revenues Stat */}
-        <Col span={4}>
+        <Col span={8}>
           <Card bordered={true}>
             <Statistic
-              title="Total Revenues"
+              title="Total Revenue"
               value={totalRevenue}
               formatter={formatter}
             />
@@ -95,16 +103,28 @@ const Overview = () => {
         </Col>
       </Row>
 
-      {/* Row for Top Selling Koi and Fish and Analysis */}
-      <Row gutter={16} >
-        <Col span={8}>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Top Selling Koi" bordered={true}>
+            <p>{topSellingKoi}</p>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title="Top Selling Fish" bordered={true}>
+            <p>{topSellingFish}</p>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={12}>
           <h3>Total Revenue</h3>
           <LineChart
             width={600}
             height={300}
             data={analysis}
             margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           >
             <Line type="monotone" dataKey="uv" stroke="#8884d8" />
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
@@ -113,15 +133,52 @@ const Overview = () => {
             <Tooltip />
           </LineChart>
         </Col>
-        <Col span={8}>
-          <Card title="Top Selling Koi" bordered={true} style={{ width: '100%' }}>
-            <p>{topSellingKoi}</p>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title="Top Selling Fish" bordered={true} style={{ width: '100%' }}>
-            <p>{topSellingFish}</p>
-          </Card>
+        <Col span={12}>
+          <h3>Order Analysis</h3>
+          {totalOrders && totalOrders.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={totalOrders}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {totalOrders.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <p>No order data available.</p>
+          )}
+          {/* Legend Section */}
+          <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
+            {totalOrders.map((entry, index) => (
+              <div key={`legend-${index}`} style={{ display: "flex", alignItems: "center" }}>
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    backgroundColor: COLORS[index % COLORS.length],
+                    marginRight: 8,
+                  }}
+                />
+                <span>
+                  {entry.name}:{" "}
+                  {((entry.value / totalOrders.reduce((acc, cur) => acc + cur.value, 0)) * 100).toFixed(0)}%
+                </span>
+              </div>
+            ))}
+          </div>
         </Col>
       </Row>
     </div>
