@@ -4,6 +4,9 @@ import { useState } from "react";
 const ImageGallery = ({ mainImage, additionalImages }) => {
   const [selectedImage, setSelectedImage] = useState(mainImage);
 
+  // Include the main image as the first item in the gallery if not already in additionalImages
+  const images = [mainImage, ...additionalImages.filter(img => img !== mainImage)];
+
   const handleImageClick = (image) => {
     setSelectedImage(image); // Update selected image on click
   };
@@ -20,7 +23,7 @@ const ImageGallery = ({ mainImage, additionalImages }) => {
       {/* Additional Images Gallery */}
       <h3 className="text-xl font-semibold mb-4">More Images:</h3>
       <div className="pl-[95px] grid grid-cols-5 gap-2">
-        {additionalImages.map((image, index) => (
+        {images.map((image, index) => (
           <img
             key={index}
             src={image}
