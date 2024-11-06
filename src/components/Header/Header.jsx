@@ -57,12 +57,20 @@ function Header() {
   );
 
   // Conditionally create menu items for manager or staff
-  const adminMenuItems = [
-    {
-      key: "/dashboard",
-      label: "Dashboard",
-    },
-  ];
+  const adminMenuItems =
+    user?.role === "staff"
+      ? [
+          {
+            key: "/dashboard/koi",
+            label: "Dashboard",
+          },
+        ]
+      : [
+          {
+            key: "/dashboard",
+            label: "Dashboard",
+          },
+        ];
 
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">

@@ -145,6 +145,10 @@ const ProductInfo = ({ product, averageRating }) => {
         {/* Column 1: Breeder, Gender, Age, Personality */}
         <div>
           <div className="mb-4">
+            <p className="font-semibold">ID:</p>
+            <p>{product.koiId}</p>
+          </div>
+          <div className="mb-4">
             <p className="font-semibold">Breed:</p>
             <p>{product.breed}</p>
           </div>
@@ -167,6 +171,11 @@ const ProductInfo = ({ product, averageRating }) => {
 
         {/* Column 2: Size, Feeding Amount, Health Status, Award Certificate */}
         <div>
+          <div className="mb-4">
+            <p className="font-semibold">In Stock:</p>
+            <p>{product.quantityInStock}</p>
+          </div>
+
           <div className="mb-4">
             <p className="font-semibold">Size:</p>
             <p>{product.size} cm</p>
