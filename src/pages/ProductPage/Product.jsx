@@ -212,7 +212,7 @@ const ProductPage = () => {
       <div className="w-3/4">
         <div className="flex justify-between mb-6">
           <Select
-            defaultValue="priceHigh"
+            defaultValue="priceLow"
             className="w-1/4"
             onChange={handleSortChange}
           >
@@ -227,7 +227,7 @@ const ProductPage = () => {
           >
             <Option value="3">3 Products Per Page</Option>
             <Option value="6">6 Products Per Page</Option>
-            <Option value="12">12 Products Per Page</Option>
+            <Option value="20">20 Products Per Page</Option>
           </Select>
         </div>
 

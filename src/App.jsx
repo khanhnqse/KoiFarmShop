@@ -69,7 +69,7 @@ function App() {
           <Route
             path={PATHS.PROFILE.INDEX}
             element={
-              <PrivateRoute requiredRole="customer">
+              <PrivateRoute allowedRoles={["customer", "manager", "staff"]}>
                 <UserProfile />
               </PrivateRoute>
             }
