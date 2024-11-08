@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Divider, Input, Rate, notification, Modal } from "antd";
+import { Button, Divider, Input, Rate, notification, Modal, Tag } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -16,6 +16,15 @@ const ProductInfo = ({ product, averageRating }) => {
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
+    if (product.status === "unavailable") {
+      notification.warning({
+        message: "Product Unavailable",
+        description: "This product is currently unavailable.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     if (!isAuthenticated) {
       notification.warning({
         message: "Not Logged In",
@@ -62,6 +71,15 @@ const ProductInfo = ({ product, averageRating }) => {
   };
 
   const handleBuyNow = () => {
+    if (product.status === "unavailable") {
+      notification.warning({
+        message: "Product Unavailable",
+        description: "This product is currently unavailable.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     if (!isAuthenticated) {
       notification.warning({
         message: "Not Logged In",
@@ -189,6 +207,13 @@ const ProductInfo = ({ product, averageRating }) => {
           <div className="mb-4">
             <p className="font-semibold">Health Status:</p>
             <p>{product.healthStatus}</p>
+          </div>
+
+          <div className="mb-4">
+            <p className="font-semibold">Status:</p>
+            <Tag color={product.status === "available" ? "green" : "red"}>
+              {product.status}
+            </Tag>
           </div>
 
           <div className="mb-4 flex items-center">
