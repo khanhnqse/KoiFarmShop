@@ -15,12 +15,12 @@ import {
 } from "recharts";
 import CountUp from "react-countup";
 
-// Dashboard API endpoints
 const dashboardApiU = "https://localhost:7285/api/Dashboard/total-users";
 const dashboardApiP = "https://localhost:7285/api/Dashboard/total-products";
 const dashboardApiA = "https://localhost:7285/api/Dashboard/analysis";
 const dashboardApiR = "https://localhost:7285/api/Dashboard/total-revenue";
 const dashboardApiTO = "https://localhost:7285/api/Dashboard/order-analysis";
+const dashboardApiTU = "https://localhost:7285/api/Dashboard/top-users";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -33,6 +33,9 @@ const Overview = () => {
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
   const [totalOrders, setTotalOrders] = useState([]);
+  const [setTopUsers] = useState([]);
+  const [topUserByOrders, setTopUserByOrders] = useState(null);
+  const [topUserBySpent, setTopUserBySpent] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +66,22 @@ const Overview = () => {
           value: order.quantity,
         }));
         setTotalOrders(orderData);
+
+        const topUserResponse = await axios.get(dashboardApiTU);
+        const topUsersData = topUserResponse.data;
+        setTopUsers(topUsersData);
+
+        // Find the user with the highest totalOrders
+        const topOrderUser = topUsersData.reduce((prev, curr) =>
+          curr.totalOrders > prev.totalOrders ? curr : prev
+        );
+        setTopUserByOrders(topOrderUser);
+
+        // Find the user with the highest totalSpent
+        const topSpentUser = topUsersData.reduce((prev, curr) =>
+          curr.totalSpent > prev.totalSpent ? curr : prev
+        );
+        setTopUserBySpent(topSpentUser);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -116,6 +135,33 @@ const Overview = () => {
         </Col>
       </Row>
 
+      {/* Top User by Category Cards */}
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Top User by Orders" bordered={true}>
+            {topUserByOrders ? (
+              <p>
+                {topUserByOrders.userName} - {topUserByOrders.totalOrders} orders
+              </p>
+            ) : (
+              <p>No data available</p>
+            )}
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title="Top User by Spent" bordered={true}>
+            {topUserBySpent ? (
+              <p>
+                {topUserBySpent.userName} - ${topUserBySpent.totalSpent.toLocaleString()}
+              </p>
+            ) : (
+              <p>No data available</p>
+            )}
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Remaining components */}
       <Row gutter={16}>
         <Col span={12}>
           <h3>Total Revenue</h3>
