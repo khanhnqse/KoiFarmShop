@@ -10,7 +10,6 @@ import {
   Image,
   Row,
   Col,
-  InputNumber,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
@@ -217,9 +216,25 @@ const KoiManagement = () => {
               <Form.Item
                 label="Price"
                 name="price"
-                rules={[{ required: true, message: "Please input the price!" }]}
+                rules={[{ required: true, message: "Please input the price!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -230,9 +245,24 @@ const KoiManagement = () => {
                 name="quantity"
                 rules={[
                   { required: true, message: "Please input the quantity!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Quantity must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Quantity cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -244,9 +274,24 @@ const KoiManagement = () => {
                     required: true,
                     message: "Please input the quantity in stock!",
                   },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Stock must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Stock cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>

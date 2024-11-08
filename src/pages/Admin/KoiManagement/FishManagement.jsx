@@ -5,7 +5,7 @@ import {
   Modal,
   Form,
   Input,
-  InputNumber,
+
   Row,
   Col,
   Upload,
@@ -264,9 +264,25 @@ const FishManagement = () => {
               <Form.Item
                 name="age"
                 label="Age"
-                rules={[{ required: true, message: "Please input the age!" }]}
+                rules={[{ required: true, message: "Please input the age!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Age must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Age cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -275,9 +291,23 @@ const FishManagement = () => {
               <Form.Item
                 name="size"
                 label="Size"
-                rules={[{ required: true, message: "Please input the size!" }]}
+                rules={[{ required: true, message: "Please input the size!" },   {
+                  validator: (_, value) => {
+                    if (
+                      value === undefined ||
+                      value === null ||
+                      isNaN(value)
+                    ) {
+                      return Promise.reject("Size must be a valid number!");
+                    }
+                    if (value < 0) {
+                      return Promise.reject("Size cannot be negative!");
+                    }
+                    return Promise.resolve();
+                  },
+                },]}
               >
-                <InputNumber min={0} />
+                <Input/>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -314,9 +344,24 @@ const FishManagement = () => {
                     required: true,
                     message: "Please input the feeding amount!",
                   },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Feeding amount must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Feeding amount cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -327,9 +372,24 @@ const FishManagement = () => {
                 label="Filter Rate"
                 rules={[
                   { required: true, message: "Please input the filter rate!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Filter rate must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Filter rate cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -385,23 +445,26 @@ const FishManagement = () => {
               <Form.Item
                 name="price"
                 label="Price"
-                rules={[{ required: true, message: "Please input the price!" }]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="quantityInStock"
-                label="Quantity In Stock"
                 rules={[
+                  { required: true, message: "Please input the price!" },
                   {
-                    required: true,
-                    message: "Please input the quantity in stock!",
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
