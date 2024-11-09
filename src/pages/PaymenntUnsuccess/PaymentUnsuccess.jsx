@@ -11,7 +11,7 @@ const PaymentUnsuccess = () => {
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <Result
-        status="unsuccess"
+        status="error"
         title="Payment Unsuccessful"
         subTitle="Your transaction has not been completed successfully."
         extra={[

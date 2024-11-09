@@ -5,7 +5,6 @@ import {
   Modal,
   Form,
   Input,
-  InputNumber,
   Row,
   Col,
   Upload,
@@ -264,9 +263,17 @@ const FishManagement = () => {
               <Form.Item
                 name="age"
                 label="Age"
-                rules={[{ required: true, message: "Please input the age!" }]}
+                rules={[
+                  { required: true, message: "Please input the age!" },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Age cannot be negative")
+                        : Promise.resolve(),
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -275,9 +282,17 @@ const FishManagement = () => {
               <Form.Item
                 name="size"
                 label="Size"
-                rules={[{ required: true, message: "Please input the size!" }]}
+                rules={[
+                  { required: true, message: "Please input the size!" },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Size cannot be negative")
+                        : Promise.resolve(),
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -314,9 +329,15 @@ const FishManagement = () => {
                     required: true,
                     message: "Please input the feeding amount!",
                   },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Feeding amount cannot be negative")
+                        : Promise.resolve(),
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -327,9 +348,15 @@ const FishManagement = () => {
                 label="Filter Rate"
                 rules={[
                   { required: true, message: "Please input the filter rate!" },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Filter rate cannot be negative")
+                        : Promise.resolve(),
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -385,9 +412,17 @@ const FishManagement = () => {
               <Form.Item
                 name="price"
                 label="Price"
-                rules={[{ required: true, message: "Please input the price!" }]}
+                rules={[
+                  { required: true, message: "Please input the price!" },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Price cannot be negative")
+                        : Promise.resolve(),
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -399,9 +434,15 @@ const FishManagement = () => {
                     required: true,
                     message: "Please input the quantity in stock!",
                   },
+                  {
+                    validator: (_, value) =>
+                      value < 0
+                        ? Promise.reject("Quantity in stock cannot be negative")
+                        : Promise.resolve(),
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>

@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
-import { Table, Typography, Spin, Button, notification, Tag } from "antd";
+import {
+  Table,
+  Typography,
+  Spin,
+  Button,
+  notification,
+  Tag,
+  Modal,
+} from "antd";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
 const { Title } = Typography;
+const { confirm } = Modal;
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -96,6 +105,57 @@ const OrdersPage = () => {
     }
   };
 
+  const handleCancelOrder = async (orderId) => {
+    setLoading(true);
+    try {
+      await axios.put(
+        `https://localhost:7285/api/Order/${orderId}/orderstatus-canceled`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      notification.success({
+        message: "Order Canceled",
+        description: "Your order has been canceled successfully.",
+      });
+      // Refresh orders
+      const response = await axios.get(
+        `https://localhost:7285/api/Order/my-orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+      notification.error({
+        message: "Cancellation Failed",
+        description:
+          "There was an error canceling the order. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showCancelConfirm = (orderId) => {
+    confirm({
+      title: "Are you sure you want to cancel this order?",
+      content: "This action cannot be undone.",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        handleCancelOrder(orderId);
+      },
+    });
+  };
+
   const getOrderStatusTag = (status) => {
     let color;
     switch (status) {
@@ -168,9 +228,21 @@ const OrdersPage = () => {
       render: (text, record) => (
         <>
           {record.orderStatus === "processing" && (
-            <Button type="primary" onClick={() => handlePayNow(record.orderId)}>
-              Pay Now
-            </Button>
+            <>
+              <Button
+                type="primary"
+                onClick={() => handlePayNow(record.orderId)}
+              >
+                Pay Now
+              </Button>
+              <Button
+                type="default"
+                onClick={() => showCancelConfirm(record.orderId)}
+                style={{ marginLeft: "10px" }}
+              >
+                Cancel
+              </Button>
+            </>
           )}
           {record.orderStatus === "delivering" && (
             <Button
@@ -185,9 +257,10 @@ const OrdersPage = () => {
     },
   ];
 
-  // Filter out orders with orderStatus "completed"
+  // Filter out orders with orderStatus "completed" or "cancelled"
   const filteredOrders = orders.filter(
-    (order) => order.orderStatus !== "completed"
+    (order) =>
+      order.orderStatus !== "completed" && order.orderStatus !== "canceled"
   );
 
   return (
