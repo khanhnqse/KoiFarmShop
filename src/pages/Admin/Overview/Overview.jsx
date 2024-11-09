@@ -36,6 +36,8 @@ const Overview = () => {
   const [topUsers,setTopUsers] = useState([]);
   const [topUserByOrders, setTopUserByOrders] = useState(null);
   const [topUserBySpent, setTopUserBySpent] = useState(null);
+  const [totalFeedBacks, setTotalFeedBacks] = useState();
+  const [averageRating, setAverageRating] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,10 +55,14 @@ const Overview = () => {
         const revenuePerMonth = analysisResponse.data.revenuePerMonth.map(
           (item) => ({
             name: `Month ${item.month}`,
-            uv: item.totalRevenue,
+            revenue: item.totalRevenue,
           })
         );
         setAnalysis(revenuePerMonth);
+        
+     
+        setTotalFeedBacks(analysisResponse.data.feedbackStatistics.totalFeedbacks);
+        setAverageRating(analysisResponse.data.feedbackStatistics.averageRating);
         setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
         setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
 
@@ -123,14 +129,24 @@ const Overview = () => {
       </Row>
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={6}>
           <Card title="Top Selling Koi" bordered={true}>
             <p>{topSellingKoi}</p>
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={6}>
           <Card title="Top Selling Fish" bordered={true}>
             <p>{topSellingFish}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card title="Total Feedback" bordered={true}>
+            <p>{totalFeedBacks}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card title="Average Rating" bordered={true}>
+            <p>{averageRating ? averageRating.toFixed(2) : "N/A"}</p>
           </Card>
         </Col>
       </Row>
@@ -164,7 +180,7 @@ const Overview = () => {
       {/* Remaining components */}
       <Row gutter={16}>
         <Col span={12}>
-          <h3>Total Revenue</h3>
+          <h3>Total Revenue Analysis</h3>
           <LineChart
             width={600}
             height={300}
@@ -172,11 +188,11 @@ const Overview = () => {
             margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
             style={{ width: "100%" }}
           >
-            <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+            <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
             <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
+            <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
+            <Tooltip formatter={(value) => `$${value.toLocaleString()}`}/>
           </LineChart>
         </Col>
         <Col span={12}>
