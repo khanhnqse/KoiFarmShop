@@ -4,7 +4,6 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const { TabPane } = Tabs;
 const { Option } = Select;
 
 const CheckoutTabs = () => {
@@ -48,7 +47,6 @@ const CheckoutTabs = () => {
           fullname: userData.userName,
           phone: userData.phoneNumber || "",
           address: userData.address || "",
-          deliveryOption: "standard", // Set default delivery option
           paymentMethod: "VN Pay", // Set default payment method
         });
       } catch (error) {
@@ -71,8 +69,6 @@ const CheckoutTabs = () => {
     if (activeTabKey === "1") {
       setActiveTabKey("2");
     } else if (activeTabKey === "2") {
-      setActiveTabKey("3");
-    } else if (activeTabKey === "3") {
       // Prepare the request body
       const orderFishes = cart
         .filter((item) => item.fishesId && item.quantity)
@@ -123,8 +119,6 @@ const CheckoutTabs = () => {
     }
   };
 
-  const delivery = 0.0; // Free shipping
-
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -133,7 +127,7 @@ const CheckoutTabs = () => {
   const discount = selectedPromotion
     ? (subtotal * selectedPromotion.discountRate) / 100
     : 0;
-  const total = subtotal - discount + delivery;
+  const total = subtotal - discount;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -142,6 +136,93 @@ const CheckoutTabs = () => {
     }).format(price);
   };
 
+  const tabItems = [
+    {
+      key: "1",
+      label: "1. Shipping",
+      children: (
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit}
+          form={form}
+          initialValues={{
+            paymentMethod: "VN Pay", // Set default payment method
+          }}
+        >
+          <Form.Item
+            label="Email address"
+            name="email"
+            rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input placeholder="youremail@gmail.com" />
+          </Form.Item>
+          <div className="flex space-x-4">
+            <Form.Item
+              label="Full Name"
+              name="fullname"
+              className="flex-1"
+              rules={[
+                { required: true, message: "Please input your full name!" },
+              ]}
+            >
+              <Input placeholder="Full name" />
+            </Form.Item>
+          </div>
+          <Form.Item
+            label="Phone Number"
+            name="phone"
+            rules={[
+              { required: true, message: "Please input your phone number!" },
+            ]}
+          >
+            <Input placeholder="Phone Number" />
+          </Form.Item>
+          <Form.Item
+            label="Street address"
+            name="address"
+            rules={[{ required: true, message: "Please input your address!" }]}
+          >
+            <Input placeholder="Street Address" />
+          </Form.Item>
+
+          <Button type="primary" htmlType="submit" block>
+            Continue to Payment
+          </Button>
+        </Form>
+      ),
+    },
+    {
+      key: "2",
+      label: "2. Payment",
+      children: (
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit}
+          form={form}
+          initialValues={{
+            paymentMethod: "VN Pay", // Set default payment method
+          }}
+        >
+          <Form.Item
+            label="Payment Method"
+            name="paymentMethod"
+            rules={[
+              { required: true, message: "Please select a payment method!" },
+            ]}
+          >
+            <Select placeholder="Select Payment Method" readOnly>
+              <Option value="VN Pay">VN Pay</Option>
+            </Select>
+          </Form.Item>
+
+          <Button type="primary" htmlType="submit" block>
+            Place Order
+          </Button>
+        </Form>
+      ),
+    },
+  ];
+
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
@@ -149,133 +230,11 @@ const CheckoutTabs = () => {
         <div className="flex justify-between">
           {/* Left side - Checkout Form */}
           <div className="w-2/4">
-            <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
-              {/* Shipping Tab */}
-              <TabPane tab="1. Shipping" key="1">
-                <Form
-                  layout="vertical"
-                  onFinish={handleSubmit}
-                  form={form}
-                  initialValues={{
-                    deliveryOption: "standard", // Set default delivery option
-                    paymentMethod: "VN Pay", // Set default payment method
-                  }}
-                >
-                  <Form.Item
-                    label="Email address"
-                    name="email"
-                    rules={[
-                      { required: true, message: "Please input your email!" },
-                    ]}
-                  >
-                    <Input placeholder="youremail@gmail.com" />
-                  </Form.Item>
-                  <div className="flex space-x-4">
-                    <Form.Item
-                      label="Full Name"
-                      name="fullname"
-                      className="flex-1"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your full name!",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Full name" />
-                    </Form.Item>
-                  </div>
-                  <Form.Item
-                    label="Phone Number"
-                    name="phone"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your phone number!",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Phone Number" />
-                  </Form.Item>
-                  <Form.Item
-                    label="Street address"
-                    name="address"
-                    rules={[
-                      { required: true, message: "Please input your address!" },
-                    ]}
-                  >
-                    <Input placeholder="Street Address" />
-                  </Form.Item>
-
-                  <Button type="primary" htmlType="submit" block>
-                    Continue to Delivery
-                  </Button>
-                </Form>
-              </TabPane>
-
-              {/* Delivery Tab */}
-              <TabPane tab="2. Delivery" key="2">
-                <Form
-                  layout="vertical"
-                  onFinish={handleSubmit}
-                  form={form}
-                  initialValues={{
-                    deliveryOption: "standard", // Set default delivery option
-                  }}
-                >
-                  <Form.Item
-                    label="Delivery Option"
-                    name="deliveryOption"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select a delivery option!",
-                      },
-                    ]}
-                  >
-                    <Select placeholder="Select Delivery Option" readOnly>
-                      <Option value="standard">
-                        Standard Delivery (3-5 days)
-                      </Option>
-                    </Select>
-                  </Form.Item>
-                  <Button type="primary" htmlType="submit" block>
-                    Continue to Payment
-                  </Button>
-                </Form>
-              </TabPane>
-
-              {/* Payment Tab */}
-              <TabPane tab="3. Payment" key="3">
-                <Form
-                  layout="vertical"
-                  onFinish={handleSubmit}
-                  form={form}
-                  initialValues={{
-                    paymentMethod: "VN Pay", // Set default payment method
-                  }}
-                >
-                  <Form.Item
-                    label="Payment Method"
-                    name="paymentMethod"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select a payment method!",
-                      },
-                    ]}
-                  >
-                    <Select placeholder="Select Payment Method" readOnly>
-                      <Option value="VN Pay">VN Pay</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Button type="primary" htmlType="submit" block>
-                    Place Order
-                  </Button>
-                </Form>
-              </TabPane>
-            </Tabs>
+            <Tabs
+              activeKey={activeTabKey}
+              onChange={setActiveTabKey}
+              items={tabItems}
+            />
           </div>
 
           {/* Right side - Order Summary */}
@@ -320,15 +279,18 @@ const CheckoutTabs = () => {
                   ))}
               </Select>
             </div>
+
             <hr className="my-2" />
             <div className="flex justify-between items-center mb-2">
               <p>Subtotal</p>
               <p>{formatPrice(subtotal)}</p>
             </div>
-            <div className="flex justify-between items-center mb-2">
-              <p>Delivery</p>
-              <p>{formatPrice(delivery)}</p>
-            </div>
+            {selectedPromotion && (
+              <div className="flex justify-between items-center mb-2">
+                <p>Discount Rate</p>
+                <p>{selectedPromotion.discountRate}%</p>
+              </div>
+            )}
             <hr className="my-2" />
             <div className="flex justify-between items-center font-semibold">
               <p>Total</p>
