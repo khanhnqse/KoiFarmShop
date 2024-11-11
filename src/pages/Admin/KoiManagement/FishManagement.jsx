@@ -473,11 +473,35 @@ const FishManagement = () => {
                       return Promise.resolve();
                     },
                   },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="quantityInStock"
+                label="Quantity In Stock"
+                rules={[
+                  { required: true, message: "Please input the quantity!" },
                   {
-                    validator: (_, value) =>
-                      value < 0
-                        ? Promise.reject("Quantity in stock cannot be negative")
-                        : Promise.resolve(),
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject(
+                          "Quantity in stock must be a valid number!"
+                        );
+                      }
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Quantity in stock cannot be negative!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >

@@ -68,11 +68,22 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
       compare: (a, b) => a.koiId - b.koiId,
     },
     defaultSortOrder: "ascend",
+    fixed: "left",
   },
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+  },
+  {
+    title: "Consign",
+    dataIndex: "isConsigned",
+    key: "isConsigned",
+    render: (isConsigned) => (
+      <Tag color={isConsigned ? "green" : "blue"}>
+        {isConsigned ? "Consign" : "None"}
+      </Tag>
+    ),
   },
   {
     title: "Origin",
@@ -125,6 +136,11 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
     key: "awardCertificates",
   },
   {
+    title: "In stock",
+    dataIndex: "quantityInStock",
+    key: "quantityInStock",
+  },
+  {
     title: "Status",
     dataIndex: "status",
     key: "status",
@@ -148,6 +164,7 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
         <Button icon={<MoreOutlined />} />
       </Dropdown>
     ),
+    fixed: "right",
   },
 ];
 
@@ -337,6 +354,7 @@ export const customerColumns = (
     title: "User ID",
     dataIndex: "userId",
     key: "userId",
+    fixed: "left",
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
@@ -384,6 +402,7 @@ export const customerColumns = (
   {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
         overlay={customerMenu(
@@ -640,6 +659,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Feedback ID",
     dataIndex: "feedbackId",
     key: "feedbackId",
+    fixed: "left",
     sorter: {
       compare: (a, b) => a.feedbackId - b.feedbackId,
     },
@@ -682,6 +702,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
   {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
         overlay={feedbackMenu(record, handleOpenModal, handleDeleteFeedback)}
@@ -721,6 +742,7 @@ export const purchaseHistoryColumns = (
       compare: (a, b) => a.orderId - b.orderId,
     },
     defaultSortOrder: "ascend",
+    fixed: "left",
   },
   {
     title: "User Name",
@@ -810,6 +832,7 @@ export const purchaseHistoryColumns = (
   {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
         overlay={purchaseHistoryMenu(
@@ -972,11 +995,7 @@ export const orderColumns = (
     dataIndex: "paymentMethod",
     key: "paymentMethod",
   },
-  {
-    title: "Delivery Status",
-    dataIndex: "deliveryStatus",
-    key: "deliveryStatus",
-  },
+
   {
     title: "Action",
     key: "action",
