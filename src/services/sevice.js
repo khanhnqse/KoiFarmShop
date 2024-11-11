@@ -436,6 +436,7 @@ export const updateOrderStatus = async (orderId, newStatus, token) => {
 const consignmentApi = "https://localhost:7285/api/Consignment";
 
 // Consignment management service
+// Consignment management service
 export const fetchConsignmentData = async (token) => {
   try {
     const response = await axios.get(`${consignmentApi}/get-consignments`, {
@@ -483,6 +484,25 @@ export const saveConsignment = async (consignment, isUpdateMode, token) => {
   } catch (error) {
     message.error("Failed to save consignment data");
     console.error("Error saving consignment data:", error);
+  }
+};
+
+export const updateConsignmentStatus = async (consignmentId, status, token) => {
+  try {
+    const url = `${consignmentApi}/update-status-consignment-take-care-in-and-out`;
+    const payload = {
+      consignmentId,
+      status,
+    };
+    await axios.put(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Consignment status updated successfully");
+  } catch (error) {
+    message.error("Failed to update consignment status");
+    console.error("Error updating consignment status:", error);
   }
 };
 

@@ -35,6 +35,7 @@ import FishDetailPage from "./pages/FishDetailPage/FishDetailPage";
 import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
 import PaymentUnsuccess from "./pages/PaymenntUnsuccess/PaymentUnsuccess";
 import OrdersPage from "./pages/OrderPage/OrderPage";
+import MyConsignment from "./pages/MyConsignment/MyConsignment";
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
           <Route path={PATHS.REGISTER} element={<RegisterPage />} />
           <Route path={PATHS.HISTORY} element={<OrderHistoryPage />} />
           <Route path={PATHS.ORDER} element={<OrdersPage />} />
+          <Route path={PATHS.CONSIGNMENT_HISTORY} element={<MyConsignment />} />
           <Route
             path={PATHS.DASHBOARD.INDEX}
             element={

@@ -19,6 +19,7 @@ export const PATHS = {
   SUCCESS: "/success",
   UNSUCCESS: "/unsuccess",
   ORDER: "/orders",
+  CONSIGNMENT_HISTORY: "/my-consignment",
   DASHBOARD: {
     INDEX: "/dashboard",
     CHILDREN: {

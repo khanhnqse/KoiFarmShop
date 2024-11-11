@@ -50,6 +50,12 @@ function Header() {
       <Menu.Item key="my-order" onClick={() => navigate("/orders")}>
         My Orders
       </Menu.Item>
+      <Menu.Item
+        key="my-consignment"
+        onClick={() => navigate("/my-consignment")}
+      >
+        My Consignment
+      </Menu.Item>
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
