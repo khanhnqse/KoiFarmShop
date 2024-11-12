@@ -204,7 +204,7 @@ const FishManagement = () => {
         dataSource={fishData}
         loading={loading}
         rowKey="koiId"
-        scroll={{ x: 1500, y: 450 }}
+        scroll={{ x: 2000, y: 600 }}
         title={() => "General Information"}
       />
       <Table

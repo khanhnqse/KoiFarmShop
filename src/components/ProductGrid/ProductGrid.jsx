@@ -66,7 +66,9 @@ const ProductGrid = ({ products }) => {
             />
 
             <h3 className="text-lg font-semibold">{product.name}</h3>
-            <h3 className="text-lg font-semibold">{product.koiId}</h3>
+            <h5 className="text-lg font-semibold text-red-500">
+              KK{product.koiId}
+            </h5>
             <p className="text-sm text-gray-500 pb-3">
               {product.description.slice(0, 100)}...
             </p>
