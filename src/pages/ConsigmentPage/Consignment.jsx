@@ -23,6 +23,16 @@ const Consignment = () => {
     setIsPolicyModalVisible(false);
   };
 
+  const handleDownloadAgreement = () => {
+    const link = document.createElement("a");
+    link.href =
+      "https://firebasestorage.googleapis.com/v0/b/student-management-c2fb4.appspot.com/o/HỢP ĐỒNG KÝ GỬI CÁ KOI.docx?alt=media";
+    link.download = "Consignment_Agreement.docx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div
       className="consignment-background"
@@ -48,6 +58,18 @@ const Consignment = () => {
           width: "100%",
         }}
       >
+        <div className="mt-4 text-right">
+          <Button type="default" onClick={handleDownloadAgreement}>
+            Download Contract
+          </Button>
+          <Button
+            type="default"
+            onClick={showPolicyModal}
+            style={{ marginLeft: "10px" }}
+          >
+            View Policy
+          </Button>
+        </div>
         <Title level={3} className="form-title">
           Consignment Koi
         </Title>
@@ -60,27 +82,6 @@ const Consignment = () => {
             <ConsignmentInside />
           </TabPane>
         </Tabs>
-
-        <div className="mt-4 text-right">
-          <Button
-            type="default"
-            onClick={() =>
-              window.open(
-                "https://docs.google.com/document/d/1xdbrSZMbdxcW5i8LMrqzJNXJ_8CrKdv9XobRaIeVWwY/edit?usp=sharing",
-                "_blank"
-              )
-            }
-          >
-            Consignment agreement
-          </Button>
-          <Button
-            type="default"
-            onClick={showPolicyModal}
-            style={{ marginLeft: "10px" }}
-          >
-            View Policy
-          </Button>
-        </div>
       </div>
 
       {/* Policy Modal */}

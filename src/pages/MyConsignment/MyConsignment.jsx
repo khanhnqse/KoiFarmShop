@@ -13,6 +13,7 @@ import {
   Tag,
   Dropdown,
   Menu,
+  notification,
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -63,6 +64,33 @@ const MyConsignment = () => {
     setCurrentConsignment(null);
   };
 
+  const handlePayNow = async (consignmentId, takeCareFee) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `https://localhost:7285/api/VNPay/CreateConsignmentPayment?consignmentId=${consignmentId}&takeCareFee=${takeCareFee}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const { paymentUrl } = response.data;
+      // window.location.href = paymentUrl;
+      window.open(paymentUrl, "_blank");
+    } catch (error) {
+      console.error("Failed to initiate payment:", error);
+      notification.error({
+        message: "Payment Failed",
+        description:
+          "There was an error initiating the payment. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const statusColors = {
     approved: "green",
     "pending payment": "orange",
@@ -81,12 +109,26 @@ const MyConsignment = () => {
       </Menu.Item>
     </Menu>
   );
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      return false;
+    }
+  };
 
   const columns = [
     {
       title: "Consignment ID",
       dataIndex: "consignmentId",
       key: "consignmentId",
+      fixed: "left",
+      sorter: {
+        compare: (a, b) => a.consignmentId - b.consignmentId,
+      },
+      defaultSortOrder: "descend",
     },
     {
       title: "User Name",
@@ -108,7 +150,7 @@ const MyConsignment = () => {
       dataIndex: "consignmentType",
       key: "consignmentType",
       render: (text) => (
-        <Tag color={text === "online" ? "green" : "red"}>{text}</Tag>
+        <Tag color={text === "online" ? "blue" : "green"}>{text}</Tag>
       ),
     },
     {
@@ -118,12 +160,24 @@ const MyConsignment = () => {
       render: (text) => <Tag color={statusColors[text]}>{text}</Tag>,
     },
     {
-      title: "Consignment Price",
+      title: "Sale Price",
       dataIndex: "consignmentPrice",
       key: "consignmentPrice",
       render: (money) =>
-        money === undefined || money === null
-          ? "In progress"
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
+    },
+    {
+      title: "Care Price",
+      dataIndex: "takeCareFee",
+      key: "takeCareFee",
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
           : `${money.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
@@ -150,6 +204,14 @@ const MyConsignment = () => {
       title: "Consignment Detail",
       dataIndex: "consignmentDetail",
       key: "consignmentDetail",
+      render: (text) =>
+        isValidUrl(text) ? (
+          <a href={text} target="_blank" rel="noopener noreferrer">
+            View Detail
+          </a>
+        ) : (
+          text
+        ),
     },
     {
       title: "Action",
@@ -158,6 +220,25 @@ const MyConsignment = () => {
         <Dropdown overlay={menu(record)} trigger={["click"]}>
           <Button icon={<MoreOutlined />} />
         </Dropdown>
+      ),
+    },
+    {
+      title: "Payment",
+      key: "action",
+      fixed: "right",
+      render: (text, record) => (
+        <>
+          {record.consignmentType === "offline" && (
+            <Button
+              type="primary"
+              onClick={() =>
+                handlePayNow(record.consignmentId, record.takeCareFee)
+              }
+            >
+              Pay Now
+            </Button>
+          )}
+        </>
       ),
     },
   ];
@@ -227,10 +308,12 @@ const MyConsignment = () => {
               {currentConsignment.koi.healthStatus}
             </Descriptions.Item>
             <Descriptions.Item label="Price">
-              {currentConsignment.koi.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
+              {currentConsignment.koi?.price
+                ? currentConsignment.koi.price.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+                : "N/A"}
             </Descriptions.Item>
             <Descriptions.Item label="Image">
               <Image

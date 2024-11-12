@@ -78,6 +78,11 @@ function Header() {
           },
         ];
 
+  // Conditionally include "Consignment" menu item
+  const menuItems = isAuthenticated
+    ? MenuItems
+    : MenuItems.filter((item) => item.key !== "/consignment");
+
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">
       <div className="logo">
@@ -99,25 +104,27 @@ function Header() {
         items={
           user?.role === "manager" || user?.role === "staff"
             ? adminMenuItems
-            : MenuItems
+            : menuItems
         } // Conditionally render menu items
       />
 
-      <div className="cart pt-3">
-        {user?.role === "manager" || user?.role === "staff" ? (
-          <Typography>
-            Welcome {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-          </Typography>
-        ) : (
-          <Link to="/cart">
-            <Badge count={cart.length} showZero className="pb-1">
-              <ShoppingCartOutlined
-                style={{ fontSize: "24px", color: "#000" }}
-              />
-            </Badge>
-          </Link>
-        )}
-      </div>
+      {isAuthenticated && (
+        <div className="cart pt-3">
+          {user?.role === "manager" || user?.role === "staff" ? (
+            <Typography>
+              Welcome {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            </Typography>
+          ) : (
+            <Link to="/cart">
+              <Badge count={cart.length} showZero className="pb-1">
+                <ShoppingCartOutlined
+                  style={{ fontSize: "24px", color: "#000" }}
+                />
+              </Badge>
+            </Link>
+          )}
+        </div>
+      )}
       <div className="user-profile">
         {isAuthenticated ? (
           <Dropdown overlay={userMenu} trigger={["click"]}>

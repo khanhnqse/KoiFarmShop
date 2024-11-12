@@ -292,12 +292,24 @@ const ConsignmentManagement = () => {
       render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
-      title: "Consignment Price",
+      title: "Sale Price",
       dataIndex: "consignmentPrice",
       key: "consignmentPrice",
       render: (money) =>
-        money === undefined || money === null
-          ? "Not Available"
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
+    },
+    {
+      title: "Care Price",
+      dataIndex: "takeCareFee",
+      key: "takeCareFee",
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
           : `${money.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",

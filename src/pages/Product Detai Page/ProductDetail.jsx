@@ -21,7 +21,6 @@ const ProductDetailPage = () => {
     try {
       const response = await axios.get(productApi);
       const productData = response.data;
-      // Parse the additionImage field into an array of image URLs
       productData.additionImage = productData.additionImage
         ? productData.additionImage.split(", ")
         : [];
@@ -42,16 +41,16 @@ const ProductDetailPage = () => {
     }
   };
 
-  const fetchAverageRating = async () => {
-    try {
-      const response = await axios.get(averageRatingApi);
-      setAverageRating(response.data.averageRating);
-    } catch (error) {
-      console.error("Error fetching average rating data:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchAverageRating = async () => {
+      try {
+        const response = await axios.get(averageRatingApi);
+        setAverageRating(response.data.averageRating);
+      } catch (error) {
+        console.error("Error fetching average rating data:", error);
+      }
+    };
+
     fetchProduct();
     fetchFeedbacks();
     fetchAverageRating();
@@ -72,17 +71,14 @@ const ProductDetailPage = () => {
   return (
     <div className="container mx-auto p-10">
       <div className="flex">
-        {/* Left Section: Image Gallery */}
         <ImageGallery
           mainImage={product.imageKoi}
           additionalImages={product.additionImage}
         />
 
-        {/* Right Section: Product Info */}
         <ProductInfo product={product} averageRating={averageRating} />
       </div>
 
-      {/* Product Specifications or Details */}
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Koi Details</h2>
         <Row>
@@ -92,7 +88,6 @@ const ProductDetailPage = () => {
         </Row>
       </div>
 
-      {/* Rating and Review Section */}
       <RatingAndReview product={product} feedbacks={feedbacks} />
     </div>
   );

@@ -4,15 +4,14 @@ import {
   Button,
   Select,
   Typography,
-  Upload,
   message,
   DatePicker,
   Form,
   Spin,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import UploadImage from "../../components/UploadImage/UploadImage";
 import "./Consignment.css";
 
 const { Option } = Select;
@@ -100,10 +99,6 @@ const ConsignmentInside = () => {
     }));
   };
 
-  const handleUploadChange = ({ fileList }) => {
-    setFileList(fileList);
-  };
-
   const handleSubmit = async () => {
     try {
       await form.validateFields();
@@ -170,15 +165,6 @@ const ConsignmentInside = () => {
           borderRadius: "8px",
         }}
       >
-        <Upload
-          className="upload-section"
-          beforeUpload={() => false}
-          fileList={fileList}
-          onChange={handleUploadChange}
-        >
-          <Button icon={<UploadOutlined />}>Add Image/Video</Button>
-        </Upload>
-
         <div className="consignment-form">
           <Title level={4} className="section-title">
             Detailed Information
@@ -290,6 +276,15 @@ const ConsignmentInside = () => {
                     placeholder="Consignment Date To"
                     onChange={handleDateChange}
                     className="input-field"
+                    disabledDate={(current) => {
+                      const today = new Date();
+                      // Disable past dates and dates within 7 days from today
+                      return (
+                        current &&
+                        (current < today.setHours(0, 0, 0, 0) ||
+                          current < today.setDate(today.getDate() + 7))
+                      );
+                    }}
                   />
                 </Form.Item>
               )}
@@ -313,24 +308,18 @@ const ConsignmentInside = () => {
                 />
               </Form.Item>
 
-              <Form.Item
+              <UploadImage
                 label="Consignment Detail"
-                name="consignmentDetail"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input the consignment detail!",
-                  },
-                ]}
-              >
-                <Input
-                  name="consignmentDetail"
-                  placeholder="Consignment Detail"
-                  value={productInfo.consignmentDetail}
-                  onChange={handleInputChange}
-                  className="input-field"
-                />
-              </Form.Item>
+                fileList={fileList}
+                setFileList={setFileList}
+                setUrl={(url) =>
+                  handleInputChange({
+                    target: { name: "consignmentDetail", value: url },
+                  })
+                }
+                maxCount={1}
+                accept=".docx"
+              />
 
               <Form.Item>
                 <Button

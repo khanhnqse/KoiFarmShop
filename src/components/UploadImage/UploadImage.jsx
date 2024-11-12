@@ -10,6 +10,7 @@ const UploadImage = ({
   setFileList,
   setUrl,
   maxCount = 1,
+  accept = "image/*", // Default to accept images
 }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -48,11 +49,11 @@ const UploadImage = ({
 
   return (
     <Form.Item
-      label={label}
+      label={label || "Upload"} // Default label if undefined
       rules={[
         {
           required: true,
-          message: `Please upload the ${label.toLowerCase()}!`,
+          message: `Please upload the ${label ? label.toLowerCase() : "file"}!`,
         },
       ]}
     >
@@ -63,6 +64,7 @@ const UploadImage = ({
         onChange={handleUploadChange}
         customRequest={customUpload}
         multiple={maxCount > 1}
+        accept={accept} // Accept prop to specify file types
       >
         {fileList.length >= maxCount ? null : uploadButton}
       </Upload>

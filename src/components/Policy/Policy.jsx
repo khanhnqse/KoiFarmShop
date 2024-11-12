@@ -13,11 +13,10 @@ const Policy = () => {
           <Paragraph>
             Chính Sách Ký Gửi Cá Koi Online và Offline (&quot;Chính Sách&quot;)
             này quy định các điều khoản khi chủ sở hữu cá koi sử dụng dịch vụ ký
-            gửi của [Tên Trang Trại/ Công Ty Koi] để bán hoặc chăm sóc cá. Chính
-            sách này được áp dụng cho cả ký gửi trực tiếp tại trang trại
-            (offline) và ký gửi thông qua hệ thống trực tuyến (online). Việc sử
-            dụng bất kỳ hình thức ký gửi nào đều đồng nghĩa với việc bạn đã chấp
-            nhận các điều khoản này.
+            gửi của KoiShop để bán hoặc chăm sóc cá. Chính sách này được áp dụng
+            cho cả ký gửi trực tuyến (online) trên website của KoiShop và ký gửi
+            trực tiếp tại trang trại (offline). Việc sử dụng bất kỳ hình thức ký
+            gửi nào đều đồng nghĩa với việc bạn đã chấp nhận các điều khoản này.
           </Paragraph>
         </section>
 
@@ -26,50 +25,34 @@ const Policy = () => {
         <section>
           <Title level={2}>2. Điều Khoản Ký Gửi</Title>
 
-          <Title level={3}>2.1 Ký Gửi Offline (Trực Tiếp tại Trang Trại)</Title>
+          <Title level={3}>2.1 Ký Gửi Online (Bán Trên Website của Shop)</Title>
           <ul className="list-disc pl-5">
             <li>
-              <b>Mục Đích Ký Gửi:</b> Chủ sở hữu có thể ký gửi cá koi tại trang
-              trại để được chăm sóc chuyên nghiệp hoặc chờ bán.
+              <b>Mục Đích Ký Gửi:</b> Chủ sở hữu có thể ký gửi cá koi trên
+              website của KoiShop để bán cho khách hàng qua nền tảng online.
             </li>
             <li>
               <b>Phí Ký Gửi:</b> Một khoản phí cố định hoặc tỷ lệ phần trăm được
-              tính dựa trên loại hình ký gửi. Phí này bao gồm chi phí chăm sóc
-              và bảo trì cơ sở vật chất.
+              tính dựa trên chi phí của cá.
             </li>
             <li>
-              <b>Thời Hạn Ký Gửi:</b> Thời gian ký gửi tiêu chuẩn là [thời hạn,
-              ví dụ: 3 tháng]. Sau thời hạn, chủ sở hữu có thể lựa chọn gia hạn
-              hoặc nhận lại cá.
-            </li>
-            <li>
-              <b>Giao Dịch Mua Bán:</b> Mọi giao dịch mua bán cá koi sẽ do đội
-              ngũ trang trại thực hiện. Sau khi bán, [phần trăm, ví dụ: 80%] số
-              tiền bán sẽ được chuyển cho chủ sở hữu sau khi trừ các khoản phí.
+              <b>Quy Trình Đăng Ký Online:</b> Chủ sở hữu đăng ký ký gửi trên
+              website của KoiShop và cung cấp các thông tin cần thiết về cá koi,
+              bao gồm hình ảnh, thông tin giống loài, tình trạng sức khỏe, và
+              giá bán mong muốn.
             </li>
           </ul>
 
-          <Title level={3}>2.2 Ký Gửi Online (Qua Hệ Thống Trực Tuyến)</Title>
+          <Title level={3}>2.2 Ký Gửi Offline (Chăm Sóc tại Trang Trại)</Title>
           <ul className="list-disc pl-5">
             <li>
-              <b>Quy Trình Đăng Ký Online:</b> Chủ sở hữu đăng ký ký gửi trên
-              website hoặc ứng dụng của [Tên Trang Trại/ Công Ty Koi] và cung
-              cấp các thông tin cần thiết về cá koi, bao gồm hình ảnh, thông tin
-              giống loài, tình trạng sức khỏe, và giá bán mong muốn.
+              <b>Phí Ký Gửi:</b> Một khoản phí cố định được tính dựa trên số
+              tuần ký gửi (ký gửi tối thiểu phải 7 ngày). Phí này bao gồm chi
+              phí chăm sóc và bảo trì cơ sở vật chất.
             </li>
             <li>
-              <b>Phí Ký Gửi:</b> Các khoản phí sẽ được hiển thị rõ ràng khi đăng
-              ký ký gửi online. Chủ sở hữu có thể thanh toán trực tuyến.
-            </li>
-            <li>
-              <b>Giao Dịch Mua Bán Online:</b> Các giao dịch bán cá sẽ được thực
-              hiện qua nền tảng online. Sau khi bán, chủ sở hữu nhận được phần
-              trăm giá trị bán hàng đã thỏa thuận.
-            </li>
-            <li>
-              <b>Chuyển Giao Cá:</b> Khi có giao dịch thành công, [Tên Trang
-              Trại/ Công Ty Koi] sẽ sắp xếp vận chuyển cá đến người mua hoặc yêu
-              cầu chủ sở hữu cung cấp cá nếu họ tự giữ cá.
+              <b>Thời Hạn Ký Gửi:</b>Thời gian ký gửi tiêu chuẩn là 7 ngày. Sau
+              thời hạn, chủ sở hữu có thể lựa chọn gia hạn hoặc nhận lại cá.
             </li>
           </ul>
         </section>
@@ -124,13 +107,13 @@ const Policy = () => {
           <ul className="list-disc pl-5">
             <li>
               <b>Thỏa Thuận Giá Bán:</b> Giá bán cá sẽ được thỏa thuận giữa chủ
-              sở hữu và [Tên Trang Trại/ Công Ty Koi], có thể điều chỉnh dựa
-              trên nhu cầu và thị trường.
+              sở hữu và KoiShop, có thể điều chỉnh dựa trên nhu cầu và thị
+              trường.
             </li>
             <li>
               <b>Phân Chia Doanh Thu:</b> Doanh thu từ việc bán cá sẽ được chia
-              phần trăm giữa chủ sở hữu và [Tên Trang Trại/ Công Ty Koi]. Phần
-              trăm cụ thể sẽ được quy định trong hợp đồng ký gửi.
+              phần trăm giữa chủ sở hữu và KoiShop. Phần trăm cụ thể sẽ được quy
+              định trong hợp đồng ký gửi.
             </li>
           </ul>
         </section>
@@ -158,9 +141,9 @@ const Policy = () => {
           <Title level={2}>7. Trách Nhiệm Bảo Vệ và Bảo Hiểm</Title>
           <ul className="list-disc pl-5">
             <li>
-              <b>Mất Mát và Hư Hỏng:</b> [Tên Trang Trại/ Công Ty Koi] không
-              chịu trách nhiệm cho bất kỳ mất mát hoặc hư hỏng nào xảy ra do
-              thiên tai, trộm cắp hoặc sự cố ngoài ý muốn.
+              <b>Mất Mát và Hư Hỏng:</b> KoiShop không chịu trách nhiệm cho bất
+              kỳ mất mát hoặc hư hỏng nào xảy ra do thiên tai, trộm cắp hoặc sự
+              cố ngoài ý muốn.
             </li>
             <li>
               <b>Lựa Chọn Bảo Hiểm:</b> Chủ sở hữu có thể lựa chọn mua bảo hiểm
@@ -174,9 +157,9 @@ const Policy = () => {
         <section>
           <Title level={2}>8. Cam Kết</Title>
           <Paragraph>
-            Bằng việc ký gửi cá koi qua hệ thống online hoặc offline của [Tên
-            Trang Trại/ Công Ty Koi], bạn xác nhận đã đọc, hiểu, và đồng ý với
-            các điều khoản và điều kiện trong Chính Sách này.
+            Bằng việc ký gửi cá koi qua hệ thống online hoặc offline của
+            KoiShop, bạn xác nhận đã đọc, hiểu, và đồng ý với các điều khoản và
+            điều kiện trong Chính Sách này.
           </Paragraph>
         </section>
       </Typography>

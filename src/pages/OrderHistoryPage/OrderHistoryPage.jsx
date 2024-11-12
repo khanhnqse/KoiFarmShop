@@ -51,6 +51,12 @@ const OrderHistoryPage = () => {
       setOrderHistory(response.data);
     } catch (error) {
       console.error("Failed to fetch order history:", error);
+      notification.error({
+        message: "Failed to fetch order history",
+        description:
+          error.response?.data?.message ||
+          "An error occurred while fetching the order history.",
+      });
     } finally {
       setLoading(false);
     }
@@ -113,8 +119,10 @@ const OrderHistoryPage = () => {
       console.error("Failed to submit feedback:", error);
       notification.error({
         message: "Feedback Submission Failed",
+
         description:
-          "There was an error submitting your feedback. Please try again.",
+          error.response?.data ||
+          "There was an error submitting your feedback.",
       });
     }
   };
@@ -132,6 +140,10 @@ const OrderHistoryPage = () => {
       title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
+      sorter: {
+        compare: (a, b) => a.orderId - b.orderId,
+      },
+      defaultSortOrder: "descend",
     },
     {
       title: "Purchase Date",
@@ -149,6 +161,12 @@ const OrderHistoryPage = () => {
       title: "Discount Money",
       dataIndex: "discountMoney",
       key: "discountMoney",
+      render: (money) => `${money.toLocaleString()} VND`,
+    },
+    {
+      title: "Final Money",
+      dataIndex: "finalMoney",
+      key: "finalMoney",
       render: (money) => `${money.toLocaleString()} VND`,
     },
     {
@@ -181,9 +199,9 @@ const OrderHistoryPage = () => {
       render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
-      title: "Promotion ID",
-      dataIndex: "promotionId",
-      key: "promotionId",
+      title: "Promotion Name",
+      dataIndex: "promotionName",
+      key: "promotionName",
     },
     {
       title: "Earned Points",
