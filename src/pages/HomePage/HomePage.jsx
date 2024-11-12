@@ -2,7 +2,7 @@ import Banner from "../../components/Banner/Banner";
 import FeaturedProducts from "../../components/FeaturedProducts/FeaturedProducts";
 import Hero from "../../components/HeroSection/HeroSection";
 import TopProducts from "../../components/TopProduct/TopProduct";
-import banner2 from "../../assets/banner2.png";
+import banner2 from "../../assets/Banner2.png";
 import Title from "antd/es/typography/Title";
 import Subscribe from "../../components/Subscribe/Subscribe";
 
