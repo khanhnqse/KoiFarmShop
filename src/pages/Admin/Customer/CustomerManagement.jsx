@@ -120,7 +120,7 @@ const CustomerManagement = () => {
                   { required: true, message: "Please input the user name!" },
                 ]}
               >
-                <Input />
+                <Input readOnly />
               </Form.Item>
             </Col>
             <Col span={12}>

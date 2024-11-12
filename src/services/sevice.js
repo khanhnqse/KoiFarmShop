@@ -314,36 +314,6 @@ export const fetchPurchaseHistoryData = async () => {
   }
 };
 
-// Save Purchase History (Create or Update)
-export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
-  try {
-    if (isUpdateMode) {
-      await axios.put(
-        `${purchasehistoryApi}/${purchaseHistory.orderId}`,
-        purchaseHistory
-      );
-      message.success("Purchase history updated successfully");
-    } else {
-      await axios.post(purchasehistoryApi, purchaseHistory);
-      message.success("Purchase history created successfully");
-    }
-  } catch (error) {
-    message.error("Failed to save purchase history data");
-    console.error("Error saving purchase history data:", error);
-  }
-};
-
-// Delete Purchase History
-export const deletePurchaseHistory = async (orderId) => {
-  try {
-    await axios.delete(`${purchasehistoryApi}/${orderId}`);
-    message.success("Purchase history deleted successfully");
-  } catch (error) {
-    message.error("Failed to delete purchase history");
-    console.error("Error deleting purchase history:", error);
-  }
-};
-
 
 const orderApi = "https://localhost:7285/api/Order";
 
@@ -489,7 +459,7 @@ export const saveConsignment = async (consignment, isUpdateMode, token) => {
 
 export const updateConsignmentStatus = async (consignmentId, status, token) => {
   try {
-    const url = `${consignmentApi}/update-status-consignment-take-care-in-and-out`;
+    const url = `${consignmentApi}/update-consignment-order-status`;
     const payload = {
       consignmentId,
       status,

@@ -20,7 +20,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+
 import { MoreOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
@@ -33,7 +33,7 @@ const OrderHistoryPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedKoi, setSelectedKoi] = useState(null);
   const { user, token } = useAuth();
-  const navigate = useNavigate();
+
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -70,11 +70,6 @@ const OrderHistoryPage = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedOrder(null);
-  };
-
-  const handleNavigateToConsignment = (koiId) => {
-    console.log("Navigating with koiId:", koiId); // Log koiId before navigating
-    navigate("/consignment", { state: { koiId } });
   };
 
   const handleFeedback = (koi) => {
@@ -280,19 +275,11 @@ const OrderHistoryPage = () => {
                           <p>
                             <strong>Quantity:</strong> {koi.quantity}
                           </p>
-                          <Button
-                            className="mt-2"
-                            type="primary"
-                            onClick={() =>
-                              handleNavigateToConsignment(koi.koiId)
-                            }
-                          >
-                            Consignment
-                          </Button>
+
                           <Button
                             type="default"
                             onClick={() => handleFeedback(koi)}
-                            style={{ marginLeft: "10px" }}
+                            style={{ margin: "10px" }}
                           >
                             Give Feedback
                           </Button>

@@ -14,11 +14,14 @@ import {
   Dropdown,
   Menu,
   notification,
+  Form,
+  Input,
 } from "antd";
 import axios from "axios";
 import moment from "moment";
 import { useAuth } from "../../context/AuthContext";
 import { MoreOutlined } from "@ant-design/icons";
+import UploadImage from "../../components/UploadImage/UploadImage";
 
 const { Title } = Typography;
 
@@ -27,7 +30,10 @@ const MyConsignment = () => {
   const [consignments, setConsignments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [currentConsignment, setCurrentConsignment] = useState(null);
+  const [fileList, setFileList] = useState([]);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (user) {
@@ -64,6 +70,62 @@ const MyConsignment = () => {
     setCurrentConsignment(null);
   };
 
+  const handleOpenUpdateModal = (record) => {
+    setCurrentConsignment(record);
+    setIsUpdateModalVisible(true);
+    form.setFieldsValue({
+      consignmentPrice: record.consignmentPrice,
+      consignmentTitle: record.consignmentTitle,
+      consignmentDetail: record.consignmentDetail,
+    });
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalVisible(false);
+    setCurrentConsignment(null);
+    setFileList([]);
+    form.resetFields();
+  };
+
+  const handleUpdateConsignment = async (values) => {
+    setLoading(true);
+    try {
+      const { consignmentPrice, consignmentTitle, consignmentDetail } = values;
+      const requestBody = {
+        consignmentPrice,
+        consignmentTitle,
+        consignmentDetail,
+      };
+
+      await axios.put(
+        `https://localhost:7285/api/Consignment/update-order-consignment/${currentConsignment.consignmentId}`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      notification.success({
+        message: "Consignment Updated",
+        description: "Consignment details updated successfully!",
+      });
+
+      fetchConsignmentData(user.userId);
+      handleCloseUpdateModal();
+    } catch (error) {
+      console.error("Failed to update consignment:", error);
+      notification.error({
+        message: "Update Failed",
+        description:
+          "There was an error updating the consignment. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePayNow = async (consignmentId, takeCareFee) => {
     setLoading(true);
     try {
@@ -77,7 +139,6 @@ const MyConsignment = () => {
         }
       );
       const { paymentUrl } = response.data;
-      // window.location.href = paymentUrl;
       window.open(paymentUrl, "_blank");
     } catch (error) {
       console.error("Failed to initiate payment:", error);
@@ -107,8 +168,12 @@ const MyConsignment = () => {
       >
         View Details
       </Menu.Item>
+      <Menu.Item key="update" onClick={() => handleOpenUpdateModal(record)}>
+        Update
+      </Menu.Item>
     </Menu>
   );
+
   const isValidUrl = (string) => {
     try {
       new URL(string);
@@ -150,7 +215,7 @@ const MyConsignment = () => {
       dataIndex: "consignmentType",
       key: "consignmentType",
       render: (text) => (
-        <Tag color={text === "online" ? "blue" : "green"}>{text}</Tag>
+        <Tag color={text === "online" ? "green" : "red"}>{text}</Tag>
       ),
     },
     {
@@ -224,7 +289,7 @@ const MyConsignment = () => {
     },
     {
       title: "Payment",
-      key: "action",
+      key: "payment",
       fixed: "right",
       render: (text, record) => (
         <>
@@ -324,6 +389,80 @@ const MyConsignment = () => {
             </Descriptions.Item>
           </Descriptions>
         )}
+      </Modal>
+
+      <Modal
+        title="Update Consignment"
+        visible={isUpdateModalVisible}
+        onCancel={handleCloseUpdateModal}
+        footer={[
+          <Button key="cancel" onClick={handleCloseUpdateModal}>
+            Cancel
+          </Button>,
+          <Button
+            key="update"
+            type="primary"
+            onClick={() => form.submit()}
+            loading={loading}
+          >
+            Update
+          </Button>,
+        ]}
+      >
+        <Spin spinning={loading}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleUpdateConsignment}
+          >
+            {currentConsignment?.consignmentType !== "offline" && (
+              <Form.Item
+                label="Consignment Price"
+                name="consignmentPrice"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the consignment price!",
+                  },
+                ]}
+              >
+                <Input placeholder="Consignment Price" />
+              </Form.Item>
+            )}
+            <Form.Item
+              label="Consignment Title"
+              name="consignmentTitle"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the consignment title!",
+                },
+              ]}
+            >
+              <Input placeholder="Consignment Title" />
+            </Form.Item>
+            <Form.Item
+              label="Consignment Detail"
+              name="consignmentDetail"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload the consignment detail!",
+                },
+              ]}
+            >
+              <UploadImage
+                fileList={fileList}
+                setFileList={setFileList}
+                setUrl={(url) =>
+                  form.setFieldsValue({ consignmentDetail: url })
+                }
+                maxCount={1}
+                accept=".docx"
+              />
+            </Form.Item>
+          </Form>
+        </Spin>
       </Modal>
     </div>
   );

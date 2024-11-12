@@ -1,4 +1,13 @@
-import { Tabs, Form, Input, Button, Select, notification, Spin } from "antd";
+import {
+  Tabs,
+  Form,
+  Input,
+  Button,
+  Select,
+  notification,
+  Spin,
+  InputNumber,
+} from "antd";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -14,6 +23,8 @@ const CheckoutTabs = () => {
   const [promotions, setPromotions] = useState([]);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [usedPoints, setUsedPoints] = useState(0);
   const location = useLocation();
   const { cart } = location.state;
   const navigate = useNavigate();
@@ -49,6 +60,7 @@ const CheckoutTabs = () => {
           address: userData.address || "",
           paymentMethod: "VN Pay", // Set default payment method
         });
+        setTotalPoints(userData.totalPoints); // Set total points
       } catch (error) {
         notification.error({
           message: "Failed to fetch user data",
@@ -89,6 +101,7 @@ const CheckoutTabs = () => {
         userId: user.userId,
         paymentMethod: paymentMethod,
         promotionId: selectedPromotion?.promotionId,
+        usedPoints: usedPoints, // Add usedPoints to the request body
         ...(orderFishes.length > 0 && { orderFishes }),
         ...(orderKois.length > 0 && { orderKois }),
       };
@@ -291,6 +304,20 @@ const CheckoutTabs = () => {
                 <p>{selectedPromotion.discountRate}%</p>
               </div>
             )}
+            <hr className="my-2" />
+            <div className="flex justify-between items-center mb-2">
+              <p>Total Points</p>
+              <p>{totalPoints}</p>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <p>Use Points</p>
+              <InputNumber
+                min={0}
+                max={totalPoints}
+                value={usedPoints}
+                onChange={(value) => setUsedPoints(value)}
+              />
+            </div>
             <hr className="my-2" />
             <div className="flex justify-between items-center font-semibold">
               <p>Total</p>

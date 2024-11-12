@@ -256,6 +256,7 @@ const ProductInfo = ({ product, averageRating }) => {
           value={quantity}
           onChange={(e) => setQuantity(parseInt(e.target.value))}
           min={1}
+          readOnly
         />
       </div>
 

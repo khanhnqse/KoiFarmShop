@@ -282,7 +282,7 @@ const ConsignmentInside = () => {
                       return (
                         current &&
                         (current < today.setHours(0, 0, 0, 0) ||
-                          current < today.setDate(today.getDate() + 7))
+                          current < today.setDate(today.getDate() + 8))
                       );
                     }}
                   />
