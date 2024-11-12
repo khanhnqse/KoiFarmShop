@@ -68,11 +68,22 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
       compare: (a, b) => a.koiId - b.koiId,
     },
     defaultSortOrder: "ascend",
+    fixed: "left",
   },
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+  },
+  {
+    title: "Consign",
+    dataIndex: "isConsigned",
+    key: "isConsigned",
+    render: (isConsigned) => (
+      <Tag color={isConsigned ? "green" : "blue"}>
+        {isConsigned ? "Consign" : "None"}
+      </Tag>
+    ),
   },
   {
     title: "Origin",
@@ -125,6 +136,11 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
     key: "awardCertificates",
   },
   {
+    title: "In stock",
+    dataIndex: "quantityInStock",
+    key: "quantityInStock",
+  },
+  {
     title: "Status",
     dataIndex: "status",
     key: "status",
@@ -148,6 +164,7 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
         <Button icon={<MoreOutlined />} />
       </Dropdown>
     ),
+    fixed: "right",
   },
 ];
 
@@ -287,35 +304,57 @@ const handleCustomerMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteCustomer
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteCustomer(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateCustomerStatus(record.userId);
   }
 };
 
-const customerMenu = (record, handleOpenModal, handleDeleteCustomer) => (
+const customerMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleCustomerMenuClick(e, record, handleOpenModal, handleDeleteCustomer)
+      handleCustomerMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteCustomer,
+        handleUpdateCustomerStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
       Edit
     </Menu.Item>
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
-      Delete
+      Inactive
+    </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Active
     </Menu.Item>
   </Menu>
 );
 
-export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
+export const customerColumns = (
+  handleOpenModal,
+  handleDeleteCustomer,
+  handleUpdateCustomerStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
     key: "userId",
+    fixed: "left",
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
@@ -353,6 +392,7 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
     title: "Register Date",
     dataIndex: "registerDate",
     key: "registerDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Points",
@@ -362,9 +402,15 @@ export const customerColumns = (handleOpenModal, handleDeleteCustomer) => [
   {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
-        overlay={customerMenu(record, handleOpenModal, handleDeleteCustomer)}
+        overlay={customerMenu(
+          record,
+          handleOpenModal,
+          handleDeleteCustomer,
+          handleUpdateCustomerStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -379,34 +425,56 @@ const handleStaffMenuClick = (
   e,
   record,
   handleOpenModal,
-  handleDeleteStaff
+  handleDeleteStaff,
+  handleUpdateStaffStatus
 ) => {
   if (e.key === "edit") {
     handleOpenModal(record);
   } else if (e.key === "delete") {
     handleDeleteStaff(record.userId);
+  } else if (e.key === "updateStatus") {
+    handleUpdateStaffStatus(record.userId);
   }
 };
 
-const staffMenu = (record, handleOpenModal, handleDeleteStaff) => (
+const staffMenu = (
+  record,
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => (
   <Menu
     onClick={(e) =>
-      handleStaffMenuClick(e, record, handleOpenModal, handleDeleteStaff)
+      handleStaffMenuClick(
+        e,
+        record,
+        handleOpenModal,
+        handleDeleteStaff,
+        handleUpdateStaffStatus
+      )
     }
   >
     <Menu.Item key="edit" icon={<EditOutlined />}>
       Edit
     </Menu.Item>
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
-      Delete
+      Inactive
+    </Menu.Item>
+    <Menu.Item key="updateStatus" icon={<EyeOutlined />}>
+      Active
     </Menu.Item>
   </Menu>
 );
 
-export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
+export const staffColumns = (
+  handleOpenModal,
+  handleDeleteStaff,
+  handleUpdateStaffStatus
+) => [
   {
     title: "User ID",
     dataIndex: "userId",
+    fixed: "left",
     key: "userId",
     sorter: {
       compare: (a, b) => a.userId - b.userId,
@@ -419,14 +487,19 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     key: "userName",
   },
   {
+    title: "Role",
+    dataIndex: "role",
+    key: "role",
+    render: (role) => (
+      <Tag color={role === "manager" ? "red" : "blue"}>
+        {role.charAt(0).toUpperCase() + role.slice(1)}
+      </Tag>
+    ),
+  },
+  {
     title: "Email",
     dataIndex: "email",
     key: "email",
-  },
-  {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
   },
   {
     title: "Phone Number",
@@ -434,9 +507,9 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     key: "phoneNumber",
   },
   {
-    title: "Role",
-    dataIndex: "role",
-    key: "role",
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
   },
   {
     title: "Status",
@@ -447,16 +520,17 @@ export const staffColumns = (handleOpenModal, handleDeleteStaff) => [
     ),
   },
   {
-    title: "Register Date",
-    dataIndex: "registerDate",
-    key: "registerDate",
-  },
-  {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
-        overlay={staffMenu(record, handleOpenModal, handleDeleteStaff)}
+        overlay={staffMenu(
+          record,
+          handleOpenModal,
+          handleDeleteStaff,
+          handleUpdateStaffStatus
+        )}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />
@@ -530,11 +604,12 @@ export const promotionColumns = (handleOpenModal, handleDeletePromotion) => [
     title: "Start Date",
     dataIndex: "startDate",
     key: "startDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "End Date",
     dataIndex: "endDate",
-    key: "endDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Status",
@@ -596,6 +671,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Feedback ID",
     dataIndex: "feedbackId",
     key: "feedbackId",
+    fixed: "left",
     sorter: {
       compare: (a, b) => a.feedbackId - b.feedbackId,
     },
@@ -633,10 +709,12 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Feedback Date",
     dataIndex: "feedbackDate",
     key: "feedbackDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Action",
     key: "action",
+    fixed: "right",
     render: (text, record) => (
       <Dropdown
         overlay={feedbackMenu(record, handleOpenModal, handleDeleteFeedback)}
@@ -649,25 +727,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
 ];
 
 // Purchase History Table Columns
-export const purchaseHistoryMenu = (
-  record,
-  handleOpenModal,
-  handleDeletePurchaseHistory
-) => (
-  <Menu
-    onClick={(e) =>
-      handleMenuClick(e, record, handleOpenModal, handleDeletePurchaseHistory)
-    }
-  >
-    <Menu.Item key="edit">Edit</Menu.Item>
-    <Menu.Item key="delete">Delete</Menu.Item>
-  </Menu>
-);
-
-export const purchaseHistoryColumns = (
-  handleOpenModal,
-  handleDeletePurchaseHistory
-) => [
+export const purchaseHistoryColumns = () => [
   {
     title: "Order ID",
     dataIndex: "orderId",
@@ -676,6 +736,7 @@ export const purchaseHistoryColumns = (
       compare: (a, b) => a.orderId - b.orderId,
     },
     defaultSortOrder: "ascend",
+    fixed: "left",
   },
   {
     title: "User Name",
@@ -692,19 +753,31 @@ export const purchaseHistoryColumns = (
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => (money !== undefined ? `$${money.toFixed(2)}` : "$0.00"), // Format money with fallback
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Order Status",
@@ -736,14 +809,9 @@ export const purchaseHistoryColumns = (
     render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
   },
   {
-    title: "Delivery Status",
-    dataIndex: "deliveryStatus",
-    key: "deliveryStatus",
-  },
-  {
-    title: "Promotion ID",
-    dataIndex: "promotionId",
-    key: "promotionId",
+    title: "Promotion Name",
+    dataIndex: "promotionName",
+    key: "promotionName",
   },
   {
     title: "Earned Points",
@@ -755,22 +823,6 @@ export const purchaseHistoryColumns = (
     dataIndex: "usedPoints",
     key: "usedPoints",
   },
-  {
-    title: "Action",
-    key: "action",
-    render: (text, record) => (
-      <Dropdown
-        overlay={purchaseHistoryMenu(
-          record,
-          handleOpenModal,
-          handleDeletePurchaseHistory
-        )}
-        trigger={["click"]}
-      >
-        <Button icon={<MoreOutlined />} />
-      </Dropdown>
-    ),
-  },
 ];
 
 // Order management Table columns
@@ -778,53 +830,35 @@ export const purchaseHistoryColumns = (
 const handleOrderMenuClick = (
   e,
   record,
-  handleOpenModal,
-  handleDeleteOrder,
+  handleUpdateOrderStatus,
   handleShowDetails
 ) => {
-  if (e.key === "edit") {
-    handleOpenModal(record);
-  } else if (e.key === "delete") {
-    handleDeleteOrder(record.orderId);
+  if (e.key === "updateStatus") {
+    handleUpdateOrderStatus(record);
   } else if (e.key === "details") {
     handleShowDetails(record);
   }
 };
 
-const orderMenu = (
-  record,
-  handleOpenModal,
-  handleDeleteOrder,
-  handleShowDetails
-) => (
+const orderMenu = (record, handleUpdateOrderStatus, handleShowDetails) => (
   <Menu
     onClick={(e) =>
       handleOrderMenuClick(
         e,
         record,
-        handleOpenModal,
-        handleDeleteOrder,
+        handleUpdateOrderStatus,
         handleShowDetails
       )
     }
   >
-    <Menu.Item key="edit" icon={<EditOutlined />}>
-      Edit
-    </Menu.Item>
-    <Menu.Item key="delete" icon={<DeleteOutlined />}>
-      Delete
-    </Menu.Item>
+    <Menu.Item key="updateStatus">Update Status</Menu.Item>
     <Menu.Item key="details" icon={<EyeOutlined />}>
       View Details
     </Menu.Item>
   </Menu>
 );
 
-export const orderColumns = (
-  handleOpenModal,
-  handleDeleteOrder,
-  handleShowDetails
-) => [
+export const orderColumns = (handleUpdateOrderStatus, handleShowDetails) => [
   {
     title: "Order ID",
     dataIndex: "orderId",
@@ -843,24 +877,37 @@ export const orderColumns = (
     title: "Order Date",
     dataIndex: "orderDate",
     key: "orderDate",
+    render: (date) => new Date(date).toLocaleDateString(), // Format date
   },
   {
     title: "Total Money",
     dataIndex: "totalMoney",
     key: "totalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Final Money",
     dataIndex: "finalMoney",
     key: "finalMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Discount Money",
     dataIndex: "discountMoney",
     key: "discountMoney",
-    render: (money) => `$${money.toFixed(2)}`,
+    render: (money) =>
+      `${money.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
   },
   {
     title: "Earned Points",
@@ -871,6 +918,13 @@ export const orderColumns = (
     title: "Order Status",
     dataIndex: "orderStatus",
     key: "orderStatus",
+    filters: [
+      { text: "Processing", value: "processing" },
+      { text: "Canceled", value: "canceled" },
+      { text: "Remittance", value: "remittance" },
+      { text: "Delivering", value: "delivering" },
+    ],
+    onFilter: (value, record) => record.orderStatus === value,
     render: (orderStatus) => {
       let color;
       switch (orderStatus) {
@@ -881,9 +935,6 @@ export const orderColumns = (
           color = "orange";
           break;
         case "canceled":
-          color = "red";
-          break;
-        case "Canceled":
           color = "red";
           break;
         case "remittance":
@@ -904,21 +955,11 @@ export const orderColumns = (
     key: "paymentMethod",
   },
   {
-    title: "Delivery Status",
-    dataIndex: "deliveryStatus",
-    key: "deliveryStatus",
-  },
-  {
     title: "Action",
     key: "action",
     render: (text, record) => (
       <Dropdown
-        overlay={orderMenu(
-          record,
-          handleOpenModal,
-          handleDeleteOrder,
-          handleShowDetails
-        )}
+        overlay={orderMenu(record, handleUpdateOrderStatus, handleShowDetails)}
         trigger={["click"]}
       >
         <Button icon={<MoreOutlined />} />

@@ -129,6 +129,14 @@ const PromotionManagement = () => {
                     required: true,
                     message: "Please input the discount rate!",
                   },
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 100,
+                    transform: (value) => (value ? Number(value) : 0),
+                    message:
+                      "Discount rate must be a number between 0 and 100!",
+                  },
                 ]}
               >
                 <Input />
@@ -144,18 +152,38 @@ const PromotionManagement = () => {
                   { required: true, message: "Please select the start date!" },
                 ]}
               >
-                <DatePicker />
+                <DatePicker
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="endDate"
                 label="End Date"
+                dependencies={["startDate"]}
                 rules={[
                   { required: true, message: "Please select the end date!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const startDate = getFieldValue("startDate");
+                      if (!value || !startDate || value.isAfter(startDate)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("End date must be after start date!")
+                      );
+                    },
+                  }),
                 ]}
               >
-                <DatePicker />
+                <DatePicker
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
             </Col>
           </Row>

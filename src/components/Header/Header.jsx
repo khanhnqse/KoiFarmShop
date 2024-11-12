@@ -50,6 +50,12 @@ function Header() {
       <Menu.Item key="my-order" onClick={() => navigate("/orders")}>
         My Orders
       </Menu.Item>
+      <Menu.Item
+        key="my-consignment"
+        onClick={() => navigate("/my-consignment")}
+      >
+        My Consignment
+      </Menu.Item>
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
@@ -57,12 +63,25 @@ function Header() {
   );
 
   // Conditionally create menu items for manager or staff
-  const adminMenuItems = [
-    {
-      key: "/dashboard",
-      label: "Dashboard",
-    },
-  ];
+  const adminMenuItems =
+    user?.role === "staff"
+      ? [
+          {
+            key: "/dashboard/koi",
+            label: "Dashboard",
+          },
+        ]
+      : [
+          {
+            key: "/dashboard",
+            label: "Dashboard",
+          },
+        ];
+
+  // Conditionally include "Consignment" menu item
+  const menuItems = isAuthenticated
+    ? MenuItems
+    : MenuItems.filter((item) => item.key !== "/consignment");
 
   return (
     <AntHeader style={{ backgroundColor: "#FFFFFF" }} className="header">
@@ -85,25 +104,27 @@ function Header() {
         items={
           user?.role === "manager" || user?.role === "staff"
             ? adminMenuItems
-            : MenuItems
+            : menuItems
         } // Conditionally render menu items
       />
 
-      <div className="cart pt-3">
-        {user?.role === "manager" || user?.role === "staff" ? (
-          <Typography>
-            Welcome {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-          </Typography>
-        ) : (
-          <Link to="/cart">
-            <Badge count={cart.length} showZero className="pb-1">
-              <ShoppingCartOutlined
-                style={{ fontSize: "24px", color: "#000" }}
-              />
-            </Badge>
-          </Link>
-        )}
-      </div>
+      {isAuthenticated && (
+        <div className="cart pt-3">
+          {user?.role === "manager" || user?.role === "staff" ? (
+            <Typography>
+              Welcome {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            </Typography>
+          ) : (
+            <Link to="/cart">
+              <Badge count={cart.length} showZero className="pb-1">
+                <ShoppingCartOutlined
+                  style={{ fontSize: "24px", color: "#000" }}
+                />
+              </Badge>
+            </Link>
+          )}
+        </div>
+      )}
       <div className="user-profile">
         {isAuthenticated ? (
           <Dropdown overlay={userMenu} trigger={["click"]}>

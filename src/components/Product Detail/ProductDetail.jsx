@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Divider, Input, Rate, notification, Modal } from "antd";
+import { Button, Divider, Input, Rate, notification, Modal, Tag } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -16,6 +16,15 @@ const ProductInfo = ({ product, averageRating }) => {
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
+    if (product.status === "unavailable") {
+      notification.warning({
+        message: "Product Unavailable",
+        description: "This product is currently unavailable.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     if (!isAuthenticated) {
       notification.warning({
         message: "Not Logged In",
@@ -62,6 +71,15 @@ const ProductInfo = ({ product, averageRating }) => {
   };
 
   const handleBuyNow = () => {
+    if (product.status === "unavailable") {
+      notification.warning({
+        message: "Product Unavailable",
+        description: "This product is currently unavailable.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     if (!isAuthenticated) {
       notification.warning({
         message: "Not Logged In",
@@ -145,6 +163,10 @@ const ProductInfo = ({ product, averageRating }) => {
         {/* Column 1: Breeder, Gender, Age, Personality */}
         <div>
           <div className="mb-4">
+            <p className="font-semibold">ID:</p>
+            <p>{product.koiId}</p>
+          </div>
+          <div className="mb-4">
             <p className="font-semibold">Breed:</p>
             <p>{product.breed}</p>
           </div>
@@ -163,10 +185,23 @@ const ProductInfo = ({ product, averageRating }) => {
             <p className="font-semibold">Personality:</p>
             <p>{product.personality}</p>
           </div>
+
+          <div className="mb-4">
+            <p className="font-semibold">Consign:</p>
+
+            <Tag color={product.isConsigned ? "green" : "blue"}>
+              {product.isConsigned ? "Yes" : "No"}
+            </Tag>
+          </div>
         </div>
 
         {/* Column 2: Size, Feeding Amount, Health Status, Award Certificate */}
         <div>
+          <div className="mb-4">
+            <p className="font-semibold">In Stock:</p>
+            <p>{product.quantityInStock} left</p>
+          </div>
+
           <div className="mb-4">
             <p className="font-semibold">Size:</p>
             <p>{product.size} cm</p>
@@ -174,7 +209,7 @@ const ProductInfo = ({ product, averageRating }) => {
 
           <div className="mb-4">
             <p className="font-semibold">Feeding Amount:</p>
-            <p>{product.feedingAmount} kg/day</p>
+            <p>{product.feedingAmount} feedings per day</p>
           </div>
 
           <div className="mb-4">
@@ -182,10 +217,17 @@ const ProductInfo = ({ product, averageRating }) => {
             <p>{product.healthStatus}</p>
           </div>
 
+          <div className="mb-4">
+            <p className="font-semibold">Status:</p>
+            <Tag color={product.status === "available" ? "green" : "red"}>
+              {product.status}
+            </Tag>
+          </div>
+
           <div className="mb-4 flex items-center">
             <p className="font-semibold">Award Certificate:</p>
             <p className="ml-2">
-              {product.awardCertificates ? (
+              {product.awardCertificates === "yes" ? (
                 <>
                   <CheckOutlined className="text-green-600" />
                   <Button
@@ -214,6 +256,7 @@ const ProductInfo = ({ product, averageRating }) => {
           value={quantity}
           onChange={(e) => setQuantity(parseInt(e.target.value))}
           min={1}
+          readOnly
         />
       </div>
 

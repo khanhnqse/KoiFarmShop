@@ -79,6 +79,7 @@ const CartPage = () => {
                 min={1}
                 value={item.quantity}
                 onChange={(value) => handleQuantityChange(index, value)}
+                readOnly
               />
               <div className="font-bold">
                 {formatPrice(item.price * item.quantity)}

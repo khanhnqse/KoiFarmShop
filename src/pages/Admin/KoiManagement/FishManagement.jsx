@@ -5,7 +5,6 @@ import {
   Modal,
   Form,
   Input,
-  InputNumber,
   Row,
   Col,
   Upload,
@@ -14,9 +13,15 @@ import {
   Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { deleteFish, fetchFishData, saveFish } from "../../../services/sevice";
+
 import { detailColumns, generalColumns } from "../../../constant/menu-data";
 import uploadFile from "../../../utils/file";
+import {
+  deleteFish,
+  fetchFishData,
+  fetchKoiTypeData,
+  saveFish,
+} from "../../../services/sevice";
 
 const FishManagement = () => {
   const [fishData, setFishData] = useState([]);
@@ -24,6 +29,7 @@ const FishManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [currentFish, setCurrentFish] = useState(null);
+  const [koiTypes, setKoiTypes] = useState([]);
   const [form] = Form.useForm();
   const [fileListKoi, setFileListKoi] = useState([]);
   const [fileListCertificate, setFileListCertificate] = useState([]);
@@ -32,6 +38,7 @@ const FishManagement = () => {
 
   useEffect(() => {
     loadFishData();
+    loadKoiTypes();
   }, []);
 
   const loadFishData = async () => {
@@ -41,14 +48,47 @@ const FishManagement = () => {
     setLoading(false);
   };
 
+  const loadKoiTypes = async () => {
+    setLoading(true);
+    const data = await fetchKoiTypeData();
+    setKoiTypes(data);
+    setLoading(false);
+  };
+
   const handleOpenModal = (fish = null) => {
     setIsUpdateMode(!!fish);
     setCurrentFish(fish);
     setIsModalVisible(true);
     if (fish) {
       form.setFieldsValue(fish);
+      if (fish.imageKoi) {
+        setFileListKoi([
+          {
+            uid: "-1",
+            name: "image.png",
+            status: "done",
+            url: fish.imageKoi,
+          },
+        ]);
+      } else {
+        setFileListKoi([]);
+      }
+      if (fish.imageCertificate) {
+        setFileListCertificate([
+          {
+            uid: "-1",
+            name: "certificate.png",
+            status: "done",
+            url: fish.imageCertificate,
+          },
+        ]);
+      } else {
+        setFileListCertificate([]);
+      }
     } else {
       form.resetFields();
+      setFileListKoi([]);
+      setFileListCertificate([]);
     }
   };
 
@@ -56,18 +96,28 @@ const FishManagement = () => {
     setIsModalVisible(false);
     setCurrentFish(null);
     form.resetFields();
+    setFileListKoi([]);
+    setFileListCertificate([]);
   };
 
   const handleSaveFish = async (values) => {
     if (fileListKoi.length > 0) {
       const file = fileListKoi[0];
-      const url = await uploadFile(file.originFileObj);
-      values.imageKoi = url;
+      if (!file.url) {
+        const url = await uploadFile(file.originFileObj);
+        values.imageKoi = url;
+      } else {
+        values.imageKoi = file.url;
+      }
     }
     if (fileListCertificate.length > 0) {
       const file = fileListCertificate[0];
-      const url = await uploadFile(file.originFileObj);
-      values.imageCertificate = url;
+      if (!file.url) {
+        const url = await uploadFile(file.originFileObj);
+        values.imageCertificate = url;
+      } else {
+        values.imageCertificate = file.url;
+      }
     }
 
     if (isUpdateMode && currentFish) {
@@ -104,6 +154,15 @@ const FishManagement = () => {
   const handleChangeCertificate = ({ fileList: newFileList }) =>
     setFileListCertificate(newFileList);
 
+  const customUpload = async ({ file, onSuccess, onError }) => {
+    try {
+      const url = await uploadFile(file);
+      onSuccess(url);
+    } catch (error) {
+      onError(error);
+    }
+  };
+
   const uploadButton = (
     <button
       style={{
@@ -138,14 +197,14 @@ const FishManagement = () => {
         onClick={() => handleOpenModal()}
         style={{ marginBottom: 16 }}
       >
-        <PlusOutlined /> Add Fish
+        <PlusOutlined /> Add Koi
       </Button>
       <Table
         columns={generalColumns(handleOpenModal, handleDeleteFish)}
         dataSource={fishData}
         loading={loading}
         rowKey="koiId"
-        scroll={{ x: 1500, y: 450 }}
+        scroll={{ x: 2000, y: 600 }}
         title={() => "General Information"}
       />
       <Table
@@ -195,8 +254,8 @@ const FishManagement = () => {
                 ]}
               >
                 <Select>
-                  <Select.Option value="Male" />
-                  <Select.Option value="Female" />
+                  <Select.Option value="Male">Male</Select.Option>
+                  <Select.Option value="Female">Female</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -204,9 +263,26 @@ const FishManagement = () => {
               <Form.Item
                 name="age"
                 label="Age"
-                rules={[{ required: true, message: "Please input the age!" }]}
+                rules={[
+                  { required: true, message: "Please input the age!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Age must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Age cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -215,9 +291,26 @@ const FishManagement = () => {
               <Form.Item
                 name="size"
                 label="Size"
-                rules={[{ required: true, message: "Please input the size!" }]}
+                rules={[
+                  { required: true, message: "Please input the size!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Size must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Size cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -227,8 +320,8 @@ const FishManagement = () => {
                 rules={[{ required: true, message: "Please input the breed!" }]}
               >
                 <Select>
-                  <Select.Option value="F1 hybrid" />
-                  <Select.Option value="Purebred" />
+                  <Select.Option value="F1 hybrid">F1 hybrid</Select.Option>
+                  <Select.Option value="purebred">Purebred</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -254,9 +347,28 @@ const FishManagement = () => {
                     required: true,
                     message: "Please input the feeding amount!",
                   },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject(
+                          "Feeding amount must be a valid number!"
+                        );
+                      }
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Feeding amount cannot be negative!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -267,9 +379,28 @@ const FishManagement = () => {
                 label="Filter Rate"
                 rules={[
                   { required: true, message: "Please input the filter rate!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject(
+                          "Filter rate must be a valid number!"
+                        );
+                      }
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Filter rate cannot be negative!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -299,7 +430,10 @@ const FishManagement = () => {
                   },
                 ]}
               >
-                <Input />
+                <Select>
+                  <Select.Option value="Yes">Yes</Select.Option>
+                  <Select.Option value="No">No</Select.Option>
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -311,8 +445,8 @@ const FishManagement = () => {
                 ]}
               >
                 <Select>
-                  <Select.Option value="Available" />
-                  <Select.Option value="Unavailable" />
+                  <Select.Option value="available">Available</Select.Option>
+                  <Select.Option value="unavailable">Unavailable</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -322,20 +456,75 @@ const FishManagement = () => {
               <Form.Item
                 name="price"
                 label="Price"
-                rules={[{ required: true, message: "Please input the price!" }]}
+                rules={[
+                  { required: true, message: "Please input the price!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="quantityInStock"
+                label="Quantity In Stock"
+                rules={[
+                  { required: true, message: "Please input the quantity!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject(
+                          "Quantity in stock must be a valid number!"
+                        );
+                      }
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Quantity in stock cannot be negative!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="koiTypeId"
                 label="Koi Type ID"
                 rules={[
-                  { required: true, message: "Please input the koi type ID!" },
+                  { required: true, message: "Please select the koi type ID!" },
                 ]}
               >
-                <Input />
+                <Select>
+                  {koiTypes.map((type) => (
+                    <Select.Option key={type.koiTypeId} value={type.koiTypeId}>
+                      {type.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -356,6 +545,7 @@ const FishManagement = () => {
                   fileList={fileListKoi}
                   onPreview={handlePreview}
                   onChange={handleChangeKoi}
+                  customRequest={customUpload}
                 >
                   {fileListKoi.length >= 8 ? null : uploadButton}
                 </Upload>
@@ -377,6 +567,7 @@ const FishManagement = () => {
                   fileList={fileListCertificate}
                   onPreview={handlePreview}
                   onChange={handleChangeCertificate}
+                  customRequest={customUpload}
                 >
                   {fileListCertificate.length >= 8 ? null : uploadButton}
                 </Upload>
@@ -386,13 +577,13 @@ const FishManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="description" label="Description">
-                <Input />
+                <Input.TextArea />
+              </Form.Item>
+              <Form.Item name="detailDescription" label="Detail Description">
+                <Input.TextArea />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item name="detailDescription" label="Detail Description">
-            <Input.TextArea />
-          </Form.Item>
         </Form>
       </Modal>
       {previewImage && (

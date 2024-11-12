@@ -2,7 +2,7 @@ import { Button, Typography } from "antd";
 import "./HeroSection.css";
 import { Link } from "react-router-dom";
 
-import heroImg from "../../assets/hero.png";
+import heroImg from "../../assets/home.jpg";
 const { Title, Paragraph } = Typography;
 
 function Hero() {

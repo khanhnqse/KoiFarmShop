@@ -1,7 +1,9 @@
-import { Input, Button, Form, Modal, message, Spin } from "antd";
+import { Input, Button, Form, Modal, message, Spin, Select } from "antd";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+
+const { Option } = Select;
 
 // Step 1: Define the data object
 const defaultUserData = {
@@ -22,6 +24,9 @@ const UserProfile = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState("");
+  const [showNewAddressInput, setShowNewAddressInput] = useState(false);
 
   // Step 2: Fetch user data from the API
   const fetchUserData = async () => {
@@ -47,9 +52,27 @@ const UserProfile = () => {
     }
   };
 
+  // Fetch addresses from the API
+  const fetchAddresses = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
+      );
+      setAddresses(response.data);
+    } catch (error) {
+      message.error("Failed to fetch addresses");
+      console.error("Error fetching addresses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Step 3: Use useEffect to fetch data on mount and when user changes
   useEffect(() => {
     fetchUserData();
+    fetchAddresses();
   }, [user]);
 
   const handleInputChange = (e) => {
@@ -78,6 +101,7 @@ const UserProfile = () => {
       message.success("Profile updated successfully");
       console.log("Updated Profile Data:", response.data);
       setIsEditing(false);
+      fetchAddresses();
     } catch (error) {
       message.error("Failed to update profile");
       console.error("Error updating profile:", error);
@@ -86,7 +110,6 @@ const UserProfile = () => {
     }
   };
 
-  // Step 1: Update handlePasswordSave to call the change password API
   const handlePasswordSave = async () => {
     setLoading(true);
     try {
@@ -94,7 +117,7 @@ const UserProfile = () => {
         "https://localhost:7285/api/User/ChangePassword",
         {
           userName: formData.userName,
-
+          currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
           confirmPassword: passwordData.confirmPassword,
         }
@@ -108,6 +131,31 @@ const UserProfile = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddressChange = (value) => {
+    if (value === "new") {
+      setShowNewAddressInput(true);
+    } else {
+      setShowNewAddressInput(false);
+      const selectedAddress = addresses.find(
+        (address) => address.addressID === value
+      );
+      setFormData((prevData) => ({
+        ...prevData,
+        address: selectedAddress.address,
+      }));
+    }
+  };
+
+  const handleAddNewAddress = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      address: newAddress,
+    }));
+    setShowNewAddressInput(false);
+    setNewAddress("");
+    handleSave(); // Call handleSave to update the profile
   };
 
   return (
@@ -142,7 +190,7 @@ const UserProfile = () => {
                 value={formData.userName}
                 placeholder="Your Name"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Email">
@@ -151,7 +199,7 @@ const UserProfile = () => {
                 value={formData.email}
                 placeholder="youremail@gmail.com"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Phone Number">
@@ -160,24 +208,63 @@ const UserProfile = () => {
                 value={formData.phoneNumber}
                 placeholder="Your Phone Number"
                 onChange={handleInputChange}
-                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </Form.Item>
             <Form.Item label="Address">
-              <Input
-                name="address"
-                value={formData.address}
-                placeholder="Your Address"
-                onChange={handleInputChange}
-                disabled={!isEditing}
-              />
+              {isEditing ? (
+                <>
+                  <Select
+                    placeholder="Select an address"
+                    onChange={handleAddressChange}
+                    style={{ width: "100%" }}
+                  >
+                    {addresses.map((address) => (
+                      <Option key={address.addressID} value={address.addressID}>
+                        {address.address}
+                      </Option>
+                    ))}
+                    <Option value="new">Enter new address</Option>
+                  </Select>
+                  {showNewAddressInput && (
+                    <div style={{ marginTop: "10px" }}>
+                      <Input
+                        name="newAddress"
+                        value={newAddress}
+                        placeholder="Enter new address"
+                        onChange={(e) => {
+                          setNewAddress(e.target.value);
+                          setFormData((prevData) => ({
+                            ...prevData,
+                            address: e.target.value,
+                          }));
+                        }}
+                      />
+                      <Button
+                        type="primary"
+                        onClick={handleAddNewAddress}
+                        style={{ marginTop: "10px" }}
+                      >
+                        Add Address
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Input
+                  name="address"
+                  value={formData.address}
+                  placeholder="Your Address"
+                  readOnly
+                />
+              )}
             </Form.Item>
             <Form.Item label="Point">
               <Input
                 name="point"
                 value={formData.point}
                 placeholder="Your point"
-                disabled={true}
+                readOnly={true}
               />
             </Form.Item>
             {isEditing && (
@@ -206,6 +293,13 @@ const UserProfile = () => {
             <Input
               name="userName"
               value={formData.userName}
+              onChange={handlePasswordChange}
+            />
+          </Form.Item>
+          <Form.Item label="Current Password">
+            <Input.Password
+              name="currentPassword"
+              value={passwordData.currentPassword}
               onChange={handlePasswordChange}
             />
           </Form.Item>

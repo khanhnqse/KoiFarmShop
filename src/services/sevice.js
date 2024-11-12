@@ -155,6 +155,16 @@ export const deleteCustomer = async (userId) => {
   }
 };
 
+export const updateCustomerStatus = async (userId) => {
+  try {
+    await axios.put(`https://localhost:7285/api/User/restore/${userId}`);
+    message.success("Customer status updated successfully");
+  } catch (error) {
+    message.error("Failed to update customer status");
+    console.error("Error updating customer status:", error);
+  }
+};
+
 // Staff management service
 export const fetchStaffData = async () => {
   try {
@@ -202,6 +212,16 @@ export const deleteStaff = async (userId) => {
   } catch (error) {
     message.error("Failed to delete staff");
     console.error("Error deleting staff:", error);
+  }
+};
+
+export const updateStaffStatus = async (userId) => {
+  try {
+    await axios.put(`https://localhost:7285/api/User/restore/${userId}`);
+    message.success("Staff status updated successfully");
+  } catch (error) {
+    message.error("Failed to update staff status");
+    console.error("Error updating staff status:", error);
   }
 };
 
@@ -291,36 +311,6 @@ export const fetchPurchaseHistoryData = async () => {
     message.error("Failed to fetch purchase history data");
     console.error("Error fetching purchase history data:", error);
     return [];
-  }
-};
-
-// Save Purchase History (Create or Update)
-export const savePurchaseHistory = async (purchaseHistory, isUpdateMode) => {
-  try {
-    if (isUpdateMode) {
-      await axios.put(
-        `${purchasehistoryApi}/${purchaseHistory.orderId}`,
-        purchaseHistory
-      );
-      message.success("Purchase history updated successfully");
-    } else {
-      await axios.post(purchasehistoryApi, purchaseHistory);
-      message.success("Purchase history created successfully");
-    }
-  } catch (error) {
-    message.error("Failed to save purchase history data");
-    console.error("Error saving purchase history data:", error);
-  }
-};
-
-// Delete Purchase History
-export const deletePurchaseHistory = async (orderId) => {
-  try {
-    await axios.delete(`${purchasehistoryApi}/${orderId}`);
-    message.success("Purchase history deleted successfully");
-  } catch (error) {
-    message.error("Failed to delete purchase history");
-    console.error("Error deleting purchase history:", error);
   }
 };
 
@@ -416,6 +406,7 @@ export const updateOrderStatus = async (orderId, newStatus, token) => {
 const consignmentApi = "https://localhost:7285/api/Consignment";
 
 // Consignment management service
+// Consignment management service
 export const fetchConsignmentData = async (token) => {
   try {
     const response = await axios.get(`${consignmentApi}/get-consignments`, {
@@ -463,6 +454,25 @@ export const saveConsignment = async (consignment, isUpdateMode, token) => {
   } catch (error) {
     message.error("Failed to save consignment data");
     console.error("Error saving consignment data:", error);
+  }
+};
+
+export const updateConsignmentStatus = async (consignmentId, status, token) => {
+  try {
+    const url = `${consignmentApi}/update-consignment-order-status`;
+    const payload = {
+      consignmentId,
+      status,
+    };
+    await axios.put(url, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Consignment status updated successfully");
+  } catch (error) {
+    message.error("Failed to update consignment status");
+    console.error("Error updating consignment status:", error);
   }
 };
 

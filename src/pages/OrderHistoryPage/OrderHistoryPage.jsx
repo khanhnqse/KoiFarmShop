@@ -20,7 +20,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+
 import { MoreOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
@@ -33,7 +33,7 @@ const OrderHistoryPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedKoi, setSelectedKoi] = useState(null);
   const { user, token } = useAuth();
-  const navigate = useNavigate();
+
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -51,6 +51,12 @@ const OrderHistoryPage = () => {
       setOrderHistory(response.data);
     } catch (error) {
       console.error("Failed to fetch order history:", error);
+      notification.error({
+        message: "Failed to fetch order history",
+        description:
+          error.response?.data?.message ||
+          "An error occurred while fetching the order history.",
+      });
     } finally {
       setLoading(false);
     }
@@ -64,11 +70,6 @@ const OrderHistoryPage = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedOrder(null);
-  };
-
-  const handleNavigateToConsignment = (koiId) => {
-    console.log("Navigating with koiId:", koiId); // Log koiId before navigating
-    navigate("/consignment", { state: { koiId } });
   };
 
   const handleFeedback = (koi) => {
@@ -113,8 +114,10 @@ const OrderHistoryPage = () => {
       console.error("Failed to submit feedback:", error);
       notification.error({
         message: "Feedback Submission Failed",
+
         description:
-          "There was an error submitting your feedback. Please try again.",
+          error.response?.data ||
+          "There was an error submitting your feedback.",
       });
     }
   };
@@ -132,6 +135,10 @@ const OrderHistoryPage = () => {
       title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
+      sorter: {
+        compare: (a, b) => a.orderId - b.orderId,
+      },
+      defaultSortOrder: "descend",
     },
     {
       title: "Purchase Date",
@@ -149,6 +156,12 @@ const OrderHistoryPage = () => {
       title: "Discount Money",
       dataIndex: "discountMoney",
       key: "discountMoney",
+      render: (money) => `${money.toLocaleString()} VND`,
+    },
+    {
+      title: "Final Money",
+      dataIndex: "finalMoney",
+      key: "finalMoney",
       render: (money) => `${money.toLocaleString()} VND`,
     },
     {
@@ -181,9 +194,9 @@ const OrderHistoryPage = () => {
       render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
-      title: "Promotion ID",
-      dataIndex: "promotionId",
-      key: "promotionId",
+      title: "Promotion Name",
+      dataIndex: "promotionName",
+      key: "promotionName",
     },
     {
       title: "Earned Points",
@@ -262,19 +275,11 @@ const OrderHistoryPage = () => {
                           <p>
                             <strong>Quantity:</strong> {koi.quantity}
                           </p>
-                          <Button
-                            className="mt-2"
-                            type="primary"
-                            onClick={() =>
-                              handleNavigateToConsignment(koi.koiId)
-                            }
-                          >
-                            Consignment
-                          </Button>
+
                           <Button
                             type="default"
                             onClick={() => handleFeedback(koi)}
-                            style={{ marginLeft: "10px" }}
+                            style={{ margin: "10px" }}
                           >
                             Give Feedback
                           </Button>

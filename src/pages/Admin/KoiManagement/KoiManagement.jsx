@@ -10,12 +10,16 @@ import {
   Image,
   Row,
   Col,
-  InputNumber,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 import { useAuth } from "../../../context/AuthContext";
-import { deleteKoi, fetchKoiData, saveKoi } from "../../../services/sevice";
+import {
+  deleteKoi,
+  fetchKoiData,
+  saveKoi,
+  fetchKoiTypeData,
+} from "../../../services/sevice";
 import { koiColumns } from "../../../constant/menu-data";
 import uploadFile from "../../../utils/file";
 
@@ -27,6 +31,7 @@ const KoiManagement = () => {
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentKoi, setCurrentKoi] = useState(null);
+  const [koiTypes, setKoiTypes] = useState([]);
   const [form] = Form.useForm();
   const [fileListKoi, setFileListKoi] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -41,11 +46,31 @@ const KoiManagement = () => {
     };
 
     fetchData();
+    loadKoiTypes();
   }, [token]);
+
+  const loadKoiTypes = async () => {
+    setLoading(true);
+    const data = await fetchKoiTypeData();
+    setKoiTypes(data);
+    setLoading(false);
+  };
 
   const handleOpenModal = (koi) => {
     setCurrentKoi(koi);
     form.setFieldsValue(koi || {});
+    if (koi && koi.imageFishes) {
+      setFileListKoi([
+        {
+          uid: "-1",
+          name: "image.png",
+          status: "done",
+          url: koi.imageFishes,
+        },
+      ]);
+    } else {
+      setFileListKoi([]);
+    }
     setIsModalVisible(true);
   };
 
@@ -59,8 +84,12 @@ const KoiManagement = () => {
   const handleSaveKoi = async (values) => {
     if (fileListKoi.length > 0) {
       const file = fileListKoi[0];
-      const url = await uploadFile(file.originFileObj);
-      values.imageFishes = url;
+      if (!file.url) {
+        const url = await uploadFile(file.originFileObj);
+        values.imageFishes = url;
+      } else {
+        values.imageFishes = file.url;
+      }
     }
 
     if (currentKoi) {
@@ -94,6 +123,15 @@ const KoiManagement = () => {
   const handleChangeKoi = ({ fileList: newFileList }) =>
     setFileListKoi(newFileList);
 
+  const customUpload = async ({ file, onSuccess, onError }) => {
+    try {
+      const url = await uploadFile(file);
+      onSuccess(url);
+    } catch (error) {
+      onError(error);
+    }
+  };
+
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -116,7 +154,7 @@ const KoiManagement = () => {
         onClick={() => handleOpenModal(null)}
         style={{ marginBottom: 16 }}
       >
-        Add Koi
+        Add Fish
       </Button>
       <Table
         columns={koiColumns(handleOpenModal, handleDeleteKoi)}
@@ -149,7 +187,13 @@ const KoiManagement = () => {
                   { required: true, message: "Please input the Koi Type ID!" },
                 ]}
               >
-                <Input />
+                <Select>
+                  {koiTypes.map((type) => (
+                    <Option key={type.koiTypeId} value={type.koiTypeId}>
+                      {type.name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -172,9 +216,25 @@ const KoiManagement = () => {
               <Form.Item
                 label="Price"
                 name="price"
-                rules={[{ required: true, message: "Please input the price!" }]}
+                rules={[{ required: true, message: "Please input the price!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -185,9 +245,24 @@ const KoiManagement = () => {
                 name="quantity"
                 rules={[
                   { required: true, message: "Please input the quantity!" },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Quantity must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Quantity cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -199,9 +274,24 @@ const KoiManagement = () => {
                     required: true,
                     message: "Please input the quantity in stock!",
                   },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Stock must be a valid number!");
+                      }
+                      if (value < 0) {
+                        return Promise.reject("Stock cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
               >
-                <InputNumber min={0} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -222,6 +312,7 @@ const KoiManagement = () => {
                   fileList={fileListKoi}
                   onPreview={handlePreview}
                   onChange={handleChangeKoi}
+                  customRequest={customUpload}
                 >
                   {fileListKoi.length >= 8 ? null : uploadButton}
                 </Upload>

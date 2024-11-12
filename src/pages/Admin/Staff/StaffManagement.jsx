@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Row, Col, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+
+import { staffColumns } from "../../../constant/menu-data";
 import {
+  deleteStaff,
   fetchStaffData,
   saveStaff,
-  deleteStaff,
+  updateStaffStatus,
 } from "../../../services/sevice";
-import { staffColumns } from "../../../constant/menu-data";
 
 const StaffManagement = () => {
   const [staff, setStaff] = useState([]);
@@ -74,6 +76,13 @@ const StaffManagement = () => {
     setLoading(false);
   };
 
+  const handleUpdateStaffStatus = async (userId) => {
+    setLoading(true);
+    await updateStaffStatus(userId);
+    loadStaffData();
+    setLoading(false);
+  };
+
   return (
     <div>
       <Typography.Title level={2}>Staff Management</Typography.Title>
@@ -85,7 +94,11 @@ const StaffManagement = () => {
         <PlusOutlined /> Add Staff
       </Button>
       <Table
-        columns={staffColumns(handleOpenModal, handleDeleteStaff)}
+        columns={staffColumns(
+          handleOpenModal,
+          handleDeleteStaff,
+          handleUpdateStaffStatus
+        )}
         dataSource={staff}
         loading={loading}
         rowKey="userId"
