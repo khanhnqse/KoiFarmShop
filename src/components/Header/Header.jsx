@@ -41,21 +41,28 @@ function Header() {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="profile" onClick={() => navigate("/profile")}>
-        Profile
-      </Menu.Item>
-      <Menu.Item key="purchase-history" onClick={() => navigate("/history")}>
-        Purchase History
-      </Menu.Item>
-      <Menu.Item key="my-order" onClick={() => navigate("/orders")}>
-        My Orders
-      </Menu.Item>
-      <Menu.Item
-        key="my-consignment"
-        onClick={() => navigate("/my-consignment")}
-      >
-        My Consignment
-      </Menu.Item>
+      {user?.role !== "staff" && user?.role !== "manager" && (
+        <>
+          <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+            Profile
+          </Menu.Item>
+          <Menu.Item
+            key="purchase-history"
+            onClick={() => navigate("/history")}
+          >
+            Purchase History
+          </Menu.Item>
+          <Menu.Item key="my-order" onClick={() => navigate("/orders")}>
+            My Orders
+          </Menu.Item>
+          <Menu.Item
+            key="my-consignment"
+            onClick={() => navigate("/my-consignment")}
+          >
+            My Consignment
+          </Menu.Item>
+        </>
+      )}
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>

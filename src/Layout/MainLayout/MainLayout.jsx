@@ -2,10 +2,10 @@ import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { Outlet, useLocation } from "react-router-dom";
 
-import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { MainContextProvider } from "../../context/MainContext";
 import { PATHS } from "../../constant/path";
+import Header from "../../components/Header/header";
 
 const MainLayout = () => {
   const location = useLocation();

@@ -78,6 +78,7 @@ const ProductPage = () => {
 
   const filteredFishs = fishs.filter((fish) => {
     return (
+      fish.status.toLowerCase() !== "unavailable" && // Filter out unavailable koi
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
@@ -89,6 +90,7 @@ const ProductPage = () => {
         : true)
     );
   });
+
   const sortedFishs = [...filteredFishs].sort((a, b) => {
     if (sortOption === "newest") {
       return new Date(b.createdAt) - new Date(a.createdAt);

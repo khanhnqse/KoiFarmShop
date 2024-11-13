@@ -7,7 +7,6 @@ import { Avatar } from "antd";
 const RatingAndReview = ({ product, feedbacks }) => {
   return (
     <div className="mt-10">
-      {/* Display Existing Reviews */}
       <h3 className="text-2xl font-bold mt-6 mb-5">Customer Reviews</h3>
       {feedbacks.length === 0 ? (
         <p className="text-gray-600">No reviews yet. Be the first to review!</p>

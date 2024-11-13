@@ -29,13 +29,11 @@ const FeedbackManagement = () => {
     setLoading(false);
   };
 
-  // Open modal for editing or adding new feedback
   const handleOpenModal = (feedback = null) => {
     setIsUpdateMode(!!feedback);
-    setSelectedFeedback(feedback); // Store selected feedback for edit
+    setSelectedFeedback(feedback);
     setIsModalVisible(true);
     if (feedback) {
-      // Populate form with selected feedback for editing
       form.setFieldsValue({
         feedbackId: feedback.feedbackId,
         userId: feedback.userId,
@@ -46,7 +44,7 @@ const FeedbackManagement = () => {
         feedbackDate: feedback.feedbackDate,
       });
     } else {
-      form.resetFields(); // Reset fields for adding new feedback
+      form.resetFields();
     }
   };
 
@@ -59,10 +57,8 @@ const FeedbackManagement = () => {
   const handleSaveFeedback = async (values) => {
     setLoading(true);
     if (isUpdateMode && selectedFeedback) {
-      // Update feedback
       await saveFeedback({ ...selectedFeedback, ...values }, true);
     } else {
-      // Add new feedback
       await saveFeedback(values, false);
     }
     loadFeedbackData();
@@ -80,13 +76,7 @@ const FeedbackManagement = () => {
   return (
     <div>
       <Typography.Title level={2}>Feedback Management</Typography.Title>
-      {/* <Button
-        type="primary"
-        onClick={() => handleOpenModal()}
-        style={{ marginBottom: 16 }}
-      >
-        <PlusOutlined /> Add Feedback
-      </Button> */}
+
       <Table
         columns={feedbackColumns(handleOpenModal, handleDeleteFeedback)}
         dataSource={feedbacks}

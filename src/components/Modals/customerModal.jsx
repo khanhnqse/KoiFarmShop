@@ -26,7 +26,6 @@ const CustomerModal = ({
     onOk={() => form.submit()}
   >
     <Form onFinish={onOk} form={form} layout="vertical">
-      {/* Form fields go here */}
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item

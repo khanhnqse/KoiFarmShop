@@ -25,13 +25,11 @@ const FishInfo = ({ fish, averageRating }) => {
     );
 
     if (existingFishIndex !== -1) {
-      // Update the quantity of the existing product in the cart
       const newCart = [...cart];
       newCart[existingFishIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
-      // Add the new product to the cart
       const cartItem = {
         fishesId: fish.fishesId,
         name: fish.name,
@@ -45,7 +43,6 @@ const FishInfo = ({ fish, averageRating }) => {
       localStorage.setItem("cart", JSON.stringify(newCart));
     }
 
-    // Trigger a notification for feedback
     notification.success({
       message: "Added to Cart",
       description: `${fish.name} has been added to your cart.`,
@@ -64,19 +61,17 @@ const FishInfo = ({ fish, averageRating }) => {
       });
       return;
     }
-    // Check if the product is already in the cart
+
     const existingProductIndex = cart.findIndex(
       (item) => item.id === fish.fishesId
     );
 
     if (existingProductIndex !== -1) {
-      // Update the quantity of the existing product in the cart
       const newCart = [...cart];
       newCart[existingProductIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
-      // Add the new product to the cart
       const cartItem = {
         fishesId: fish.fishesId,
         name: fish.name,
@@ -90,7 +85,6 @@ const FishInfo = ({ fish, averageRating }) => {
       localStorage.setItem("cart", JSON.stringify(newCart));
     }
 
-    // Navigate to the cart page
     navigate("/cart");
   };
 
@@ -105,22 +99,18 @@ const FishInfo = ({ fish, averageRating }) => {
     <div className="w-1/2">
       <h1 className="text-3xl font-bold mb-4">{fish.name}</h1>
 
-      {/* Fish Rating */}
       <div className="flex items-center mb-4">
         <Rate defaultValue={averageRating} disabled allowHalf />
         <span className="ml-2 text-gray-600">{averageRating}/5</span>
       </div>
 
-      {/* Fish Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
         {formatPrice(fish.price)}
       </p>
 
       <Divider />
 
-      {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Column 1: Quantity, Koi Type ID, Name */}
         <div>
           <div className="mb-4">
             <p className="font-semibold">Quantity:</p>
@@ -138,7 +128,6 @@ const FishInfo = ({ fish, averageRating }) => {
           </div>
         </div>
 
-        {/* Column 2: Status, Price, Quantity in Stock */}
         <div>
           <div className="mb-4">
             <p className="font-semibold">Status:</p>
@@ -158,7 +147,6 @@ const FishInfo = ({ fish, averageRating }) => {
       </div>
       <Divider />
 
-      {/* Quantity Selection */}
       <div className="mb-6 mt-4">
         <p className="font-semibold">Quantity:</p>
         <Input
@@ -170,7 +158,6 @@ const FishInfo = ({ fish, averageRating }) => {
         />
       </div>
 
-      {/* Buy Now & Add to Cart Buttons */}
       <div className="flex space-x-4">
         <Button
           type="primary"

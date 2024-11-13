@@ -29,10 +29,9 @@ const FishGrid = ({ fishes }) => {
             className="mb-4 h-64 w-full object-contain rounded"
           />
           <h3 className="text-lg font-semibold">{fish.name}</h3>
+          <h5 className="text-lg font-semibold">FI{fish.fishesId}</h5>
           <p className="text-red-600 font-bold">{formatPrice(fish.price)}</p>
           <p className="text-gray-600">Quantity: {fish.quantity}</p>
-
-          {/* View Button */}
           <Button
             type="primary"
             onClick={() => handleViewNow(fish.fishesId)}

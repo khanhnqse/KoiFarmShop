@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import logo from "../../assets/logo.png";
 
-import "./Footer.css"; // Import the CSS file
+import "./Footer.css";
 import { Link } from "react-router-dom";
 
 const { Paragraph, Title } = Typography;
@@ -18,7 +18,6 @@ export default function Footer() {
   return (
     <div className="footer-container">
       <Row justify="center" align="top" gutter={[32, 32]}>
-        {/* Logo and Subscription Section */}
         <Col xs={24} md={8} lg={6}>
           <img src={logo} alt="Logo" className="footer-logo" />
           <Paragraph className="footer-paragraph">
@@ -35,7 +34,6 @@ export default function Footer() {
           />
         </Col>
 
-        {/* Contact Info Section */}
         <Col xs={24} md={8} lg={6}>
           <Title level={4} className="footer-title pl-7">
             Contact Us
@@ -53,7 +51,6 @@ export default function Footer() {
           </Typography>
         </Col>
 
-        {/* Quick Links Section */}
         <Col xs={24} md={8} lg={6}>
           <Title level={4} className="footer-title pl-7">
             Quick Links
@@ -82,7 +79,6 @@ export default function Footer() {
           </Typography>
         </Col>
 
-        {/* Social Media Section */}
         <Col xs={24} md={8} lg={6}>
           <Title level={4} className="footer-title">
             Follow Us
@@ -124,7 +120,6 @@ export default function Footer() {
         </Col>
       </Row>
 
-      {/* Footer Bottom */}
       <Row justify="center" className="footer-bottom">
         <Col span={24}>
           <Paragraph style={{ color: "#fff" }}>
