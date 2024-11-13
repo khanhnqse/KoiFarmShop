@@ -34,19 +34,16 @@ const ProductInfo = ({ product, averageRating }) => {
       return;
     }
 
-    // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
       (item) => item.id === product.koiId
     );
 
     if (existingProductIndex !== -1) {
-      // Update the quantity of the existing product in the cart
       const newCart = [...cart];
       newCart[existingProductIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
-      // Add the new product to the cart
       const cartItem = {
         KoiId: product.koiId,
         name: product.name,
@@ -60,7 +57,6 @@ const ProductInfo = ({ product, averageRating }) => {
       localStorage.setItem("cart", JSON.stringify(newCart));
     }
 
-    // Trigger a notification for feedback
     notification.success({
       message: "Added to Cart",
       description: `${product.name} has been added to your cart.`,
@@ -89,19 +85,16 @@ const ProductInfo = ({ product, averageRating }) => {
       return;
     }
 
-    // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(
       (item) => item.id === product.koiId
     );
 
     if (existingProductIndex !== -1) {
-      // Update the quantity of the existing product in the cart
       const newCart = [...cart];
       newCart[existingProductIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
-      // Add the new product to the cart
       const cartItem = {
         KoiId: product.koiId,
         name: product.name,
@@ -115,7 +108,6 @@ const ProductInfo = ({ product, averageRating }) => {
       localStorage.setItem("cart", JSON.stringify(newCart));
     }
 
-    // Navigate to the cart page
     navigate("/cart");
   };
 
@@ -142,25 +134,20 @@ const ProductInfo = ({ product, averageRating }) => {
     <div className="w-1/2">
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
 
-      {/* Product Rating */}
       <div className="flex items-center mb-4">
         <Rate defaultValue={averageRating} disabled allowHalf />
         <span className="ml-2 text-gray-600">{averageRating}/5</span>
       </div>
 
-      {/* Product Price */}
       <p className="text-xl text-red-600 font-semibold mb-4">
         {formatPrice(product.price)}
       </p>
 
-      {/* Product Description */}
       <p className="text-gray-600 mb-6">{product.description}</p>
 
       <Divider />
 
-      {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Column 1: Breeder, Gender, Age, Personality */}
         <div>
           <div className="mb-4">
             <p className="font-semibold">ID:</p>
@@ -195,7 +182,6 @@ const ProductInfo = ({ product, averageRating }) => {
           </div>
         </div>
 
-        {/* Column 2: Size, Feeding Amount, Health Status, Award Certificate */}
         <div>
           <div className="mb-4">
             <p className="font-semibold">In Stock:</p>
@@ -247,7 +233,6 @@ const ProductInfo = ({ product, averageRating }) => {
       </div>
       <Divider />
 
-      {/* Quantity Selection */}
       <div className="mb-6 mt-4">
         <p className="font-semibold">Quantity:</p>
         <Input
@@ -260,7 +245,6 @@ const ProductInfo = ({ product, averageRating }) => {
         />
       </div>
 
-      {/* Buy Now & Add to Cart Buttons */}
       <div className="flex space-x-4">
         <Button
           type="primary"
@@ -281,7 +265,6 @@ const ProductInfo = ({ product, averageRating }) => {
         </Button>
       </div>
 
-      {/* Modal for Certificate Image */}
       <Modal
         title="Award Certificate"
         visible={isModalVisible}

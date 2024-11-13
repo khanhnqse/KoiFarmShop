@@ -33,7 +33,8 @@ const Overview = () => {
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
   const [totalOrders, setTotalOrders] = useState([]);
-  const [topUsers,setTopUsers] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [topUsers, setTopUsers] = useState([]);
   const [topUserByOrders, setTopUserByOrders] = useState(null);
   const [topUserBySpent, setTopUserBySpent] = useState(null);
   const [totalFeedBacks, setTotalFeedBacks] = useState();
@@ -59,10 +60,13 @@ const Overview = () => {
           })
         );
         setAnalysis(revenuePerMonth);
-        
-     
-        setTotalFeedBacks(analysisResponse.data.feedbackStatistics.totalFeedbacks);
-        setAverageRating(analysisResponse.data.feedbackStatistics.averageRating);
+
+        setTotalFeedBacks(
+          analysisResponse.data.feedbackStatistics.totalFeedbacks
+        );
+        setAverageRating(
+          analysisResponse.data.feedbackStatistics.averageRating
+        );
         setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
         setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
 
@@ -157,7 +161,8 @@ const Overview = () => {
           <Card title="Top User by Orders" bordered={true}>
             {topUserByOrders ? (
               <p>
-                {topUserByOrders.userName} - {topUserByOrders.totalOrders} orders
+                {topUserByOrders.userName} - {topUserByOrders.totalOrders}{" "}
+                orders
               </p>
             ) : (
               <p>No data available</p>
@@ -168,7 +173,8 @@ const Overview = () => {
           <Card title="Top User by Spent" bordered={true}>
             {topUserBySpent ? (
               <p>
-                {topUserBySpent.userName} - ${topUserBySpent.totalSpent.toLocaleString()}
+                {topUserBySpent.userName} - $
+                {topUserBySpent.totalSpent.toLocaleString()}
               </p>
             ) : (
               <p>No data available</p>
@@ -192,7 +198,7 @@ const Overview = () => {
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
             <XAxis dataKey="name" />
             <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
-            <Tooltip formatter={(value) => `$${value.toLocaleString()}`}/>
+            <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
           </LineChart>
         </Col>
         <Col span={12}>
@@ -223,9 +229,14 @@ const Overview = () => {
             <p>No order data available.</p>
           )}
           {/* Legend Section */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", marginTop: 16 }}
+          >
             {totalOrders.map((entry, index) => (
-              <div key={`legend-${index}`} style={{ display: "flex", alignItems: "center" }}>
+              <div
+                key={`legend-${index}`}
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <div
                   style={{
                     width: 20,
@@ -236,7 +247,12 @@ const Overview = () => {
                 />
                 <span>
                   {entry.name}:{" "}
-                  {((entry.value / totalOrders.reduce((acc, cur) => acc + cur.value, 0)) * 100).toFixed(0)}%
+                  {(
+                    (entry.value /
+                      totalOrders.reduce((acc, cur) => acc + cur.value, 0)) *
+                    100
+                  ).toFixed(0)}
+                  %
                 </span>
               </div>
             ))}
