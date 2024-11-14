@@ -67,16 +67,9 @@ const FishDetailPage = () => {
   return (
     <div className="container mx-auto p-10">
       <div className="flex">
-        {/* Left Section: Image Gallery */}
         <ImageGallery mainImage={fish.imageFishes} additionalImages={[]} />
-
-        {/* Right Section: Fish Info */}
         <FishInfo fish={fish} averageRating={averageRating} />
       </div>
-
-      {/* Product Specifications or Details */}
-
-      {/* Rating and Review Section */}
       <RatingAndReview product={fish} feedbacks={feedbacks} />
     </div>
   );

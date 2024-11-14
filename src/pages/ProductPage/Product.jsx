@@ -78,7 +78,7 @@ const ProductPage = () => {
 
   const filteredFishs = fishs.filter((fish) => {
     return (
-      fish.status.toLowerCase() !== "unavailable" && // Filter out unavailable koi
+      fish.status.toLowerCase() !== "unavailable" &&
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
@@ -109,7 +109,6 @@ const ProductPage = () => {
     currentPage * pageSize
   );
 
-  // Extract unique values for filters
   const uniqueCategories = [...new Set(fishs.map((fish) => fish.name))];
   const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breed))];
   const uniqueGenders = [...new Set(fishs.map((fish) => fish.gender))];
@@ -117,7 +116,6 @@ const ProductPage = () => {
 
   return (
     <div className="flex px-10 py-5">
-      {/* Sidebar */}
       <div className="w-1/4 pr-10">
         <div className="mb-6">
           <input
@@ -138,7 +136,6 @@ const ProductPage = () => {
             onChange={handlePriceChange}
           />
         </div>
-
         <div className="mb-6">
           <h2 className="font-semibold">CATEGORIES</h2>
           <Radio.Group onChange={handleCategoryChange}>
@@ -166,7 +163,6 @@ const ProductPage = () => {
             ))}
           </Select>
         </div>
-
         <div className="mb-6">
           <h2 className="font-semibold">FILTER BY GENDER</h2>
           <Select
@@ -182,7 +178,6 @@ const ProductPage = () => {
             ))}
           </Select>
         </div>
-
         <div className="mb-6">
           <h2 className="font-semibold">FILTER BY AGE</h2>
           <Select

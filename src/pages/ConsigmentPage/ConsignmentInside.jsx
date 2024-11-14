@@ -151,10 +151,10 @@ const ConsignmentInside = () => {
     <div
       className="consignment-background"
       style={{
-        backgroundImage: "url('')", // Change the path to your image
+        backgroundImage: "url('')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "50px", // Adjust the padding as needed
+        padding: "50px",
       }}
     >
       <div
@@ -278,7 +278,6 @@ const ConsignmentInside = () => {
                     className="input-field"
                     disabledDate={(current) => {
                       const today = new Date();
-                      // Disable past dates and dates within 7 days from today
                       return (
                         current &&
                         (current < today.setHours(0, 0, 0, 0) ||
