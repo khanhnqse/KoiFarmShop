@@ -23,7 +23,7 @@ const dashboardApiTO = "https://localhost:7285/api/Dashboard/order-analysis";
 const dashboardApiTU = "https://localhost:7285/api/Dashboard/top-users";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042","#f171f1"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#f171f1"];
 
 const Overview = () => {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -44,10 +44,10 @@ const Overview = () => {
     const fetchData = async () => {
       try {
         const userResponse = await axios.get(dashboardApiU);
-        setTotalUsers(userResponse.data.totalUsers);
+        setTotalUsers(userResponse.data.totalUsers.totak_account);
 
         const productResponse = await axios.get(dashboardApiP);
-        setTotalProduct(productResponse.data.totalProducts);
+        setTotalProduct(productResponse.data.totalProducts.totalProducts);
 
         const revenueResponse = await axios.get(dashboardApiR);
         setTotalRevenue(revenueResponse.data.totalRevenue);
@@ -71,15 +71,38 @@ const Overview = () => {
         setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
 
         const totalOrderResponse = await axios.get(dashboardApiTO);
-        const orderData = totalOrderResponse.data.statusCounts.map((order) => ({
-          name: order.status,
-          value: order.quantity,
-        }));
-        setTotalOrders(orderData);
+        console.log("API Response:", totalOrderResponse.data);
+        // Bước 1: Gộp các trạng thái giống nhau lại và cộng dồn quantity
+        const groupedOrderData = totalOrderResponse.data?.reduce(
+          (acc, order) => {
+            // Kiểm tra xem trạng thái này đã có trong mảng chưa
+            const existingStatus = acc.find(
+              (item) => item.name === order.status
+            );
+
+            if (existingStatus) {
+              // Nếu có rồi, cộng dồn quantity
+              existingStatus.value += order.quantity;
+            } else {
+              // Nếu chưa có, tạo mới đối tượng cho trạng thái này
+              acc.push({
+                name: order.status,
+                value: order.quantity,
+              });
+            }
+
+            return acc;
+          },
+          []
+        ); // Initial value is an empty array
+
+        // Bước 2: Cập nhật state với dữ liệu đã gộp lại
+        setTotalOrders(groupedOrderData);
 
         const topUserResponse = await axios.get(dashboardApiTU);
         const topUsersData = topUserResponse.data;
         setTopUsers(topUsersData);
+        console.log("User Data:", topUsersData);
 
         // Find the user with the highest totalOrders
         const topOrderUser = topUsersData.reduce((prev, curr) =>
@@ -135,7 +158,7 @@ const Overview = () => {
       <Row gutter={16}>
         <Col span={6}>
           <Card title="Top Selling Koi" bordered={true}>
-            <p>{topSellingKoi ? (topSellingKoi) : ("N/A")}</p>
+            <p>{topSellingKoi ? topSellingKoi : "N/A"}</p>
           </Card>
         </Col>
         <Col span={6}>
@@ -194,7 +217,12 @@ const Overview = () => {
                 data={analysis}
                 margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
               >
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#8884d8"
+                  activeDot={{ r: 8 }}
+                />
                 <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
                 <XAxis dataKey="name" />
                 <YAxis
