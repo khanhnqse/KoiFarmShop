@@ -21,7 +21,7 @@ export const MenuItems = [
     key: "SubMenu",
     children: [
       {
-        label: "Products",
+        label: "Koi",
         key: PATHS.PRODUCTS.INDEX,
       },
       {
