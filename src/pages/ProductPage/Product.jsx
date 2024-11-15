@@ -1,9 +1,9 @@
-import { Slider, Radio, Select, Spin, Pagination, Button } from "antd";
+import { Slider, Radio, Select, Spin, Pagination,} from "antd";
 import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const ProductPage = () => {
@@ -19,7 +19,7 @@ const ProductPage = () => {
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const api = "https://localhost:7285/api/Koi";
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const fetchFishs = async () => {
     setLoading(true);
@@ -72,9 +72,9 @@ const ProductPage = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleViewFishProducts = () => {
-    navigate("/fish");
-  };
+  // const handleViewFishProducts = () => {
+  //   navigate("/fish");
+  // };
 
   const filteredFishs = fishs.filter((fish) => {
     return (
@@ -199,7 +199,7 @@ const ProductPage = () => {
           </Select>
         </div>
 
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <Button
             type="primary"
             onClick={handleViewFishProducts}
@@ -207,7 +207,7 @@ const ProductPage = () => {
           >
             View Fish Products
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Product List */}

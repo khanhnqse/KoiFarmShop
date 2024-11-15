@@ -17,8 +17,18 @@ export const MenuItems = [
     key: PATHS.ABOUT_US.INDEX,
   },
   {
-    label: "Products",
-    key: PATHS.PRODUCTS.INDEX,
+    label: "Product",
+    key: "SubMenu",
+    children: [
+      {
+        label: "Products",
+        key: PATHS.PRODUCTS.INDEX,
+      },
+      {
+        label: "Fish",
+        key: PATHS.FISH.INDEX,
+      },
+    ],
   },
   {
     label: "Contact",
