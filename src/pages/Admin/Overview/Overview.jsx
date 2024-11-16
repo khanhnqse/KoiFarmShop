@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Card, Col, Row, Statistic } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import { Card, Col, Row, Statistic, DatePicker } from "antd";
+import dayjs from "dayjs"; // Nếu cần thao tác với ngày
 import {
   LineChart,
   Line,
@@ -32,7 +34,22 @@ const Overview = () => {
   const [analysis, setAnalysis] = useState([]);
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
+
+  //Order Analysis
   const [totalOrders, setTotalOrders] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1); // Lấy tháng hiện tại
+  const [selectedYear, setSelectedYear] = useState(dayjs().year()); // Lấy năm hiện tại
+
+  // Thêm sự kiện khi chọn ngày
+  // Thêm sự kiện khi chọn ngày
+  const handleDateChange = (date) => {
+    if (date) {
+      setSelectedMonth(date.month() + 1); // Tháng trong dayjs bắt đầu từ 0
+      setSelectedYear(date.year());
+    }
+  };
+
+
   // eslint-disable-next-line no-unused-vars
   const [topUsers, setTopUsers] = useState([]);
   const [topUserByOrders, setTopUserByOrders] = useState(null);
@@ -47,7 +64,7 @@ const Overview = () => {
         setTotalUsers(userResponse.data.totalUsers.totak_account);
 
         const productResponse = await axios.get(dashboardApiP);
-        setTotalProduct(productResponse.data.totalProducts.totalProducts);
+        setTotalProduct(productResponse.data.totalProducts);
 
         const revenueResponse = await axios.get(dashboardApiR);
         setTotalRevenue(revenueResponse.data.totalRevenue);
@@ -67,37 +84,42 @@ const Overview = () => {
         setAverageRating(
           analysisResponse.data.feedbackStatistics.averageRating
         );
-        setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
-        setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
+        setTopSellingKoi(analysisResponse.data.topSellingKoi);
+        setTopSellingFish(analysisResponse.data.topSellingFish);
 
-        const totalOrderResponse = await axios.get(dashboardApiTO);
-        console.log("API Response:", totalOrderResponse.data);
-        // Bước 1: Gộp các trạng thái giống nhau lại và cộng dồn quantity
-        const groupedOrderData = totalOrderResponse.data?.reduce(
-          (acc, order) => {
-            // Kiểm tra xem trạng thái này đã có trong mảng chưa
-            const existingStatus = acc.find(
-              (item) => item.name === order.status
-            );
+        try {
+          const totalOrderResponse = await axios.get(dashboardApiTO, {
+            params: {
+              month: selectedMonth,
+              year: selectedYear,
+            },
+          });
+          console.log("API Request Params:", {
+            month: selectedMonth,
+            year: selectedYear,
+          });
+          console.log("Order analysis API Response:", totalOrderResponse.data);
 
-            if (existingStatus) {
-              // Nếu có rồi, cộng dồn quantity
-              existingStatus.value += order.quantity;
-            } else {
-              // Nếu chưa có, tạo mới đối tượng cho trạng thái này
-              acc.push({
-                name: order.status,
-                value: order.quantity,
-              });
-            }
-
-            return acc;
-          },
-          []
-        ); // Initial value is an empty array
-
-        // Bước 2: Cập nhật state với dữ liệu đã gộp lại
-        setTotalOrders(groupedOrderData);
+          // Gộp trạng thái giống nhau
+          const groupedOrderData = totalOrderResponse.data?.reduce(
+            (acc, order) => {
+              const existingStatus = acc.find(
+                (item) => item.name === order.status
+              );
+              if (existingStatus) {
+                existingStatus.value += order.quantity;
+              } else {
+                acc.push({ name: order.status, value: order.quantity });
+              }
+              return acc;
+            },
+            []
+          );
+          setTotalOrders(groupedOrderData);
+          console.log("Updated totalOrders:", groupedOrderData); 
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
 
         const topUserResponse = await axios.get(dashboardApiTU);
         const topUsersData = topUserResponse.data;
@@ -121,66 +143,127 @@ const Overview = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      <DatePicker
+        picker="month"
+        onChange={handleDateChange}
+        defaultValue={dayjs()}
+      />
       <Row gutter={12}>
+        {/* Cột 1: Statistic */}
         <Col span={8}>
           <Card bordered={true}>
-            <Statistic
-              title="Total Users"
-              value={totalUsers}
-              formatter={formatter}
-            />
+            {/* Row 1: Koi */}
+            <Row gutter={16}>
+              <Col span={12}>
+                <Statistic
+                  title="Available Koi Type"
+                  value={totalProducts?.totalKoi?.available || 0}
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Unavailable Koi Type"
+                  value={totalProducts?.totalKoi?.unavailable || 0}
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
+
+            {/* Row 2: Fish */}
+            <Row gutter={16} style={{ marginTop: "16px" }}>
+              <Col span={12}>
+                <Statistic
+                  title="Available Fish Type"
+                  value={totalProducts?.totalFish?.available || 0}
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Unavailable Fish Type"
+                  value={totalProducts?.totalFish?.unavailable || 0}
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
           </Card>
         </Col>
-        <Col span={8}>
+
+        {/* Cột 2: Gộp Total Users và Total Revenue */}
+        <Col span={16}>
           <Card bordered={true}>
-            <Statistic
-              title="Total Products"
-              value={totalProducts}
-              formatter={formatter}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={true}>
-            <Statistic
-              title="Total Revenue"
-              value={totalRevenue}
-              formatter={formatter}
-            />
+            {/* Hàng 1: Total Users và Total Revenue */}
+            <Row gutter={12}>
+              <Col span={12}>
+                <Statistic
+                  title="Total Users"
+                  value={totalUsers}
+                  formatter={formatter}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Total Revenue"
+                  value={totalRevenue}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
+
+            {/* Hàng 2: Total Feedback */}
+            <Row gutter={12} style={{ marginTop: "16px" }}>
+              <Col span={12}>
+                <Statistic
+                  title="Total Feedback"
+                  value={totalFeedBacks}
+                  formatter={formatter}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Average Rating"
+                  value={averageRating}
+                  formatter={(value) => value.toFixed(2)} // Hiển thị 2 chữ số thập phân
+                />
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>
 
       <Row gutter={16}>
         <Col span={6}>
-          <Card title="Top Selling Koi" bordered={true}>
-            <p>{topSellingKoi ? topSellingKoi : "N/A"}</p>
+          <Card title="Top Selling Koi Species" bordered={true}>
+            {topSellingKoi ? (
+              <p>
+                {topSellingKoi.koiName} - {topSellingKoi.koiId}{" "}
+              </p>
+            ) : (
+              <p>No data available</p>
+            )}
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top Selling Fish" bordered={true}>
-            <p>{topSellingFish ? topSellingFish : "N/A"}</p>
+          <Card title="Top Selling Fish Species" bordered={true}>
+            {topSellingFish ? (
+              <p>
+                {topSellingFish.fishName} - {topSellingFish.fishId}{" "}
+              </p>
+            ) : (
+              <p>No data available</p>
+            )}
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Total Feedback" bordered={true}>
-            <p>{totalFeedBacks ? totalFeedBacks : "N/A"}</p>
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card title="Average Rating" bordered={true}>
-            <p>{averageRating ? averageRating.toFixed(2) : "N/A"}</p>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Top User by Category Cards */}
-      <Row gutter={16}>
-        <Col span={12}>
           <Card title="Top User by Orders" bordered={true}>
             {topUserByOrders ? (
               <p>
@@ -192,7 +275,7 @@ const Overview = () => {
             )}
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={6}>
           <Card title="Top User by Spent" bordered={true}>
             {topUserBySpent ? (
               <p>
@@ -232,7 +315,7 @@ const Overview = () => {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p>No order data available.</p>
+            <p>No revenue data available.</p>
           )}
         </Col>
         <Col span={12}>
