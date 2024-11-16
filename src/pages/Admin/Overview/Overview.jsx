@@ -23,7 +23,7 @@ const dashboardApiTO = "https://localhost:7285/api/Dashboard/order-analysis";
 const dashboardApiTU = "https://localhost:7285/api/Dashboard/top-users";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042","#f171f1"];
 
 const Overview = () => {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -33,7 +33,8 @@ const Overview = () => {
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
   const [totalOrders, setTotalOrders] = useState([]);
-  const [topUsers,setTopUsers] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [topUsers, setTopUsers] = useState([]);
   const [topUserByOrders, setTopUserByOrders] = useState(null);
   const [topUserBySpent, setTopUserBySpent] = useState(null);
   const [totalFeedBacks, setTotalFeedBacks] = useState();
@@ -59,10 +60,13 @@ const Overview = () => {
           })
         );
         setAnalysis(revenuePerMonth);
-        
-     
-        setTotalFeedBacks(analysisResponse.data.feedbackStatistics.totalFeedbacks);
-        setAverageRating(analysisResponse.data.feedbackStatistics.averageRating);
+
+        setTotalFeedBacks(
+          analysisResponse.data.feedbackStatistics.totalFeedbacks
+        );
+        setAverageRating(
+          analysisResponse.data.feedbackStatistics.averageRating
+        );
         setTopSellingKoi(analysisResponse.data.topSellingKoi.koiName);
         setTopSellingFish(analysisResponse.data.topSellingFish.fishName);
 
@@ -131,17 +135,17 @@ const Overview = () => {
       <Row gutter={16}>
         <Col span={6}>
           <Card title="Top Selling Koi" bordered={true}>
-            <p>{topSellingKoi}</p>
+            <p>{topSellingKoi ? (topSellingKoi) : ("N/A")}</p>
           </Card>
         </Col>
         <Col span={6}>
           <Card title="Top Selling Fish" bordered={true}>
-            <p>{topSellingFish}</p>
+            <p>{topSellingFish ? topSellingFish : "N/A"}</p>
           </Card>
         </Col>
         <Col span={6}>
           <Card title="Total Feedback" bordered={true}>
-            <p>{totalFeedBacks}</p>
+            <p>{totalFeedBacks ? totalFeedBacks : "N/A"}</p>
           </Card>
         </Col>
         <Col span={6}>
@@ -157,7 +161,8 @@ const Overview = () => {
           <Card title="Top User by Orders" bordered={true}>
             {topUserByOrders ? (
               <p>
-                {topUserByOrders.userName} - {topUserByOrders.totalOrders} orders
+                {topUserByOrders.userName} - {topUserByOrders.totalOrders}{" "}
+                orders
               </p>
             ) : (
               <p>No data available</p>
@@ -168,7 +173,8 @@ const Overview = () => {
           <Card title="Top User by Spent" bordered={true}>
             {topUserBySpent ? (
               <p>
-                {topUserBySpent.userName} - ${topUserBySpent.totalSpent.toLocaleString()}
+                {topUserBySpent.userName} - $
+                {topUserBySpent.totalSpent.toLocaleString()}
               </p>
             ) : (
               <p>No data available</p>
@@ -181,19 +187,25 @@ const Overview = () => {
       <Row gutter={16}>
         <Col span={12}>
           <h3>Total Revenue Analysis</h3>
-          <LineChart
-            width={600}
-            height={300}
-            data={analysis}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-            style={{ width: "100%" }}
-          >
-            <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis dataKey="name" />
-            <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
-            <Tooltip formatter={(value) => `$${value.toLocaleString()}`}/>
-          </LineChart>
+          {analysis && analysis.length > 0 ? (
+            <ResponsiveContainer width={"100%"} height={450}>
+              <LineChart
+                style={{ width: "100%", height: "90%" }}
+                data={analysis}
+                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+              >
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                <XAxis dataKey="name" />
+                <YAxis
+                  tickFormatter={(value) => `$${value.toLocaleString()}`}
+                />
+                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <p>No order data available.</p>
+          )}
         </Col>
         <Col span={12}>
           <h3>Order Analysis</h3>
@@ -223,9 +235,14 @@ const Overview = () => {
             <p>No order data available.</p>
           )}
           {/* Legend Section */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", marginTop: 16 }}
+          >
             {totalOrders.map((entry, index) => (
-              <div key={`legend-${index}`} style={{ display: "flex", alignItems: "center" }}>
+              <div
+                key={`legend-${index}`}
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <div
                   style={{
                     width: 20,
@@ -236,7 +253,12 @@ const Overview = () => {
                 />
                 <span>
                   {entry.name}:{" "}
-                  {((entry.value / totalOrders.reduce((acc, cur) => acc + cur.value, 0)) * 100).toFixed(0)}%
+                  {(
+                    (entry.value /
+                      totalOrders.reduce((acc, cur) => acc + cur.value, 0)) *
+                    100
+                  ).toFixed(0)}
+                  %
                 </span>
               </div>
             ))}

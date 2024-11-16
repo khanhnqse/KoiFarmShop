@@ -41,7 +41,7 @@ const ProductGrid = ({ products }) => {
 
   const handleModalClose = () => {
     setIsModalVisible(false);
-    setSelectedKoi([]); // Reset selected Koi fish
+    setSelectedKoi([]);
   };
 
   return (
@@ -54,44 +54,48 @@ const ProductGrid = ({ products }) => {
         )}
       </div>
       <div className="grid grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div
-            key={product.koiId}
-            className="text-center border p-4 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
-          >
-            <img
-              src={product.imageKoi}
-              alt={product.name}
-              className="mb-4 h-64 w-full object-contain rounded"
-            />
-
-            <h3 className="text-lg font-semibold">{product.name}</h3>
-            <h5 className="text-lg font-semibold text-red-500">
-              KK{product.koiId}
-            </h5>
-            <p className="text-sm text-gray-500 pb-3">
-              {product.description.slice(0, 100)}...
-            </p>
-            <p className="text-red-600 font-bold pb-3">
-              {formatPrice(product.price)}
-            </p>
-
-            <Button
-              type="primary"
-              onClick={() => handleBuyNow(product.koiId)}
-              className="transition-colors duration-300 hover:bg-red-600 hover:text-white mb-2"
+        {products
+          .filter((product) => product.status.toLowerCase() !== "unavailable") // Filter out unavailable koi
+          .map((product) => (
+            <div
+              key={product.koiId}
+              className="text-center border p-4 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
             >
-              View Now
-            </Button>
-            <Button
-              className="ml-3"
-              type={selectedKoi.includes(product) ? "primary" : "default"}
-              onClick={() => handleSelectKoi(product)}
-            >
-              {selectedKoi.includes(product) ? "Selected" : "Select to compare"}
-            </Button>
-          </div>
-        ))}
+              <img
+                src={product.imageKoi}
+                alt={product.name}
+                className="mb-4 h-64 w-full object-contain rounded"
+              />
+
+              <h3 className="text-lg font-semibold">{product.name}</h3>
+              <h5 className="text-lg font-semibold text-red-500">
+                KK{product.koiId}
+              </h5>
+              <p className="text-sm text-gray-500 pb-3">
+                {product.description.slice(0, 100)}...
+              </p>
+              <p className="text-red-600 font-bold pb-3">
+                {formatPrice(product.price)}
+              </p>
+
+              <Button
+                type="primary"
+                onClick={() => handleBuyNow(product.koiId)}
+                className="transition-colors duration-300 hover:bg-red-600 hover:text-white mb-2"
+              >
+                View Now
+              </Button>
+              <Button
+                className="ml-3"
+                type={selectedKoi.includes(product) ? "primary" : "default"}
+                onClick={() => handleSelectKoi(product)}
+              >
+                {selectedKoi.includes(product)
+                  ? "Selected"
+                  : "Select to compare"}
+              </Button>
+            </div>
+          ))}
       </div>
 
       <Modal

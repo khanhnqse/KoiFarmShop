@@ -83,7 +83,6 @@ const OrderKoiManagement = () => {
     }
   };
 
-  // Filter out orders with orderStatus "completed"
   const filteredOrders = orders.filter(
     (order) => order.orderStatus !== "completed"
   );

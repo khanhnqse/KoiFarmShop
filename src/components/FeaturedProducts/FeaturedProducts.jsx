@@ -39,7 +39,6 @@ function FeaturedProducts() {
           <Spin size="large" />
         </div>
       ) : (
-        // Use slice to limit the number of items to 3
         <ProductGrid products={fishs.slice(0, 3)} />
       )}
     </section>

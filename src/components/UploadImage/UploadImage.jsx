@@ -10,7 +10,7 @@ const UploadImage = ({
   setFileList,
   setUrl,
   maxCount = 1,
-  accept = "image/*", // Default to accept images
+  accept = "image/*",
 }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -49,7 +49,7 @@ const UploadImage = ({
 
   return (
     <Form.Item
-      label={label || "Upload"} // Default label if undefined
+      label={label || "Upload"}
       rules={[
         {
           required: true,
@@ -64,7 +64,7 @@ const UploadImage = ({
         onChange={handleUploadChange}
         customRequest={customUpload}
         multiple={maxCount > 1}
-        accept={accept} // Accept prop to specify file types
+        accept={accept}
       >
         {fileList.length >= maxCount ? null : uploadButton}
       </Upload>
