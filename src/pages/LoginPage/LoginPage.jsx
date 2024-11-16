@@ -34,7 +34,7 @@ const LoginPage = () => {
         if (user.role === "manager") {
           navigate(PATHS.DASHBOARD.CHILDREN.OVERVIEW);
         }
-        if (user.role === "staff") {
+        else if (user.role === "staff") {
           navigate(PATHS.DASHBOARD.CHILDREN.KOI);
         } else {
           navigate(PATHS.HOME); // Navigate to home page for other users
