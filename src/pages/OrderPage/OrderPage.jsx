@@ -83,7 +83,7 @@ const OrdersPage = () => {
         message: "Order has been received",
         description: "Your order has been marked as received.",
       });
-      // Refresh orders
+
       const response = await axios.get(
         `https://localhost:7285/api/Order/my-orders`,
         {
@@ -182,6 +182,10 @@ const OrdersPage = () => {
       title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
+      sorter: {
+        compare: (a, b) => a.orderId - b.orderId,
+      },
+      defaultSortOrder: "descend",
     },
     {
       title: "Order Date",
@@ -257,7 +261,6 @@ const OrdersPage = () => {
     },
   ];
 
-  // Filter out orders with orderStatus "completed" or "cancelled"
   const filteredOrders = orders.filter(
     (order) =>
       order.orderStatus !== "completed" && order.orderStatus !== "canceled"

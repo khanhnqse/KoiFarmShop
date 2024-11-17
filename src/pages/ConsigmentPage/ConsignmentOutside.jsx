@@ -294,8 +294,8 @@ const ConsignmentOutside = () => {
                   onChange={(value) => handleInputChange(value, "gender")}
                   className="input-field"
                 >
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
+                  <Option value="Male">Male</Option>
+                  <Option value="Female">Female</Option>
                 </Select>
               </Form.Item>
               <Form.Item

@@ -29,7 +29,13 @@ const FishGrid = ({ fishes }) => {
             className="mb-4 h-64 w-full object-contain rounded"
           />
           <h3 className="text-lg font-semibold">{fish.name}</h3>
-          <h5 className="text-lg font-semibold">FI{fish.fishesId}</h5>
+          <h5 className="text-lg font-semibold text-red-500">
+            FI{fish.fishesId}
+          </h5>
+          <p className="text-sm text-gray-500 pb-3">
+            {fish.description ? fish.description.slice(0, 100) : ""}
+            ...
+          </p>
           <p className="text-red-600 font-bold">{formatPrice(fish.price)}</p>
           <p className="text-gray-600">Quantity: {fish.quantity}</p>
           <Button

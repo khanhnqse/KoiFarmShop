@@ -75,10 +75,8 @@ const ProductDetailPage = () => {
           mainImage={product.imageKoi}
           additionalImages={product.additionImage}
         />
-
         <ProductInfo product={product} averageRating={averageRating} />
       </div>
-
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Koi Details</h2>
         <Row>
@@ -87,7 +85,6 @@ const ProductDetailPage = () => {
           </Col>
         </Row>
       </div>
-
       <RatingAndReview product={product} feedbacks={feedbacks} />
     </div>
   );

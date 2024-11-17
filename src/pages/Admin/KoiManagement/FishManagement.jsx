@@ -23,6 +23,8 @@ import {
   saveFish,
 } from "../../../services/sevice";
 
+const { Option } = Select;
+
 const FishManagement = () => {
   const [fishData, setFishData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,9 @@ const FishManagement = () => {
   const [fileListCertificate, setFileListCertificate] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState(null);
 
   useEffect(() => {
     loadFishData();
@@ -189,9 +194,36 @@ const FishManagement = () => {
     setLoading(false);
   };
 
+  const filteredFishData = fishData.filter((fish) => {
+    return (
+      (searchQuery
+        ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true) && (statusFilter ? fish.status === statusFilter : true)
+    );
+  });
+
   return (
     <div>
       <Typography.Title level={2}>Koi Management</Typography.Title>
+      <div className="justify-between mb-4 ">
+        <Input
+          className="mr-4"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ width: "30%" }}
+        />
+
+        <Select
+          placeholder="Filter by Status"
+          onChange={(value) => setStatusFilter(value)}
+          style={{ width: "30%" }}
+          allowClear
+        >
+          <Option value="available">Available</Option>
+          <Option value="unavailable">Unavailable</Option>
+        </Select>
+      </div>
       <Button
         type="primary"
         onClick={() => handleOpenModal()}
@@ -201,7 +233,7 @@ const FishManagement = () => {
       </Button>
       <Table
         columns={generalColumns(handleOpenModal, handleDeleteFish)}
-        dataSource={fishData}
+        dataSource={filteredFishData}
         loading={loading}
         rowKey="koiId"
         scroll={{ x: 2000, y: 600 }}
@@ -209,7 +241,7 @@ const FishManagement = () => {
       />
       <Table
         columns={detailColumns}
-        dataSource={fishData}
+        dataSource={filteredFishData}
         loading={loading}
         rowKey="koiId"
         scroll={{ x: 1500, y: 450 }}
@@ -266,19 +298,15 @@ const FishManagement = () => {
                 rules={[
                   { required: true, message: "Please input the age!" },
                   {
-                    validator: (_, value) => {
-                      if (
-                        value === undefined ||
-                        value === null ||
-                        isNaN(value)
-                      ) {
-                        return Promise.reject("Age must be a valid number!");
-                      }
-                      if (value < 0) {
-                        return Promise.reject("Age cannot be negative!");
-                      }
-                      return Promise.resolve();
-                    },
+                    type: "number",
+                    min: 0,
+                    max: 100,
+                    message: "Age must be a positive integer!",
+                    transform: (value) => Number(value),
+                  },
+                  {
+                    pattern: /^[0-9]+$/,
+                    message: "Age must be a positive integer!",
                   },
                 ]}
               >
@@ -431,8 +459,8 @@ const FishManagement = () => {
                 ]}
               >
                 <Select>
-                  <Select.Option value="Yes">Yes</Select.Option>
-                  <Select.Option value="No">No</Select.Option>
+                  <Select.Option value="yes">Yes</Select.Option>
+                  <Select.Option value="no">No</Select.Option>
                 </Select>
               </Form.Item>
             </Col>

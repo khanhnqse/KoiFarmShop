@@ -63,7 +63,13 @@ function Header() {
           </Menu.Item>
         </>
       )}
-      <Menu.Item key="logout" onClick={handleLogout}>
+      <Menu.Item
+        style={{
+          color: "red",
+        }}
+        key="logout"
+        onClick={handleLogout}
+      >
         Logout
       </Menu.Item>
     </Menu>

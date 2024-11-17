@@ -190,7 +190,7 @@ ProductGrid.propTypes = {
       koiId: PropTypes.number.isRequired,
       imageKoi: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
+      description: PropTypes.string,
       price: PropTypes.number.isRequired,
       size: PropTypes.number.isRequired,
       age: PropTypes.number.isRequired,

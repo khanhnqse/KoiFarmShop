@@ -47,7 +47,6 @@ const RegisterPage = () => {
         className="bg-white shadow-lg rounded-lg flex overflow-hidden"
         style={{ width: "900px" }}
       >
-        {/* Left section (Register form) */}
         <div className="w-2/3 p-10">
           <div className="text-left mb-8">
             <img src={logo} alt="Logo" className="h-12 mb-4" />
@@ -57,7 +56,6 @@ const RegisterPage = () => {
             <p className="text-gray-500">Register using social networks</p>
           </div>
 
-          {/* Social register buttons */}
           <div className="flex space-x-4 mb-6">
             <Button
               icon={<FacebookOutlined />}
@@ -75,14 +73,12 @@ const RegisterPage = () => {
             </Button>
           </div>
 
-          {/* OR Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-t border-gray-300" />
             <span className="mx-2 text-gray-400">OR</span>
             <hr className="flex-grow border-t border-gray-300" />
           </div>
 
-          {/* Username, Email, and Password Input */}
           <Form
             name="register"
             layout="vertical"
@@ -168,7 +164,6 @@ const RegisterPage = () => {
           </Form>
         </div>
 
-        {/* Right section (Login prompt) */}
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{

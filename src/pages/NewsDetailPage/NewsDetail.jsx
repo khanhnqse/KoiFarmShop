@@ -6,14 +6,12 @@ const { Title, Paragraph } = Typography;
 const ArticleDetail = () => {
   const { id } = useParams();
   const location = useLocation();
-  const article = location.state?.article; // Access the passed article from state
+  const article = location.state?.article;
 
   console.log(`Displaying article ID: ${id}`);
-
   if (!article) {
     return <div className="text-center">Article not found.</div>;
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="shadow-lg">
@@ -26,10 +24,8 @@ const ArticleDetail = () => {
           {article.title}
         </Title>
         <Paragraph className="text-gray-600 mb-4">{article.summary}</Paragraph>
-
         <Paragraph className="text-gray-800">{article.content}</Paragraph>
         <Paragraph className="text-gray-800">{article.content1}</Paragraph>
-        {/* Add subImage display */}
         {article.subImage && (
           <img
             src={article.subImage}
