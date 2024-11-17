@@ -25,6 +25,9 @@ const CheckoutTabs = () => {
   const [loading, setLoading] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [usedPoints, setUsedPoints] = useState(0);
+  const [addresses, setAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState("");
+  const [showNewAddressInput, setShowNewAddressInput] = useState(false);
   const location = useLocation();
   const { cart } = location.state;
   const navigate = useNavigate();
@@ -72,8 +75,50 @@ const CheckoutTabs = () => {
       }
     };
 
+    const fetchAddresses = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
+        );
+        setAddresses(response.data);
+      } catch (error) {
+        notification.error({
+          message: "Failed to fetch addresses",
+          description: "There was an error fetching your addresses.",
+        });
+        console.error("Error fetching addresses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserData();
+    fetchAddresses();
   }, [user, form]);
+
+  const handleAddressChange = (value) => {
+    if (value === "new") {
+      setShowNewAddressInput(true);
+    } else {
+      setShowNewAddressInput(false);
+      const selectedAddress = addresses.find(
+        (address) => address.addressID === value
+      );
+      form.setFieldsValue({
+        address: selectedAddress.address,
+      });
+    }
+  };
+
+  const handleAddNewAddress = () => {
+    form.setFieldsValue({
+      address: newAddress,
+    });
+    setShowNewAddressInput(false);
+    setNewAddress("");
+  };
 
   const handleSubmit = async (values) => {
     console.log("Form data:", values);
@@ -195,7 +240,37 @@ const CheckoutTabs = () => {
             name="address"
             rules={[{ required: true, message: "Please input your address!" }]}
           >
-            <Input placeholder="Street Address" />
+            {showNewAddressInput ? (
+              <div>
+                <Input
+                  value={newAddress}
+                  placeholder="Enter new address"
+                  onChange={(e) => setNewAddress(e.target.value)}
+                />
+                <Button
+                  type="primary"
+                  onClick={handleAddNewAddress}
+                  style={{ marginTop: "10px" }}
+                >
+                  Add Address
+                </Button>
+              </div>
+            ) : (
+              <Select
+                placeholder="Select an address"
+                onChange={handleAddressChange}
+                style={{ width: "100%" }}
+              >
+                {addresses.map((address) => (
+                  <Option key={address.addressID} value={address.addressID}>
+                    {address.address}
+                  </Option>
+                ))}
+                <Option className="bg-cyan-200" value="new">
+                  Enter new address
+                </Option>
+              </Select>
+            )}
           </Form.Item>
 
           <Button type="primary" htmlType="submit" block>

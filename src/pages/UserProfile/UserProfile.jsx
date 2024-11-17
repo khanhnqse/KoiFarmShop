@@ -158,11 +158,6 @@ const UserProfile = () => {
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg w-1/2">
       {/* User Info */}
       <div className="flex items-center">
-        <img
-          src={"https://via.placeholder.com/100"}
-          alt="User"
-          className="w-24 h-24 rounded-full"
-        />
         <div className="ml-4">
           <h2 className="text-xl font-semibold">{formData.userName}</h2>
           <p className="text-gray-600">{formData.email}</p>

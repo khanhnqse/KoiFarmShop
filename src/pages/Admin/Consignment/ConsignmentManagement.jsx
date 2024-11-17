@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   Tag,
+  Typography,
 } from "antd";
 import {
   MoreOutlined,
@@ -242,6 +243,7 @@ const ConsignmentManagement = () => {
       sorter: {
         compare: (a, b) => a.consignmentId - b.consignmentId,
       },
+      defaultSortOrder: "descend",
     },
     {
       title: "User ID",
@@ -347,13 +349,14 @@ const ConsignmentManagement = () => {
 
   return (
     <div>
-      <Button
+      {/* <Button
         type="primary"
         onClick={() => handleOpenModal(null)}
         style={{ marginBottom: 16 }}
       >
         Add Consignment
-      </Button>
+      </Button> */}
+      <Typography.Title level={2}>Consignment Management</Typography.Title>
       <Table
         columns={columns}
         dataSource={consignments}

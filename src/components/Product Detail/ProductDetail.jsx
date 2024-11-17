@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Divider, Input, Rate, notification, Modal, Tag } from "antd";
+import { Button, Divider, Rate, notification, Modal, Tag } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const ProductInfo = ({ product, averageRating }) => {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { isAuthenticated, cart, setCart } = useAuth();
   const navigate = useNavigate();
@@ -35,27 +35,29 @@ const ProductInfo = ({ product, averageRating }) => {
     }
 
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.koiId
+      (item) => item.KoiId === product.koiId
     );
 
     if (existingProductIndex !== -1) {
-      const newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
-    } else {
-      const cartItem = {
-        KoiId: product.koiId,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.imageKoi,
-      };
-
-      const newCart = [...cart, cartItem];
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
+      notification.warning({
+        message: "Product Already in Cart",
+        description: "This product is already in your cart.",
+        placement: "bottomRight",
+      });
+      return;
     }
+
+    const cartItem = {
+      KoiId: product.koiId,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: product.imageKoi,
+    };
+
+    const newCart = [...cart, cartItem];
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
 
     notification.success({
       message: "Added to Cart",
@@ -86,27 +88,29 @@ const ProductInfo = ({ product, averageRating }) => {
     }
 
     const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.koiId
+      (item) => item.KoiId === product.koiId
     );
 
     if (existingProductIndex !== -1) {
-      const newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
-    } else {
-      const cartItem = {
-        KoiId: product.koiId,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.imageKoi,
-      };
-
-      const newCart = [...cart, cartItem];
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
+      notification.warning({
+        message: "Product Already in Cart",
+        description: "This product is already in your cart.",
+        placement: "bottomRight",
+      });
+      return;
     }
+
+    const cartItem = {
+      KoiId: product.koiId,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: product.imageKoi,
+    };
+
+    const newCart = [...cart, cartItem];
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
 
     navigate("/cart");
   };
@@ -233,7 +237,7 @@ const ProductInfo = ({ product, averageRating }) => {
       </div>
       <Divider />
 
-      <div className="mb-6 mt-4">
+      {/* <div className="mb-6 mt-4">
         <p className="font-semibold">Quantity:</p>
         <Input
           type="number"
@@ -243,7 +247,7 @@ const ProductInfo = ({ product, averageRating }) => {
           min={1}
           readOnly
         />
-      </div>
+      </div> */}
 
       <div className="flex space-x-4">
         <Button

@@ -10,6 +10,7 @@ import {
   Image,
   Row,
   Col,
+  Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
@@ -149,6 +150,7 @@ const KoiManagement = () => {
 
   return (
     <div>
+      <Typography.Title level={2}>Fish Management</Typography.Title>
       <Button
         type="primary"
         onClick={() => handleOpenModal(null)}
@@ -216,7 +218,8 @@ const KoiManagement = () => {
               <Form.Item
                 label="Price"
                 name="price"
-                rules={[{ required: true, message: "Please input the price!" },
+                rules={[
+                  { required: true, message: "Please input the price!" },
                   {
                     validator: (_, value) => {
                       if (
@@ -252,7 +255,9 @@ const KoiManagement = () => {
                         value === null ||
                         isNaN(value)
                       ) {
-                        return Promise.reject("Quantity must be a valid number!");
+                        return Promise.reject(
+                          "Quantity must be a valid number!"
+                        );
                       }
                       if (value < 0) {
                         return Promise.reject("Quantity cannot be negative!");
@@ -328,7 +333,7 @@ const KoiManagement = () => {
                   { required: true, message: "Please input the description!" },
                 ]}
               >
-                <Input />
+                <Input.TextArea />
               </Form.Item>
             </Col>
           </Row>

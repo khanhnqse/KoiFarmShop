@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Form, Input, Button } from "antd";
+import { Table, Modal, Form, Input, Button, Typography } from "antd";
 
 import { useAuth } from "../../../context/AuthContext";
 import { fetchKoiTypeData, saveKoiType } from "../../../services/sevice";
@@ -56,6 +56,7 @@ const KoiTypeManagement = () => {
 
   return (
     <div>
+      <Typography.Title level={2}>Koi Type Management</Typography.Title>
       <Button
         type="primary"
         onClick={handleOpenModal}

@@ -182,6 +182,10 @@ const OrdersPage = () => {
       title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
+      sorter: {
+        compare: (a, b) => a.orderId - b.orderId,
+      },
+      defaultSortOrder: "descend",
     },
     {
       title: "Order Date",

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Spin } from "antd";
+import { Col, Row, Spin } from "antd";
 import ImageGallery from "./../../components/Image Gallery/ImageGallery";
 import FishInfo from "./../../components/FishInfo/FishInfo";
 import RatingAndReview from "./../../components/Review&rating/RatingAndReview";
@@ -69,6 +69,14 @@ const FishDetailPage = () => {
       <div className="flex">
         <ImageGallery mainImage={fish.imageFishes} additionalImages={[]} />
         <FishInfo fish={fish} averageRating={averageRating} />
+      </div>
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold mb-4">Koi Details</h2>
+        <Row>
+          <Col span={12}>
+            <p className="text-gray-600">{fish.detailDescription}</p>
+          </Col>
+        </Row>
       </div>
       <RatingAndReview product={fish} feedbacks={feedbacks} />
     </div>
