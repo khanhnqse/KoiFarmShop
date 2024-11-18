@@ -25,7 +25,7 @@ export const MenuItems = [
         key: PATHS.PRODUCTS.INDEX,
       },
       {
-        label: "Fish",
+        label: "Fish container",
         key: PATHS.FISH.INDEX,
       },
     ],
@@ -777,10 +777,12 @@ export const purchaseHistoryColumns = () => [
     dataIndex: "discountMoney",
     key: "discountMoney",
     render: (money) =>
-      `${money.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}`,
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Final Money",
@@ -917,10 +919,12 @@ export const orderColumns = (handleUpdateOrderStatus, handleShowDetails) => [
     dataIndex: "discountMoney",
     key: "discountMoney",
     render: (money) =>
-      `${money.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}`,
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Earned Points",

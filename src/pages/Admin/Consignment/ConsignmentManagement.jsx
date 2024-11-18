@@ -285,13 +285,13 @@ const ConsignmentManagement = () => {
       title: "Consignment Date From",
       dataIndex: "consignmentDateFrom",
       key: "consignmentDateFrom",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       title: "Consignment Date To",
       dataIndex: "consignmentDateTo",
       key: "consignmentDateTo",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       title: "Sale Price",

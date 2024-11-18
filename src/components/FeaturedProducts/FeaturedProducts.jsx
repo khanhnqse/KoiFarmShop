@@ -28,6 +28,8 @@ function FeaturedProducts() {
     fetchFishs();
   }, []);
 
+  const availableFishs = fishs.filter((fish) => fish.status === "available");
+
   return (
     <section className="featured-products">
       <Title className="pb-10" level={2}>
@@ -39,7 +41,7 @@ function FeaturedProducts() {
           <Spin size="large" />
         </div>
       ) : (
-        <ProductGrid products={fishs.slice(0, 3)} />
+        <ProductGrid products={availableFishs.slice(0, 3)} />
       )}
     </section>
   );

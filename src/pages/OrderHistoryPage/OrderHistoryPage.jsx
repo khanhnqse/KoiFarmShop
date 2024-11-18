@@ -144,25 +144,43 @@ const OrderHistoryPage = () => {
       title: "Purchase Date",
       dataIndex: "purchaseDate",
       key: "purchaseDate",
-      render: (date) => moment(date).format("YYYY-MM-DD"),
+      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Total Money",
       dataIndex: "totalMoney",
       key: "totalMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Discount Money",
       dataIndex: "discountMoney",
       key: "discountMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Final Money",
       dataIndex: "finalMoney",
       key: "finalMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Order Status",
@@ -191,7 +209,7 @@ const OrderHistoryPage = () => {
       title: "Shipping Date",
       dataIndex: "shippingDate",
       key: "shippingDate",
-      render: (date) => moment(date).format("YYYY-MM-DD"),
+      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Promotion Name",

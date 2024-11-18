@@ -158,6 +158,7 @@ const MyConsignment = () => {
     sold: "blue",
     cancelled: "red",
     rejected: "red",
+    "awaiting inspection": "yellow",
   };
 
   const menu = (record) => (
@@ -200,11 +201,11 @@ const MyConsignment = () => {
       dataIndex: "userName",
       key: "userName",
     },
-    {
-      title: "Koi Type ID",
-      dataIndex: "koiTypeId",
-      key: "koiTypeId",
-    },
+    // {
+    //   title: "Koi Type ID",
+    //   dataIndex: "koiTypeId",
+    //   key: "koiTypeId",
+    // },
     {
       title: "Koi ID",
       dataIndex: "koiId",
@@ -252,13 +253,13 @@ const MyConsignment = () => {
       title: "Consignment Date From",
       dataIndex: "consignmentDateFrom",
       key: "consignmentDateFrom",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       title: "Consignment Date To",
       dataIndex: "consignmentDateTo",
       key: "consignmentDateTo",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       title: "Consignment Title",
@@ -281,6 +282,7 @@ const MyConsignment = () => {
     {
       title: "Action",
       key: "action",
+      fixed: "right",
       render: (text, record) => (
         <Dropdown overlay={menu(record)} trigger={["click"]}>
           <Button icon={<MoreOutlined />} />
@@ -293,16 +295,17 @@ const MyConsignment = () => {
       fixed: "right",
       render: (text, record) => (
         <>
-          {record.consignmentType === "offline" && (
-            <Button
-              type="primary"
-              onClick={() =>
-                handlePayNow(record.consignmentId, record.takeCareFee)
-              }
-            >
-              Pay Now
-            </Button>
-          )}
+          {record.consignmentType === "offline" &&
+            record.status === "awaiting inspection" && (
+              <Button
+                type="primary"
+                onClick={() =>
+                  handlePayNow(record.consignmentId, record.takeCareFee)
+                }
+              >
+                Pay Now
+              </Button>
+            )}
         </>
       ),
     },

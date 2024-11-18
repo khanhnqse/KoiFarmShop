@@ -264,14 +264,22 @@ const ProductPage = () => {
             </div>
           ) : (
             <>
-              <ProductGrid products={paginatedFishs} />
-              <Pagination
-                current={currentPage}
-                pageSize={pageSize}
-                total={filteredFishs.length}
-                onChange={handlePageChange}
-                className="mt-6 text-center"
-              />
+              {paginatedFishs.length === 0 ? (
+                <div className="flex justify-center items-center h-full">
+                  <p>No products found matching your criteria.</p>
+                </div>
+              ) : (
+                <>
+                  <ProductGrid products={paginatedFishs} />
+                  <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={filteredFishs.length}
+                    onChange={handlePageChange}
+                    className="mt-6 text-center"
+                  />
+                </>
+              )}
             </>
           )}
         </div>
