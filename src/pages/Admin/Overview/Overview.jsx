@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Statistic, DatePicker } from "antd";
-import dayjs from "dayjs"; // Nếu cần thao tác với ngày
+import dayjs from "dayjs";
 import {
   LineChart,
   Line,
@@ -10,6 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  BarChart,
+  Bar,
   ResponsiveContainer,
 } from "recharts";
 import CountUp from "react-countup";
@@ -32,19 +34,50 @@ const Overview = () => {
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
   const [revenueByDate, setRevenueByDate] = useState({});
+  const [selectedDateRevenue, setSelectedDateRevenue] = useState(null);
 
   //Order Analysis
   const [totalOrders, setTotalOrders] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1); // Lấy tháng hiện tại
-  const [selectedYear, setSelectedYear] = useState(dayjs().year()); // Lấy năm hiện tại
+  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
+  const [selectedYear, setSelectedYear] = useState(dayjs().year());
 
-  // Thêm sự kiện khi chọn ngày
   const handleDateChange = (date) => {
     if (date) {
-      setSelectedMonth(date.month() + 1); // Tháng trong dayjs bắt đầu từ 0
+      setSelectedMonth(date.month() + 1);
       setSelectedYear(date.year());
     }
   };
+
+  //Revenue by date
+  const handleRevenueDateChange = (date) => {
+    if (date) {
+      const monthStart = date.startOf("month").format("YYYY-MM-DD");
+      const monthEnd = date.endOf("month").format("YYYY-MM-DD");
+
+      const filteredRevenue = [];
+      let currentDate = dayjs(monthStart);
+      while (currentDate.isBefore(monthEnd) || currentDate.isSame(monthEnd)) {
+        const dateKey = currentDate.format("YYYY-MM-DD");
+        const revenue = revenueByDate[dateKey] || 0; 
+        if (revenue > 0) {
+          filteredRevenue.push({
+            date: dateKey,
+            revenue: revenue,
+          });
+        }
+        currentDate = currentDate.add(1, "day");
+      }
+
+      setSelectedDateRevenue(filteredRevenue);
+    } else {
+      setSelectedDateRevenue(null);
+    }
+  };
+
+  const chartData =
+    selectedDateRevenue && Array.isArray(selectedDateRevenue)
+      ? selectedDateRevenue
+      : [];
 
   // eslint-disable-next-line no-unused-vars
   const [topUsers, setTopUsers] = useState([]);
@@ -85,16 +118,14 @@ const Overview = () => {
 
         try {
           const totalOrderResponse = await axios.get(dashboardApiTO);
-          const allOrders = totalOrderResponse.data; // Dữ liệu tất cả các order
+          const allOrders = totalOrderResponse.data;
 
           console.log("All orders:", allOrders);
 
-          // Filter dựa vào tháng và năm
           const filteredOrders = allOrders.filter(
             (order) =>
               order.month === selectedMonth && order.year === selectedYear
           );
-          // Gộp trạng thái giống nhau
           const groupedOrderData = filteredOrders.reduce((acc, order) => {
             const existingStatus = acc.find(
               (item) => item.name === order.status
@@ -118,13 +149,11 @@ const Overview = () => {
         setTopUsers(topUsersData);
         console.log("User Data:", topUsersData);
 
-        // Find the user with the highest totalOrders
         const topOrderUser = topUsersData.reduce((prev, curr) =>
           curr.totalOrders > prev.totalOrders ? curr : prev
         );
         setTopUserByOrders(topOrderUser);
 
-        // Find the user with the highest totalSpent
         const topSpentUser = topUsersData.reduce((prev, curr) =>
           curr.totalSpent > prev.totalSpent ? curr : prev
         );
@@ -137,6 +166,7 @@ const Overview = () => {
       console.log("Revenue by Date:", getDayRevenueResponse.data);
       setRevenueByDate(getDayRevenueResponse.data);
     };
+    
 
     fetchData();
   }, [selectedMonth, selectedYear]);
@@ -144,14 +174,21 @@ const Overview = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <Row gutter={12}>
-        {/* Cột 1: Statistic */}
         <Col span={8}>
-          <Card bordered={true}>
-            {/* Row 1: Koi */}
+          <Card
+            bordered={true}
+            style={{
+              backgroundColor: "#9bf7f4",
+              borderColor: "#1890ff",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic
-                  title="Available Koi Type"
+                  title="Available Koi"
                   value={totalProducts?.totalKoi?.available || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -159,7 +196,7 @@ const Overview = () => {
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="Unavailable Koi Type"
+                  title="Unavailable Koi"
                   value={totalProducts?.totalKoi?.unavailable || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -167,11 +204,10 @@ const Overview = () => {
               </Col>
             </Row>
 
-            {/* Row 2: Fish */}
             <Row gutter={16} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
-                  title="Available Fish Type"
+                  title="Available Fish"
                   value={totalProducts?.totalFish?.available || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -179,7 +215,7 @@ const Overview = () => {
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="Unavailable Fish Type"
+                  title="Unavailable Fish"
                   value={totalProducts?.totalFish?.unavailable || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -189,10 +225,17 @@ const Overview = () => {
           </Card>
         </Col>
 
-        {/* Cột 2: Gộp Total Users và Total Revenue */}
         <Col span={16}>
-          <Card bordered={true}>
-            {/* Hàng 1: Total Users và Total Revenue */}
+          <Card
+            bordered={true}
+            style={{
+              backgroundColor: "#8ff562",
+              borderColor: "#59b60a",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             <Row gutter={12}>
               <Col span={12}>
                 <Statistic
@@ -210,7 +253,6 @@ const Overview = () => {
               </Col>
             </Row>
 
-            {/* Hàng 2: Total Feedback */}
             <Row gutter={12} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
@@ -223,7 +265,7 @@ const Overview = () => {
                 <Statistic
                   title="Average Rating"
                   value={averageRating}
-                  formatter={(value) => value.toFixed(2)} // Hiển thị 2 chữ số thập phân
+                  formatter={(value) => value.toFixed(2)}
                 />
               </Col>
             </Row>
@@ -233,7 +275,17 @@ const Overview = () => {
 
       <Row gutter={16}>
         <Col span={6}>
-          <Card title="Top Selling Koi Species" bordered={true}>
+          <Card
+            title="Top Selling Koi Species"
+            bordered={true}
+            style={{
+              backgroundColor: "#f97cf7",
+              borderColor: "#b913b6",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topSellingKoi ? (
               <p>{topSellingKoi.koiName}</p>
             ) : (
@@ -242,7 +294,17 @@ const Overview = () => {
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top Selling Fish Species" bordered={true}>
+          <Card
+            title="Top Selling Fish Species"
+            bordered={true}
+            style={{
+              backgroundColor: "#fc8fa5",
+              borderColor: "#71091e",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topSellingFish ? (
               <p>{topSellingFish.fishName}</p>
             ) : (
@@ -251,7 +313,17 @@ const Overview = () => {
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top User by Orders" bordered={true}>
+          <Card
+            title="Top User by Orders"
+            bordered={true}
+            style={{
+              backgroundColor: "#eff78d",
+              borderColor: "#8b9510",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topUserByOrders ? (
               <p>
                 {topUserByOrders.userName} - {topUserByOrders.totalOrders}{" "}
@@ -263,7 +335,17 @@ const Overview = () => {
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top User by Spent" bordered={true}>
+          <Card
+            title="Top User by Spent"
+            bordered={true}
+            style={{
+              backgroundColor: "#fac874",
+              borderColor: "#a57017",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topUserBySpent ? (
               <p>
                 {topUserBySpent.userName} - $
@@ -276,10 +358,17 @@ const Overview = () => {
         </Col>
       </Row>
 
-      {/* Total Revenue */}
       <Row gutter={16}>
         <Col span={12}>
-          <h3>Total Revenue Analysis</h3>
+          <h3
+            style={{
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
+            Total Revenue Analysis
+          </h3>
           {analysis && analysis.length > 0 ? (
             <ResponsiveContainer width={"100%"} height={450}>
               <LineChart
@@ -311,9 +400,24 @@ const Overview = () => {
             onChange={handleDateChange}
             defaultValue={dayjs()}
           />
-          <h3>Order Analysis</h3>
-          <Card bordered={true}>
-            {/* Row 1 */}
+          <h3
+            style={{
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
+            Order Analysis
+          </h3>
+          <Card
+            bordered={true}
+            style={{
+              marginTop: "16px",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic
@@ -339,7 +443,6 @@ const Overview = () => {
               </Col>
             </Row>
 
-            {/* Row 2 */}
             <Row gutter={16} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
@@ -364,7 +467,7 @@ const Overview = () => {
                 />
               </Col>
             </Row>
-            {/* Row 3 */}
+
             <Row gutter={16} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
@@ -381,43 +484,38 @@ const Overview = () => {
           </Card>
         </Col>
       </Row>
-      <Row gutter={16} style={{ marginTop: "24px" }}>
-        <Col span={12}>
-          <h3>Revenue by Date</h3>
-          {/* Date Picker để chọn ngày */}
-          <DatePicker
-            onChange={(date) => {
-              if (date) {
-                // Định dạng lại ngày từ DatePicker và set thời gian về 00:00:00
-                const selectedDate = dayjs(date)
-                  .startOf("day")
-                  .format("YYYY-MM-DD"); // Set thời gian về 00:00:00
-                console.log("Selected date:", selectedDate); // Kiểm tra ngày đã chọn
-
-                // Lấy doanh thu từ đối tượng dữ liệu (revenueByDate)
-                const revenue = revenueByDate[selectedDate] || 0; // Nếu không có dữ liệu, mặc định là 0
-
-                // Cập nhật doanh thu vào state
-                setRevenueByDate(revenue);
-
-                console.log("Revenue for date", selectedDate, "is:", revenue);
-              }
-            }}
-          />
-          {/* Hiển thị doanh thu theo ngày */}
-          <Card bordered={true} style={{ marginTop: "16px" }}>
-            {revenueByDate !== undefined ? (
-              <Statistic
-                title="Revenue"
-                value={revenueByDate}
-                formatter={formatter} // Định dạng số nếu cần
-              />
-            ) : (
-              <p>No revenue data available for the selected date.</p>
-            )}
-          </Card>
-        </Col>
-      </Row>
+      <Col span={6}>
+        <DatePicker
+          picker="month"
+          onChange={handleRevenueDateChange}
+          defaultValue={dayjs()}
+        />
+        <h3
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Revenue by Date in Month
+        </h3>
+        {chartData && chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={450}>
+            <BarChart
+              data={chartData}
+              style={{ width: "100%", height: "150%" }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="revenue" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p>No revenue data available.</p>
+        )}
+      </Col>
     </div>
   );
 };
