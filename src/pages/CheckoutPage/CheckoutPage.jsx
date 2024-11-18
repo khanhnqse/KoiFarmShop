@@ -112,12 +112,38 @@ const CheckoutTabs = () => {
     }
   };
 
-  const handleAddNewAddress = () => {
-    form.setFieldsValue({
-      address: newAddress,
-    });
-    setShowNewAddressInput(false);
-    setNewAddress("");
+  const handleAddNewAddress = async () => {
+    try {
+      setLoading(true);
+      const values = form.getFieldsValue();
+      const response = await axios.put(
+        `https://localhost:7285/api/User/updateProfile${user.userId}`,
+        {
+          email: values.email,
+          userName: values.fullname,
+          phoneNumber: values.phone,
+          address: newAddress,
+        }
+      );
+      notification.success({
+        message: "Address Added",
+        description: "Your new address has been added successfully.",
+      });
+      setAddresses([...addresses, response.data]);
+      form.setFieldsValue({
+        address: newAddress,
+      });
+      setShowNewAddressInput(false);
+      setNewAddress("");
+    } catch (error) {
+      notification.error({
+        message: "Failed to Add Address",
+        description: "There was an error adding your new address.",
+      });
+      console.error("Error adding new address:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (values) => {
@@ -144,6 +170,10 @@ const CheckoutTabs = () => {
       console.log("orderKois", orderKois);
       const requestBody = {
         userId: user.userId,
+        email: values.email,
+        userName: values.fullname,
+        phoneNumber: values.phone,
+        address: values.address,
         paymentMethod: paymentMethod,
         promotionId: selectedPromotion?.promotionId,
         usedPoints: usedPoints, // Add usedPoints to the request body

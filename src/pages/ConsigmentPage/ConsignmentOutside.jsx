@@ -623,7 +623,16 @@ const ConsignmentOutside = () => {
                   className="input-field"
                 />
               </Form.Item>
-              <Form.Item label="Consignment Contract" name="consignmentDetail">
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the consignment title!",
+                  },
+                ]}
+                label="Consignment Contract"
+                name="consignmentDetail"
+              >
                 <Row gutter={16}>
                   <Col span={12}>
                     <UploadImage

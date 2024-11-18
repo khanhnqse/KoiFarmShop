@@ -10,6 +10,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import moment from "moment";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -191,24 +192,43 @@ const OrdersPage = () => {
       title: "Order Date",
       dataIndex: "orderDate",
       key: "orderDate",
+      render: (date) => moment(date).format("DD-MM-YYYY"),
     },
     {
       title: "Total Money",
       dataIndex: "totalMoney",
       key: "totalMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Final Money",
       dataIndex: "finalMoney",
       key: "finalMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Discount Money",
       dataIndex: "discountMoney",
       key: "discountMoney",
-      render: (money) => `${money.toLocaleString()} VND`,
+      render: (money) =>
+        money === undefined || money === 0
+          ? "None"
+          : `${money.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}`,
     },
     {
       title: "Earned Points",

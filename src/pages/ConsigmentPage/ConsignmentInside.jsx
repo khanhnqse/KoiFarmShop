@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import {
   Input,
@@ -22,11 +23,11 @@ const ConsignmentInside = () => {
   const [productInfo, setProductInfo] = useState({
     koiID: "",
     koiTypeID: "",
-    consignmentType: "", // Remove default value
+    consignmentType: "",
     consignmentDateTo: "",
     consignmentTitle: "",
     consignmentDetail: "",
-    consignmentPrice: "", // Add consignmentPrice field
+    consignmentPrice: "",
   });
   const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
@@ -102,7 +103,10 @@ const ConsignmentInside = () => {
   const handleSubmit = async () => {
     try {
       await form.validateFields();
-      // eslint-disable-next-line no-unused-vars
+      if (fileList.length === 0) {
+        message.error("Please upload the consignment contract.");
+        return;
+      }
     } catch (error) {
       message.error("Please fill in all required fields.");
       return;
@@ -307,18 +311,32 @@ const ConsignmentInside = () => {
                 />
               </Form.Item>
 
-              <UploadImage
-                label="Consignment Detail"
-                fileList={fileList}
-                setFileList={setFileList}
-                setUrl={(url) =>
-                  handleInputChange({
-                    target: { name: "consignmentDetail", value: url },
-                  })
-                }
-                maxCount={1}
-                accept=".docx"
-              />
+              <Form.Item
+                label="Consignment Contract"
+                name="consignmentDetail"
+                rules={[
+                  {
+                    validator: (_, value) =>
+                      fileList.length > 0
+                        ? Promise.resolve()
+                        : Promise.reject(
+                            new Error("Please upload the consignment contract!")
+                          ),
+                  },
+                ]}
+              >
+                <UploadImage
+                  fileList={fileList}
+                  setFileList={setFileList}
+                  setUrl={(url) =>
+                    handleInputChange({
+                      target: { name: "consignmentDetail", value: url },
+                    })
+                  }
+                  maxCount={1}
+                  accept=".docx"
+                />
+              </Form.Item>
 
               <Form.Item>
                 <Button
