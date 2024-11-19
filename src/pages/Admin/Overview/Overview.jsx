@@ -527,7 +527,7 @@ const Overview = () => {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <p>No revenue data available for the selected range.</p>
+          <p>No revenue data available.</p>
         )}
       </Col>
     </div>
