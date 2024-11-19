@@ -58,7 +58,7 @@ const Overview = () => {
       let currentDate = dayjs(monthStart);
       while (currentDate.isBefore(monthEnd) || currentDate.isSame(monthEnd)) {
         const dateKey = currentDate.format("YYYY-MM-DD");
-        const revenue = revenueByDate[dateKey] || 0; 
+        const revenue = revenueByDate[dateKey] || 0;
         if (revenue > 0) {
           filteredRevenue.push({
             date: dateKey,
@@ -158,16 +158,30 @@ const Overview = () => {
           curr.totalSpent > prev.totalSpent ? curr : prev
         );
         setTopUserBySpent(topSpentUser);
+
+        const getDayRevenueResponse = await axios.get(dashboardApiRBD);
+        console.log("Revenue by Date:", getDayRevenueResponse.data);
+        setRevenueByDate(getDayRevenueResponse.data);
+        const currentMonthStart = dayjs().startOf("month").format("YYYY-MM-DD");
+        const currentMonthEnd = dayjs().endOf("month").format("YYYY-MM-DD");
+        const filteredRevenue = [];
+        let currentDate = dayjs(currentMonthStart);
+        while (currentDate.isBefore(currentMonthEnd) || currentDate.isSame(currentMonthEnd)) {
+          const dateKey = currentDate.format("YYYY-MM-DD");
+          const revenue = getDayRevenueResponse.data[dateKey] || 0;
+          if (revenue > 0) {
+            filteredRevenue.push({
+              date: dateKey,
+              revenue: revenue,
+            });
+          }
+          currentDate = currentDate.add(1, "day");
+        }
+        setSelectedDateRevenue(filteredRevenue);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-
-      const getDayRevenueResponse = await axios.get(dashboardApiRBD);
-      console.log("Revenue by Date:", getDayRevenueResponse.data);
-      setRevenueByDate(getDayRevenueResponse.data);
     };
-    
-
     fetchData();
   }, [selectedMonth, selectedYear]);
 
@@ -503,7 +517,7 @@ const Overview = () => {
           <ResponsiveContainer width="100%" height={450}>
             <BarChart
               data={chartData}
-              style={{ width: "100%", height: "150%" }}
+              style={{ width: "100%", height: "98%" }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
@@ -513,7 +527,7 @@ const Overview = () => {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <p>No revenue data available.</p>
+          <p>No revenue data available for the selected range.</p>
         )}
       </Col>
     </div>
