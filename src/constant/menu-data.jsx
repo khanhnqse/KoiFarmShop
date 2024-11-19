@@ -866,7 +866,7 @@ const orderMenu = (record, handleUpdateOrderStatus, handleShowDetails) => (
       )
     }
   >
-    <Menu.Item key="updateStatus">Update Status</Menu.Item>
+    {/* <Menu.Item key="updateStatus">Update Status</Menu.Item> */}
     <Menu.Item key="details" icon={<EyeOutlined />}>
       View Details
     </Menu.Item>

@@ -114,7 +114,6 @@ const OrderHistoryPage = () => {
       console.error("Failed to submit feedback:", error);
       notification.error({
         message: "Feedback Submission Failed",
-
         description:
           error.response?.data ||
           "There was an error submitting your feedback.",
@@ -242,6 +241,10 @@ const OrderHistoryPage = () => {
             </Title>
             {loading ? (
               <Spin size="large" />
+            ) : orderHistory.length === 0 ? (
+              <div className="flex justify-center items-center h-full">
+                <p>You dont have any order yet.</p>
+              </div>
             ) : (
               <Table
                 columns={columns}
