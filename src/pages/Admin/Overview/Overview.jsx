@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Statistic, DatePicker } from "antd";
-import dayjs from "dayjs"; // Nếu cần thao tác với ngày
+import dayjs from "dayjs";
 import {
   LineChart,
   Line,
@@ -10,9 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  PieChart,
-  Pie,
-  Cell,
+  BarChart,
+  Bar,
   ResponsiveContainer,
 } from "recharts";
 import CountUp from "react-countup";
@@ -23,9 +22,9 @@ const dashboardApiA = "https://localhost:7285/api/Dashboard/analysis";
 const dashboardApiR = "https://localhost:7285/api/Dashboard/total-revenue";
 const dashboardApiTO = "https://localhost:7285/api/Dashboard/order-analysis";
 const dashboardApiTU = "https://localhost:7285/api/Dashboard/top-users";
+const dashboardApiRBD = "https://localhost:7285/api/Dashboard/get-day-revenue";
 
 const formatter = (value) => <CountUp end={value} separator="," />;
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#f171f1"];
 
 const Overview = () => {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -34,21 +33,51 @@ const Overview = () => {
   const [analysis, setAnalysis] = useState([]);
   const [topSellingKoi, setTopSellingKoi] = useState("");
   const [topSellingFish, setTopSellingFish] = useState("");
+  const [revenueByDate, setRevenueByDate] = useState({});
+  const [selectedDateRevenue, setSelectedDateRevenue] = useState(null);
 
   //Order Analysis
   const [totalOrders, setTotalOrders] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1); // Lấy tháng hiện tại
-  const [selectedYear, setSelectedYear] = useState(dayjs().year()); // Lấy năm hiện tại
+  const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
+  const [selectedYear, setSelectedYear] = useState(dayjs().year());
 
-  // Thêm sự kiện khi chọn ngày
-  // Thêm sự kiện khi chọn ngày
   const handleDateChange = (date) => {
     if (date) {
-      setSelectedMonth(date.month() + 1); // Tháng trong dayjs bắt đầu từ 0
+      setSelectedMonth(date.month() + 1);
       setSelectedYear(date.year());
     }
   };
 
+  //Revenue by date
+  const handleRevenueDateChange = (date) => {
+    if (date) {
+      const monthStart = date.startOf("month").format("YYYY-MM-DD");
+      const monthEnd = date.endOf("month").format("YYYY-MM-DD");
+
+      const filteredRevenue = [];
+      let currentDate = dayjs(monthStart);
+      while (currentDate.isBefore(monthEnd) || currentDate.isSame(monthEnd)) {
+        const dateKey = currentDate.format("YYYY-MM-DD");
+        const revenue = revenueByDate[dateKey] || 0;
+        if (revenue > 0) {
+          filteredRevenue.push({
+            date: dateKey,
+            revenue: revenue,
+          });
+        }
+        currentDate = currentDate.add(1, "day");
+      }
+
+      setSelectedDateRevenue(filteredRevenue);
+    } else {
+      setSelectedDateRevenue(null);
+    }
+  };
+
+  const chartData =
+    selectedDateRevenue && Array.isArray(selectedDateRevenue)
+      ? selectedDateRevenue
+      : [];
 
   // eslint-disable-next-line no-unused-vars
   const [topUsers, setTopUsers] = useState([]);
@@ -88,37 +117,31 @@ const Overview = () => {
         setTopSellingFish(analysisResponse.data.topSellingFish);
 
         try {
-          const totalOrderResponse = await axios.get(dashboardApiTO, {
-            params: {
-              month: selectedMonth,
-              year: selectedYear,
-            },
-          });
-          console.log("API Request Params:", {
-            month: selectedMonth,
-            year: selectedYear,
-          });
-          console.log("Order analysis API Response:", totalOrderResponse.data);
+          const totalOrderResponse = await axios.get(dashboardApiTO);
+          const allOrders = totalOrderResponse.data;
 
-          // Gộp trạng thái giống nhau
-          const groupedOrderData = totalOrderResponse.data?.reduce(
-            (acc, order) => {
-              const existingStatus = acc.find(
-                (item) => item.name === order.status
-              );
-              if (existingStatus) {
-                existingStatus.value += order.quantity;
-              } else {
-                acc.push({ name: order.status, value: order.quantity });
-              }
-              return acc;
-            },
-            []
+          console.log("All orders:", allOrders);
+
+          const filteredOrders = allOrders.filter(
+            (order) =>
+              order.month === selectedMonth && order.year === selectedYear
           );
+          const groupedOrderData = filteredOrders.reduce((acc, order) => {
+            const existingStatus = acc.find(
+              (item) => item.name === order.status
+            );
+            if (existingStatus) {
+              existingStatus.value += order.quantity;
+            } else {
+              acc.push({ name: order.status, value: order.quantity });
+            }
+            return acc;
+          }, []);
+
           setTotalOrders(groupedOrderData);
-          console.log("Updated totalOrders:", groupedOrderData); 
+          console.log("Filtered and grouped orders:", groupedOrderData);
         } catch (error) {
-          console.error("Error fetching data:", error);
+          console.error("Error fetching order data:", error);
         }
 
         const topUserResponse = await axios.get(dashboardApiTU);
@@ -126,41 +149,60 @@ const Overview = () => {
         setTopUsers(topUsersData);
         console.log("User Data:", topUsersData);
 
-        // Find the user with the highest totalOrders
         const topOrderUser = topUsersData.reduce((prev, curr) =>
           curr.totalOrders > prev.totalOrders ? curr : prev
         );
         setTopUserByOrders(topOrderUser);
 
-        // Find the user with the highest totalSpent
         const topSpentUser = topUsersData.reduce((prev, curr) =>
           curr.totalSpent > prev.totalSpent ? curr : prev
         );
         setTopUserBySpent(topSpentUser);
+
+        const getDayRevenueResponse = await axios.get(dashboardApiRBD);
+        console.log("Revenue by Date:", getDayRevenueResponse.data);
+        setRevenueByDate(getDayRevenueResponse.data);
+        const currentMonthStart = dayjs().startOf("month").format("YYYY-MM-DD");
+        const currentMonthEnd = dayjs().endOf("month").format("YYYY-MM-DD");
+        const filteredRevenue = [];
+        let currentDate = dayjs(currentMonthStart);
+        while (currentDate.isBefore(currentMonthEnd) || currentDate.isSame(currentMonthEnd)) {
+          const dateKey = currentDate.format("YYYY-MM-DD");
+          const revenue = getDayRevenueResponse.data[dateKey] || 0;
+          if (revenue > 0) {
+            filteredRevenue.push({
+              date: dateKey,
+              revenue: revenue,
+            });
+          }
+          currentDate = currentDate.add(1, "day");
+        }
+        setSelectedDateRevenue(filteredRevenue);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, [selectedMonth, selectedYear]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <DatePicker
-        picker="month"
-        onChange={handleDateChange}
-        defaultValue={dayjs()}
-      />
       <Row gutter={12}>
-        {/* Cột 1: Statistic */}
         <Col span={8}>
-          <Card bordered={true}>
-            {/* Row 1: Koi */}
+          <Card
+            bordered={true}
+            style={{
+              backgroundColor: "#9bf7f4",
+              borderColor: "#1890ff",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic
-                  title="Available Koi Type"
+                  title="Available Koi"
                   value={totalProducts?.totalKoi?.available || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -168,7 +210,7 @@ const Overview = () => {
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="Unavailable Koi Type"
+                  title="Unavailable Koi"
                   value={totalProducts?.totalKoi?.unavailable || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -176,11 +218,10 @@ const Overview = () => {
               </Col>
             </Row>
 
-            {/* Row 2: Fish */}
             <Row gutter={16} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
-                  title="Available Fish Type"
+                  title="Available Fish"
                   value={totalProducts?.totalFish?.available || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -188,7 +229,7 @@ const Overview = () => {
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="Unavailable Fish Type"
+                  title="Unavailable Fish"
                   value={totalProducts?.totalFish?.unavailable || 0}
                   prefix={<InboxOutlined />}
                   formatter={formatter}
@@ -198,10 +239,17 @@ const Overview = () => {
           </Card>
         </Col>
 
-        {/* Cột 2: Gộp Total Users và Total Revenue */}
         <Col span={16}>
-          <Card bordered={true}>
-            {/* Hàng 1: Total Users và Total Revenue */}
+          <Card
+            bordered={true}
+            style={{
+              backgroundColor: "#8ff562",
+              borderColor: "#59b60a",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             <Row gutter={12}>
               <Col span={12}>
                 <Statistic
@@ -219,7 +267,6 @@ const Overview = () => {
               </Col>
             </Row>
 
-            {/* Hàng 2: Total Feedback */}
             <Row gutter={12} style={{ marginTop: "16px" }}>
               <Col span={12}>
                 <Statistic
@@ -232,7 +279,7 @@ const Overview = () => {
                 <Statistic
                   title="Average Rating"
                   value={averageRating}
-                  formatter={(value) => value.toFixed(2)} // Hiển thị 2 chữ số thập phân
+                  formatter={(value) => value.toFixed(2)}
                 />
               </Col>
             </Row>
@@ -242,29 +289,55 @@ const Overview = () => {
 
       <Row gutter={16}>
         <Col span={6}>
-          <Card title="Top Selling Koi Species" bordered={true}>
+          <Card
+            title="Top Selling Koi Species"
+            bordered={true}
+            style={{
+              backgroundColor: "#f97cf7",
+              borderColor: "#b913b6",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topSellingKoi ? (
-              <p>
-                {topSellingKoi.koiName} - {topSellingKoi.koiId}{" "}
-              </p>
+              <p>{topSellingKoi.koiName}</p>
             ) : (
               <p>No data available</p>
             )}
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top Selling Fish Species" bordered={true}>
+          <Card
+            title="Top Selling Fish Species"
+            bordered={true}
+            style={{
+              backgroundColor: "#fc8fa5",
+              borderColor: "#71091e",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topSellingFish ? (
-              <p>
-                {topSellingFish.fishName} - {topSellingFish.fishId}{" "}
-              </p>
+              <p>{topSellingFish.fishName}</p>
             ) : (
               <p>No data available</p>
             )}
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top User by Orders" bordered={true}>
+          <Card
+            title="Top User by Orders"
+            bordered={true}
+            style={{
+              backgroundColor: "#eff78d",
+              borderColor: "#8b9510",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topUserByOrders ? (
               <p>
                 {topUserByOrders.userName} - {topUserByOrders.totalOrders}{" "}
@@ -276,7 +349,17 @@ const Overview = () => {
           </Card>
         </Col>
         <Col span={6}>
-          <Card title="Top User by Spent" bordered={true}>
+          <Card
+            title="Top User by Spent"
+            bordered={true}
+            style={{
+              backgroundColor: "#fac874",
+              borderColor: "#a57017",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
             {topUserBySpent ? (
               <p>
                 {topUserBySpent.userName} - $
@@ -289,10 +372,17 @@ const Overview = () => {
         </Col>
       </Row>
 
-      {/* Remaining components */}
       <Row gutter={16}>
         <Col span={12}>
-          <h3>Total Revenue Analysis</h3>
+          <h3
+            style={{
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
+            Total Revenue Analysis
+          </h3>
           {analysis && analysis.length > 0 ? (
             <ResponsiveContainer width={"100%"} height={450}>
               <LineChart
@@ -319,63 +409,127 @@ const Overview = () => {
           )}
         </Col>
         <Col span={12}>
-          <h3>Order Analysis</h3>
-          {totalOrders && totalOrders.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={totalOrders}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {totalOrders.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <p>No order data available.</p>
-          )}
-          {/* Legend Section */}
-          <div
-            style={{ display: "flex", flexDirection: "column", marginTop: 16 }}
+          <DatePicker
+            picker="month"
+            onChange={handleDateChange}
+            defaultValue={dayjs()}
+          />
+          <h3
+            style={{
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
           >
-            {totalOrders.map((entry, index) => (
-              <div
-                key={`legend-${index}`}
-                style={{ display: "flex", alignItems: "center" }}
-              >
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: COLORS[index % COLORS.length],
-                    marginRight: 8,
-                  }}
+            Order Analysis
+          </h3>
+          <Card
+            bordered={true}
+            style={{
+              marginTop: "16px",
+              fontFamily: "Arial, sans-serif",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Statistic
+                  title="Completed Order"
+                  value={
+                    totalOrders.find((item) => item.name === "completed")
+                      ?.value || 0
+                  }
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
                 />
-                <span>
-                  {entry.name}:{" "}
-                  {(
-                    (entry.value /
-                      totalOrders.reduce((acc, cur) => acc + cur.value, 0)) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </span>
-              </div>
-            ))}
-          </div>
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Canceled Order"
+                  value={
+                    totalOrders.find((item) => item.name === "canceled")
+                      ?.value || 0
+                  }
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
+
+            <Row gutter={16} style={{ marginTop: "16px" }}>
+              <Col span={12}>
+                <Statistic
+                  title="Delivering Order"
+                  value={
+                    totalOrders.find((item) => item.name === "delivering")
+                      ?.value || 0
+                  }
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Processing Order"
+                  value={
+                    totalOrders.find((item) => item.name === "processing")
+                      ?.value || 0
+                  }
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
+
+            <Row gutter={16} style={{ marginTop: "16px" }}>
+              <Col span={12}>
+                <Statistic
+                  title="Remittance Order"
+                  value={
+                    totalOrders.find((item) => item.name === "remittance")
+                      ?.value || 0
+                  }
+                  prefix={<InboxOutlined />}
+                  formatter={formatter}
+                />
+              </Col>
+            </Row>
+          </Card>
         </Col>
       </Row>
+      <Col span={6}>
+        <DatePicker
+          picker="month"
+          onChange={handleRevenueDateChange}
+          defaultValue={dayjs()}
+        />
+        <h3
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Revenue by Date in Month
+        </h3>
+        {chartData && chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={450}>
+            <BarChart
+              data={chartData}
+              style={{ width: "100%", height: "98%" }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="revenue" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p>No revenue data available.</p>
+        )}
+      </Col>
     </div>
   );
 };

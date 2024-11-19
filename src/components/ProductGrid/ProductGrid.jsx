@@ -55,7 +55,13 @@ const ProductGrid = ({ products }) => {
       </div>
       <div className="grid grid-cols-3 gap-6">
         {products
-          .filter((product) => product.status.toLowerCase() !== "unavailable") // Filter out unavailable koi
+          .filter(
+            (product) =>
+              !(
+                product.status.toLowerCase() === "unavailable" &&
+                product.isConsigned
+              )
+          ) // Filter out products that are both unavailable and consigned
           .map((product) => (
             <div
               key={product.koiId}
@@ -198,6 +204,8 @@ ProductGrid.propTypes = {
       breed: PropTypes.string.isRequired,
       personality: PropTypes.string.isRequired,
       awardCertificates: PropTypes.bool.isRequired,
+      status: PropTypes.string.isRequired,
+      isConsigned: PropTypes.bool.isRequired,
     })
   ).isRequired,
 };

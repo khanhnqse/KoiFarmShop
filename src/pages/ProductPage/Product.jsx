@@ -78,7 +78,7 @@ const ProductPage = () => {
 
   const filteredFishs = fishs.filter((fish) => {
     return (
-      fish.status.toLowerCase() !== "unavailable" &&
+      !(fish.status.toLowerCase() === "unavailable" && fish.isConsigned) &&
       fish.price >= priceRange[0] &&
       fish.price <= priceRange[1] &&
       (selectedCategory ? fish.name === selectedCategory : true) &&
