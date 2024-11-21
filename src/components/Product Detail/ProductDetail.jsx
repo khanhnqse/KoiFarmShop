@@ -139,8 +139,12 @@ const ProductInfo = ({ product, averageRating }) => {
       <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
 
       <div className="flex items-center mb-4">
-        <Rate defaultValue={averageRating} disabled allowHalf />
-        <span className="ml-2 text-gray-600">{averageRating}/5</span>
+        {averageRating > 0 && (
+          <>
+            <Rate defaultValue={averageRating} disabled allowHalf />
+            <span className="ml-2 text-gray-600">{averageRating}/5</span>
+          </>
+        )}
       </div>
 
       <p className="text-xl text-red-600 font-semibold mb-4">

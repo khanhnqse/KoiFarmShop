@@ -38,6 +38,7 @@ const FishManagement = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchKoiId, setSearchKoiId] = useState("");
 
   const [statusFilter, setStatusFilter] = useState(null);
 
@@ -126,10 +127,10 @@ const FishManagement = () => {
     }
 
     if (isUpdateMode && currentFish) {
-      values.koiId = currentFish.koiId; // Ensure koiId is set
+      values.koiId = currentFish.koiId;
     }
 
-    console.log("Fish data to be saved:", values); // Log the fish object
+    console.log("Fish data to be saved:", values);
 
     setLoading(true);
     await saveFish(values, isUpdateMode);
@@ -198,7 +199,9 @@ const FishManagement = () => {
     return (
       (searchQuery
         ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
-        : true) && (statusFilter ? fish.status === statusFilter : true)
+        : true) &&
+      (searchKoiId ? fish.koiId.toString().includes(searchKoiId) : true) &&
+      (statusFilter ? fish.status === statusFilter : true)
     );
   });
 
@@ -206,6 +209,13 @@ const FishManagement = () => {
     <div>
       <Typography.Title level={2}>Koi Management</Typography.Title>
       <div className="justify-between mb-4 ">
+        <Input
+          className="mr-4"
+          placeholder="Search by Koi ID"
+          value={searchKoiId}
+          onChange={(e) => setSearchKoiId(e.target.value)}
+          style={{ width: "30%" }}
+        />
         <Input
           className="mr-4"
           placeholder="Search by name"
@@ -288,6 +298,7 @@ const FishManagement = () => {
                 <Select>
                   <Select.Option value="Male">Male</Select.Option>
                   <Select.Option value="Female">Female</Select.Option>
+                  <Select.Option value="Bisexual">Bisexual</Select.Option>
                 </Select>
               </Form.Item>
             </Col>

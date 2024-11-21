@@ -20,9 +20,19 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
 
+    if (!quantity || quantity < 1 || quantity > fish.quantityInStock) {
+      notification.error({
+        message: "Invalid Quantity",
+        description: `Please enter a valid quantity between 1 and ${fish.quantityInStock}.`,
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     const existingFishIndex = cart.findIndex(
-      (item) => item.id === fish.fishesId
+      (item) => item.fishesId === fish.fishesId
     );
+    //modify in cart
 
     if (existingFishIndex !== -1) {
       const newCart = [...cart];
@@ -61,13 +71,22 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
 
-    const existingProductIndex = cart.findIndex(
-      (item) => item.id === fish.fishesId
+    if (!quantity || quantity < 1 || quantity > fish.quantityInStock) {
+      notification.error({
+        message: "Invalid Quantity",
+        description: `Please enter a valid quantity between 1 and ${fish.quantityInStock}.`,
+        placement: "bottomRight",
+      });
+      return;
+    }
+
+    const existingFishIndex = cart.findIndex(
+      (item) => item.fishesId === fish.fishesId
     );
 
-    if (existingProductIndex !== -1) {
+    if (existingFishIndex !== -1) {
       const newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
+      newCart[existingFishIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
@@ -158,6 +177,7 @@ const FishInfo = ({ fish, averageRating }) => {
           value={quantity}
           onChange={(e) => setQuantity(parseInt(e.target.value))}
           min={1}
+          max={fish.quantityInStock}
         />
       </div>
 

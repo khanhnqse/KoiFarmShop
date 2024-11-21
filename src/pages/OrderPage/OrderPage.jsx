@@ -130,7 +130,7 @@ const OrdersPage = () => {
         message: "Order Canceled",
         description: "Your order has been canceled successfully.",
       });
-      // Refresh orders
+
       const response = await axios.get(
         `https://localhost:7285/api/Order/my-orders`,
         {
@@ -140,6 +140,7 @@ const OrdersPage = () => {
         }
       );
       setOrders(response.data);
+      handleCloseDetailModal();
     } catch (error) {
       console.error("Failed to cancel order:", error);
       notification.error({
@@ -281,17 +282,15 @@ const OrdersPage = () => {
               >
                 Pay Now
               </Button>
-              {/* <Button
-                type="default"
-                onClick={() => showCancelConfirm(record.orderId)}
-                style={{ marginLeft: "10px" }}
-              >
-                Cancel
-              </Button> */}
             </>
           )}
           {record.orderStatus === "delivering" && (
             <Button
+              style={{
+                marginLeft: "10px",
+                background: "#52c41a",
+                borderColor: "#52c41a",
+              }}
               type="default"
               onClick={() => handleReceived(record.orderId)}
             >
@@ -338,6 +337,7 @@ const OrdersPage = () => {
               key="cancel"
               type="default"
               onClick={() => showCancelConfirm(selectedOrder.orderId)}
+              disabled={loading}
             >
               Cancel Order
             </Button>

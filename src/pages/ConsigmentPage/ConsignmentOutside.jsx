@@ -296,6 +296,7 @@ const ConsignmentOutside = () => {
                 >
                   <Option value="Male">Male</Option>
                   <Option value="Female">Female</Option>
+                  <Option value="Bisexual">Bisexual</Option>
                 </Select>
               </Form.Item>
               <Form.Item

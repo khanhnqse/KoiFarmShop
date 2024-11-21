@@ -28,6 +28,7 @@ const CheckoutTabs = () => {
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState("");
   const [showNewAddressInput, setShowNewAddressInput] = useState(false);
+  const [selectedAddressID, setSelectedAddressID] = useState(null);
   const location = useLocation();
   const { cart } = location.state;
   const navigate = useNavigate();
@@ -61,9 +62,9 @@ const CheckoutTabs = () => {
           fullname: userData.userName,
           phone: userData.phoneNumber || "",
           address: userData.address || "",
-          paymentMethod: "VN Pay", // Set default payment method
+          paymentMethod: "VN Pay",
         });
-        setTotalPoints(userData.totalPoints); // Set total points
+        setTotalPoints(userData.totalPoints);
       } catch (error) {
         notification.error({
           message: "Failed to fetch user data",
@@ -82,7 +83,22 @@ const CheckoutTabs = () => {
         const response = await axios.get(
           `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
         );
-        setAddresses(response.data);
+        const addressesData = response.data;
+        setAddresses(addressesData);
+        const defaultAddress = addressesData.find(
+          (address) => address.isDefault
+        );
+        if (defaultAddress) {
+          setSelectedAddressID(defaultAddress.addressID);
+          form.setFieldsValue({
+            address: defaultAddress.address,
+          });
+        } else if (addressesData.length > 0) {
+          setSelectedAddressID(addressesData[0].addressID);
+          form.setFieldsValue({
+            address: addressesData[0].address,
+          });
+        }
       } catch (error) {
         notification.error({
           message: "Failed to fetch addresses",
@@ -101,6 +117,7 @@ const CheckoutTabs = () => {
   const handleAddressChange = (value) => {
     if (value === "new") {
       setShowNewAddressInput(true);
+      setSelectedAddressID(null);
     } else {
       setShowNewAddressInput(false);
       const selectedAddress = addresses.find(
@@ -109,6 +126,27 @@ const CheckoutTabs = () => {
       form.setFieldsValue({
         address: selectedAddress.address,
       });
+      setSelectedAddressID(value);
+    }
+  };
+
+  const fetchAddresses = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
+      );
+      const addressesData = response.data;
+      setAddresses(addressesData);
+    } catch (error) {
+      notification.error({
+        message: "Failed to fetch addresses",
+        description: "There was an error fetching your addresses.",
+      });
+      console.error("Error fetching addresses:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -129,12 +167,14 @@ const CheckoutTabs = () => {
         message: "Address Added",
         description: "Your new address has been added successfully.",
       });
-      setAddresses([...addresses, response.data]);
-      form.setFieldsValue({
-        address: newAddress,
-      });
-      setShowNewAddressInput(false);
+      const newAddressData = response.data;
       setNewAddress("");
+      setShowNewAddressInput(false);
+      fetchAddresses();
+      setSelectedAddressID(newAddressData.addressID);
+      form.setFieldsValue({
+        address: newAddressData.address,
+      });
     } catch (error) {
       notification.error({
         message: "Failed to Add Address",
@@ -152,7 +192,6 @@ const CheckoutTabs = () => {
     if (activeTabKey === "1") {
       setActiveTabKey("2");
     } else if (activeTabKey === "2") {
-      // Prepare the request body
       const orderFishes = cart
         .filter((item) => item.fishesId && item.quantity)
         .map((item) => ({
@@ -174,15 +213,15 @@ const CheckoutTabs = () => {
         userName: values.fullname,
         phoneNumber: values.phone,
         address: values.address,
+        addressId: selectedAddressID,
         paymentMethod: paymentMethod,
         promotionId: selectedPromotion?.promotionId,
-        usedPoints: usedPoints, // Add usedPoints to the request body
+        usedPoints: usedPoints,
         ...(orderFishes.length > 0 && { orderFishes }),
         ...(orderKois.length > 0 && { orderKois }),
       };
 
       try {
-        // Send the request to the API endpoint
         const response = await axios.post(
           "https://localhost:7285/api/Order",
           requestBody
@@ -195,7 +234,7 @@ const CheckoutTabs = () => {
         // Clear the cart
         setCart([]);
         localStorage.removeItem("cart");
-        navigate("/orders"); // Redirect to the orders page
+        navigate("/orders");
       } catch (error) {
         console.error("Failed to create order:", error);
         notification.error({
@@ -234,36 +273,19 @@ const CheckoutTabs = () => {
           onFinish={handleSubmit}
           form={form}
           initialValues={{
-            paymentMethod: "VN Pay", // Set default payment method
+            paymentMethod: "VN Pay",
           }}
         >
-          <Form.Item
-            label="Email address"
-            name="email"
-            rules={[{ required: true, message: "Please input your email!" }]}
-          >
-            <Input placeholder="youremail@gmail.com" />
+          <Form.Item label="Email address" name="email">
+            <Input placeholder="youremail@gmail.com" readOnly />
           </Form.Item>
           <div className="flex space-x-4">
-            <Form.Item
-              label="Full Name"
-              name="fullname"
-              className="flex-1"
-              rules={[
-                { required: true, message: "Please input your full name!" },
-              ]}
-            >
-              <Input placeholder="Full name" />
+            <Form.Item label="Full Name" name="fullname" className="flex-1">
+              <Input placeholder="Full name" readOnly />
             </Form.Item>
           </div>
-          <Form.Item
-            label="Phone Number"
-            name="phone"
-            rules={[
-              { required: true, message: "Please input your phone number!" },
-            ]}
-          >
-            <Input placeholder="Phone Number" />
+          <Form.Item label="Phone Number" name="phone">
+            <Input placeholder="Phone Number" readOnly />
           </Form.Item>
           <Form.Item
             label="Street address"
@@ -290,6 +312,7 @@ const CheckoutTabs = () => {
                 placeholder="Select an address"
                 onChange={handleAddressChange}
                 style={{ width: "100%" }}
+                value={selectedAddressID}
               >
                 {addresses.map((address) => (
                   <Option key={address.addressID} value={address.addressID}>
@@ -318,7 +341,7 @@ const CheckoutTabs = () => {
           onFinish={handleSubmit}
           form={form}
           initialValues={{
-            paymentMethod: "VN Pay", // Set default payment method
+            paymentMethod: "VN Pay",
           }}
         >
           <Form.Item
