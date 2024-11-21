@@ -16,6 +16,7 @@ const ProductPage = () => {
   const [selectedBreeder, setSelectedBreeder] = useState(null);
   const [selectedGender, setSelectedGender] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("available");
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const api = "https://localhost:7285/api/Koi";
@@ -64,6 +65,10 @@ const ProductPage = () => {
     setSelectedAge(value === "All" ? null : value);
   };
 
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value === "All" ? null : value);
+  };
+
   const handleSortChange = (value) => {
     setSortOption(value);
   };
@@ -85,6 +90,7 @@ const ProductPage = () => {
       (selectedBreeder ? fish.breed === selectedBreeder : true) &&
       (selectedGender ? fish.gender === selectedGender : true) &&
       (selectedAge ? fish.age === selectedAge : true) &&
+      (selectedStatus ? fish.status === selectedStatus : true) &&
       (searchQuery
         ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
         : true)
@@ -113,8 +119,8 @@ const ProductPage = () => {
   const uniqueBreeders = [...new Set(fishs.map((fish) => fish.breed))];
   const uniqueGenders = [...new Set(fishs.map((fish) => fish.gender))];
   const uniqueAges = [...new Set(fishs.map((fish) => fish.age))];
+  const uniqueStatuses = [...new Set(fishs.map((fish) => fish.status))];
 
-  // Array of image URLs for the slider
   const imageUrls = [
     "https://i.ibb.co/7zJHy0H/1.png",
     "https://i.ibb.co/Lr6xDFv/banner-1.png",
@@ -138,7 +144,7 @@ const ProductPage = () => {
             <img
               src={url}
               alt={`Slide ${index + 1}`}
-              className="w-full h-96 object-cover rounded-lg" // Adjusted height to h-96
+              className="w-full h-96 object-cover rounded-lg"
             />
           </div>
         ))}
@@ -176,6 +182,22 @@ const ProductPage = () => {
                 </Radio>
               ))}
             </Radio.Group>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="font-semibold">FILTER BY STATUS</h2>
+            <Select
+              placeholder="Select Status"
+              className="w-full"
+              onChange={handleStatusChange}
+            >
+              <Option value="All">All</Option>
+              {uniqueStatuses.map((status) => (
+                <Option key={status} value={status}>
+                  {status}
+                </Option>
+              ))}
+            </Select>
           </div>
 
           <div className="mb-6">

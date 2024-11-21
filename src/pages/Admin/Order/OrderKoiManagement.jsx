@@ -11,7 +11,6 @@ import {
   Typography,
   notification,
   Spin,
-  Select,
   Descriptions,
 } from "antd";
 import { orderColumns } from "../../../constant/menu-data";
@@ -19,7 +18,6 @@ import { useAuth } from "../../../context/AuthContext";
 import { fetchOrderData, updateOrderStatus } from "../../../services/sevice";
 import moment from "moment";
 
-const { Option } = Select;
 const { Title } = Typography;
 
 const OrderKoiManagement = () => {
@@ -114,7 +112,9 @@ const OrderKoiManagement = () => {
           <Button
             key="update"
             type="primary"
-            onClick={() => form.submit()}
+            onClick={() =>
+              handleUpdateOrderStatus({ orderStatus: "delivering" })
+            }
             loading={loading}
           >
             Update Status
@@ -176,30 +176,6 @@ const OrderKoiManagement = () => {
                 {currentOrder.paymentMethod || "None"}
               </Descriptions.Item>
             </Descriptions>
-
-            <Title level={4} className="mt-4">
-              Update Order Status
-            </Title>
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleUpdateOrderStatus}
-            >
-              <Form.Item
-                label="Order Status"
-                name="orderStatus"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select the order status!",
-                  },
-                ]}
-              >
-                <Select placeholder="Select Order Status">
-                  <Option value="delivering">Delivering</Option>
-                </Select>
-              </Form.Item>
-            </Form>
 
             <Title level={4} className="mt-4">
               Point Transactions

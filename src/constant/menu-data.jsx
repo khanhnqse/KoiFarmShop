@@ -163,6 +163,13 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
     title: "Price",
     dataIndex: "price",
     key: "price",
+    render: (money) =>
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Action",
@@ -264,6 +271,9 @@ export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
     title: "Status",
     dataIndex: "status",
     key: "status",
+    render: (status) => (
+      <Tag color={status === "available" ? "green" : "red"}>{status}</Tag>
+    ),
   },
   {
     title: "Price",
