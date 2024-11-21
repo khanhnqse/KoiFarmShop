@@ -514,7 +514,7 @@ const Overview = () => {
           Revenue by Date in Month
         </h3>
         {chartData && chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={450}>
+          <ResponsiveContainer width="180%" height={600}>
             <BarChart
               data={chartData}
               style={{ width: "100%", height: "98%" }}
@@ -523,7 +523,7 @@ const Overview = () => {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="revenue" fill="#8884d8" />
+              <Bar dataKey="revenue" fill="#8884d8" barSize={80}/>
             </BarChart>
           </ResponsiveContainer>
         ) : (
