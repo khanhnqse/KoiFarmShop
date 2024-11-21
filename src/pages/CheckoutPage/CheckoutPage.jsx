@@ -68,7 +68,9 @@ const CheckoutTabs = () => {
       } catch (error) {
         notification.error({
           message: "Failed to fetch user data",
-          description: "There was an error fetching your user data.",
+          description:
+            error.response?.data ||
+            "There was an error fetching your user data.",
         });
         console.error("Error fetching user data:", error);
       } finally {
@@ -102,7 +104,9 @@ const CheckoutTabs = () => {
       } catch (error) {
         notification.error({
           message: "Failed to fetch addresses",
-          description: "There was an error fetching your addresses.",
+          description:
+            error.response?.data ||
+            "There was an error fetching your addresses.",
         });
         console.error("Error fetching addresses:", error);
       } finally {
@@ -142,7 +146,8 @@ const CheckoutTabs = () => {
     } catch (error) {
       notification.error({
         message: "Failed to fetch addresses",
-        description: "There was an error fetching your addresses.",
+        description:
+          error.response?.data || "There was an error fetching your addresses.",
       });
       console.error("Error fetching addresses:", error);
     } finally {
@@ -178,7 +183,8 @@ const CheckoutTabs = () => {
     } catch (error) {
       notification.error({
         message: "Failed to Add Address",
-        description: "There was an error adding your new address.",
+        description:
+          error.response?.data || "There was an error adding your new address.",
       });
       console.error("Error adding new address:", error);
     } finally {
@@ -240,6 +246,7 @@ const CheckoutTabs = () => {
         notification.error({
           message: "Order Creation Failed",
           description:
+            error.response?.data ||
             "There was an error creating your order. Please try again.",
         });
       }

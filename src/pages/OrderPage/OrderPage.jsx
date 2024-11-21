@@ -45,7 +45,8 @@ const OrdersPage = () => {
       } catch (error) {
         notification.error({
           message: "Failed to fetch user orders",
-          description: "There was an error fetching your orders.",
+          description:
+            error.response?.data || "There was an error fetching your orders.",
         });
         console.error("Error fetching user orders:", error);
       } finally {
@@ -69,6 +70,7 @@ const OrdersPage = () => {
       notification.error({
         message: "Payment Failed",
         description:
+          error.response?.data ||
           "There was an error initiating the payment. Please try again.",
       });
     } finally {
@@ -107,6 +109,7 @@ const OrdersPage = () => {
       notification.error({
         message: "Update Failed",
         description:
+          error.response?.data ||
           "There was an error updating the order status. Please try again.",
       });
     } finally {
@@ -146,6 +149,7 @@ const OrdersPage = () => {
       notification.error({
         message: "Cancellation Failed",
         description:
+          error.response?.data ||
           "There was an error canceling the order. Please try again.",
       });
     } finally {
