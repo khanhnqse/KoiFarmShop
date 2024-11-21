@@ -8,7 +8,6 @@ const CartPage = () => {
   const navigate = useNavigate();
 
   const handleQuantityChange = (index, value) => {
-    // Update the quantity of the cart item
     const newCart = [...cart];
     newCart[index].quantity = value;
     setCart(newCart);
@@ -16,7 +15,6 @@ const CartPage = () => {
   };
 
   const handleDelete = (index) => {
-    // Remove the item from the cart
     const newCart = cart.filter((_, i) => i !== index);
     setCart(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));

@@ -352,6 +352,23 @@ export const updateOrderStatus = async (orderId, newStatus, token) => {
     console.error("Error updating order status:", error);
   }
 };
+export const fetchOrderDetails = async (orderId, token) => {
+  try {
+    const response = await axios.get(
+      `https://localhost:7285/api/Order/${orderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch order details:", error);
+    throw error;
+  }
+};
+
 
 const consignmentApi = "https://localhost:7285/api/Consignment";
 // Consignment management service

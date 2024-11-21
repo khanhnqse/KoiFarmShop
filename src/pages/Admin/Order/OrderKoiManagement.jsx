@@ -12,13 +12,20 @@ import {
   notification,
   Spin,
   Descriptions,
+  Input,
 } from "antd";
 import { orderColumns } from "../../../constant/menu-data";
 import { useAuth } from "../../../context/AuthContext";
-import { fetchOrderData, updateOrderStatus } from "../../../services/sevice";
+
 import moment from "moment";
+import {
+  fetchOrderData,
+  fetchOrderDetails,
+  updateOrderStatus,
+} from "../../../services/sevice";
 
 const { Title } = Typography;
+const { Search } = Input;
 
 const OrderKoiManagement = () => {
   const { token } = useAuth();
@@ -26,6 +33,7 @@ const OrderKoiManagement = () => {
   const [loading, setLoading] = useState(false);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(null);
+  const [searchOrderId, setSearchOrderId] = useState("");
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -39,10 +47,22 @@ const OrderKoiManagement = () => {
     fetchData();
   }, [token]);
 
-  const handleShowDetails = (order) => {
-    setCurrentOrder(order);
-    form.setFieldsValue(order);
-    setIsDetailModalVisible(true);
+  const handleShowDetails = async (orderId) => {
+    setLoading(true);
+    try {
+      const orderDetails = await fetchOrderDetails(orderId, token);
+      setCurrentOrder(orderDetails);
+      form.setFieldsValue(orderDetails);
+      setIsDetailModalVisible(true);
+    } catch (error) {
+      console.error("Failed to fetch order details:", error);
+      notification.error({
+        message: "Failed to fetch order details",
+        description: "There was an error fetching the order details.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseDetailModal = () => {
@@ -73,9 +93,10 @@ const OrderKoiManagement = () => {
   };
 
   const filteredOrders = orders.filter(
-    (order) => order.orderStatus !== "completed"
+    (order) =>
+      order.orderStatus !== "completed" &&
+      order.orderId.toString().includes(searchOrderId)
   );
-
   return (
     <div>
       <Row justify="center">
@@ -84,6 +105,11 @@ const OrderKoiManagement = () => {
             <Title className="text-center" level={2}>
               Order Koi Management
             </Title>
+            <Search
+              placeholder="Search by Order ID"
+              onSearch={(value) => setSearchOrderId(value)}
+              style={{ width: 300, marginBottom: 20 }}
+            />
             {loading ? (
               <Spin size="large" />
             ) : (
@@ -128,7 +154,13 @@ const OrderKoiManagement = () => {
                 {currentOrder.orderId}
               </Descriptions.Item>
               <Descriptions.Item label="User Name">
-                {currentOrder.username || "None"}
+                {currentOrder.userName || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {currentOrder.email || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Phone Number">
+                {currentOrder.phoneNumber || "None"}
               </Descriptions.Item>
               <Descriptions.Item label="Address">
                 {currentOrder.address || "None"}
@@ -137,7 +169,9 @@ const OrderKoiManagement = () => {
                 {currentOrder.promotion || "None"}
               </Descriptions.Item>
               <Descriptions.Item label="Order Date">
-                {currentOrder.orderDate || "None"}
+                {currentOrder.orderDate
+                  ? moment(currentOrder.orderDate).format("DD-MM-YYYY")
+                  : "None"}
               </Descriptions.Item>
               <Descriptions.Item label="Total Money">
                 {currentOrder.totalMoney
@@ -218,26 +252,22 @@ const OrderKoiManagement = () => {
               Fishes
             </Title>
             <Row gutter={16}>
-              {(currentOrder.orderFishes || []).map((fish) => (
+              {(currentOrder.fishes || []).map((fish) => (
                 <Col span={12} key={fish.fishesId}>
                   <Card>
-                    <Image
-                      src={fish.fishDetails.imageFishes}
-                      width={100}
-                      height={100}
-                    />
+                    <Image src={fish.imageFishes} width={100} height={100} />
                     <p>
                       <strong>ID:</strong> {fish.fishesId}
                     </p>
                     <p>
-                      <strong>Name:</strong> {fish.fishDetails.name}
+                      <strong>Name:</strong> {fish.name}
                     </p>
                     <p>
                       <strong>Quantity:</strong> {fish.quantity}
                     </p>
                     <p>
                       <strong>Price:</strong>{" "}
-                      {fish.fishDetails.price.toLocaleString("vi-VN", {
+                      {fish.price.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}
@@ -251,32 +281,28 @@ const OrderKoiManagement = () => {
               Koi
             </Title>
             <Row gutter={16}>
-              {(currentOrder.orderKois || []).map((koi) => (
+              {(currentOrder.kois || []).map((koi) => (
                 <Col span={12} key={koi.koiId}>
                   <Card>
-                    <Image
-                      src={koi.koiDetails.imageKoi}
-                      width={100}
-                      height={100}
-                    />
+                    <Image src={koi.imageKoi} width={100} height={100} />
                     <p>
                       <strong>ID:</strong> {koi.koiId}
                     </p>
                     <p>
-                      <strong>Name:</strong> {koi.koiDetails.name}
+                      <strong>Name:</strong> {koi.name}
                     </p>
                     <p>
-                      <strong>Gender:</strong> {koi.koiDetails.gender}
+                      <strong>Gender:</strong> {koi.gender}
                     </p>
                     <p>
                       <strong>Quantity:</strong> {koi.quantity}
                     </p>
                     <p>
-                      <strong>Size:</strong> {koi.koiDetails.size} cm
+                      <strong>Size:</strong> {koi.size} cm
                     </p>
                     <p>
                       <strong>Price:</strong>{" "}
-                      {koi.koiDetails.price.toLocaleString("vi-VN", {
+                      {koi.price.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}

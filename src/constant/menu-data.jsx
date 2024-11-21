@@ -256,6 +256,10 @@ export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
     title: "Fishes ID",
     dataIndex: "fishesId",
     key: "fishesId",
+    sorter: {
+      compare: (a, b) => a.fishesId - b.fishesId,
+    },
+    defaultSortOrder: "descend",
   },
   {
     title: "Name",
@@ -383,7 +387,7 @@ export const customerColumns = (
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "User Name",
@@ -504,7 +508,7 @@ export const staffColumns = (
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "User Name",
@@ -858,10 +862,8 @@ const handleOrderMenuClick = (
   handleUpdateOrderStatus,
   handleShowDetails
 ) => {
-  if (e.key === "updateStatus") {
-    handleUpdateOrderStatus(record);
-  } else if (e.key === "details") {
-    handleShowDetails(record);
+  if (e.key === "details") {
+    handleShowDetails(record.orderId);
   }
 };
 
@@ -876,7 +878,6 @@ const orderMenu = (record, handleUpdateOrderStatus, handleShowDetails) => (
       )
     }
   >
-    {/* <Menu.Item key="updateStatus">Update Status</Menu.Item> */}
     <Menu.Item key="details" icon={<EyeOutlined />}>
       View Details
     </Menu.Item>

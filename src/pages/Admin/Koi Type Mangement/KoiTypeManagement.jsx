@@ -46,6 +46,8 @@ const KoiTypeManagement = () => {
       title: "KoiType ID",
       dataIndex: "koiTypeId",
       key: "koiTypeId",
+      sorter: (a, b) => a.koiTypeId - b.koiTypeId,
+      defaultSortOrder: "descend",
     },
     {
       title: "Name",
@@ -80,7 +82,20 @@ const KoiTypeManagement = () => {
           <Form.Item
             label="Name"
             name="name"
-            rules={[{ required: true, message: "Please input the name!" }]}
+            rules={[
+              { required: true, message: "Please input the name!" },
+              {
+                validator: (_, value) => {
+                  const regex = /^[A-Za-z\s]+$/;
+                  if (!value || regex.test(value)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    "Cannot contain numbers or special characters!"
+                  );
+                },
+              },
+            ]}
           >
             <Input />
           </Form.Item>
