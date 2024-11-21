@@ -294,8 +294,9 @@ const ConsignmentOutside = () => {
                   onChange={(value) => handleInputChange(value, "gender")}
                   className="input-field"
                 >
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
+                  <Option value="Male">Male</Option>
+                  <Option value="Female">Female</Option>
+                  <Option value="Bisexual">Bisexual</Option>
                 </Select>
               </Form.Item>
               <Form.Item
@@ -305,9 +306,9 @@ const ConsignmentOutside = () => {
                   { required: true, message: "Please input the age!" },
                   {
                     type: "number",
-                    min: 0,
+                    min: 1,
                     max: 100,
-                    message: "Age must be a positive integer!",
+                    message: "Age must be >= 1!",
                     transform: (value) => Number(value),
                   },
                   {
@@ -389,8 +390,8 @@ const ConsignmentOutside = () => {
                   },
                   {
                     type: "number",
-                    min: 0,
-                    message: "Feeding Amount must be a positive integer!",
+                    min: 1,
+                    message: "Feeding Amount not valid!",
                     transform: (value) => Number(value),
                   },
                   {
@@ -415,8 +416,8 @@ const ConsignmentOutside = () => {
                   { required: true, message: "Please input the filter rate!" },
                   {
                     type: "number",
-                    min: 0,
-                    message: "Filter Rate must be a positive integer!",
+                    min: 1,
+                    message: "Filter Rate not valid!",
                     transform: (value) => Number(value),
                   },
                   {
@@ -623,7 +624,16 @@ const ConsignmentOutside = () => {
                   className="input-field"
                 />
               </Form.Item>
-              <Form.Item label="Consignment Contract" name="consignmentDetail">
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the consignment title!",
+                  },
+                ]}
+                label="Consignment Contract"
+                name="consignmentDetail"
+              >
                 <Row gutter={16}>
                   <Col span={12}>
                     <UploadImage

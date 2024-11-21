@@ -39,7 +39,8 @@ const Policy = () => {
               <b>Quy Trình Đăng Ký Online:</b> Chủ sở hữu đăng ký ký gửi trên
               website của KoiShop và cung cấp các thông tin cần thiết về cá koi,
               bao gồm hình ảnh, thông tin giống loài, tình trạng sức khỏe, và
-              giá bán mong muốn.
+              giá bán mong muốn, đồng thời điền thông tin vào hợp đồng có sẵn
+              trên website.
             </li>
           </ul>
 
@@ -51,8 +52,9 @@ const Policy = () => {
               phí chăm sóc và bảo trì cơ sở vật chất.
             </li>
             <li>
-              <b>Thời Hạn Ký Gửi:</b>Thời gian ký gửi tiêu chuẩn là 7 ngày. Sau
-              thời hạn, chủ sở hữu có thể lựa chọn gia hạn hoặc nhận lại cá.
+              <b>Thời Hạn Ký Gửi:</b>Thời gian ký gửi tiêu chuẩn là 7 ngày.
+              Trong quá trình trong thời gian ký gửi, chủ sở hữu không thể chấm
+              dứt hợp đồng.
             </li>
           </ul>
         </section>
@@ -63,17 +65,16 @@ const Policy = () => {
           <Title level={2}>3. Trách Nhiệm và Quyền Sở Hữu</Title>
           <ul className="list-disc pl-5">
             <li>
-              <b>Xác Minh Quyền Sở Hữu:</b> Tất cả cá koi ký gửi cần có giấy tờ
-              chứng minh quyền sở hữu hợp lệ.
+              <b>Xác Minh Quyền Sở Hữu:</b> Tất cả cá koi ký gửi cần có giấy tờ,
+              chứng chỉ chứng minh quyền sở hữu hợp lệ.
             </li>
             <li>
               <b>Đảm Bảo Sức Khỏe:</b> Chủ sở hữu phải đảm bảo cá koi khỏe mạnh
               khi ký gửi và cung cấp giấy tờ kiểm tra sức khỏe nếu cần.
             </li>
             <li>
-              <b>Trách Nhiệm Chăm Sóc:</b> [Tên Trang Trại/ Công Ty Koi] có
-              trách nhiệm duy trì sức khỏe và điều kiện tốt nhất cho cá koi
-              trong thời gian ký gửi.
+              <b>Trách Nhiệm Chăm Sóc:</b> Koi Farm có trách nhiệm duy trì sức
+              khỏe và điều kiện tốt nhất cho cá koi trong thời gian ký gửi.
             </li>
           </ul>
         </section>
@@ -124,8 +125,8 @@ const Policy = () => {
           <Title level={2}>6. Điều Khoản Chấm Dứt</Title>
           <ul className="list-disc pl-5">
             <li>
-              <b>Kết Thúc Ký Gửi:</b> Chủ sở hữu có thể chấm dứt hợp đồng ký gửi
-              với thông báo trước [thời gian thông báo, ví dụ: 14 ngày].
+              <b>Kết Thúc Ký Gửi:</b> Chủ sở hữu không thể chấm dứt hợp đồng ký
+              gửi khi đang trong thời gian kí gửi.
             </li>
             <li>
               <b>Gia Hạn hoặc Trả Lại Cá Không Bán Được:</b> Đối với cá không

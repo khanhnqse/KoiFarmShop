@@ -15,12 +15,16 @@ import {
   Row,
   Col,
   Tag,
+  Typography,
+  Spin,
+  notification,
 } from "antd";
 import {
   MoreOutlined,
   EditOutlined,
   DeleteOutlined,
   SearchOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
 
@@ -32,6 +36,10 @@ import {
   updateConsignmentStatus,
 } from "../../../services/sevice";
 
+import axios from "axios";
+import UploadImage from "../../../components/UploadImage/UploadImage";
+import Title from "antd/es/skeleton/Title";
+
 const { Option } = Select;
 
 const ConsignmentManagement = () => {
@@ -42,6 +50,7 @@ const ConsignmentManagement = () => {
   const [currentConsignment, setCurrentConsignment] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [editingStatusId, setEditingStatusId] = useState(null);
+  const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -65,6 +74,7 @@ const ConsignmentManagement = () => {
     setIsModalVisible(false);
     setCurrentConsignment(null);
     form.resetFields();
+    setFileList([]);
   };
 
   const handleSaveConsignment = async (values) => {
@@ -90,9 +100,28 @@ const ConsignmentManagement = () => {
     setLoading(false);
   };
 
-  const handleOpenDetailModal = (record) => {
-    setCurrentConsignment(record);
-    setIsDetailModalVisible(true);
+  const handleOpenDetailModal = async (consignmentId) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://localhost:7285/api/Consignment/get-consignment/${consignmentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setCurrentConsignment(response.data);
+      setIsDetailModalVisible(true);
+    } catch (error) {
+      console.error("Failed to fetch consignment details:", error);
+      notification.error({
+        message: "Failed to fetch consignment details",
+        description: "There was an error fetching the consignment details.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseDetailModal = () => {
@@ -107,6 +136,46 @@ const ConsignmentManagement = () => {
     setConsignments(data);
     setLoading(false);
     setEditingStatusId(null);
+  };
+
+  const handleUpdateConsignment = async (values) => {
+    setLoading(true);
+    try {
+      const { consignmentPrice, consignmentTitle, consignmentDetail } = values;
+      const requestBody = {
+        consignmentPrice,
+        consignmentTitle,
+        consignmentDetail,
+      };
+
+      await axios.put(
+        `https://localhost:7285/api/Consignment/update-order-consignment/${currentConsignment.consignmentId}`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      notification.success({
+        message: "Consignment Updated",
+        description: "Consignment details updated successfully!",
+      });
+
+      const data = await fetchConsignmentData(token);
+      setConsignments(data);
+      handleCloseModal();
+    } catch (error) {
+      console.error("Failed to update consignment:", error);
+      notification.error({
+        message: "Update Failed",
+        description:
+          "There was an error updating the consignment. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const consignmentMenu = (record) => (
@@ -128,7 +197,7 @@ const ConsignmentManagement = () => {
       <Menu.Item
         key="detail"
         icon={<MoreOutlined />}
-        onClick={() => handleOpenDetailModal(record)}
+        onClick={() => handleOpenDetailModal(record.consignmentId)}
       >
         View Detail
       </Menu.Item>
@@ -139,14 +208,7 @@ const ConsignmentManagement = () => {
         >
           Approved
         </Menu.Item>
-        <Menu.Item
-          key="pending payment"
-          onClick={() =>
-            handleUpdateStatus(record.consignmentId, "pending payment")
-          }
-        >
-          Pending Payment
-        </Menu.Item>
+
         <Menu.Item
           key="sold"
           onClick={() => handleUpdateStatus(record.consignmentId, "sold")}
@@ -158,6 +220,12 @@ const ConsignmentManagement = () => {
           onClick={() => handleUpdateStatus(record.consignmentId, "cancelled")}
         >
           Cancelled
+        </Menu.Item>
+        <Menu.Item
+          key="completed"
+          onClick={() => handleUpdateStatus(record.consignmentId, "completed")}
+        >
+          Completed
         </Menu.Item>
       </Menu.SubMenu>
     </Menu>
@@ -225,7 +293,6 @@ const ConsignmentManagement = () => {
   const getStatusFilterProps = () => ({
     filters: [
       { text: "Approved", value: "approved" },
-      { text: "Pending Payment", value: "pending payment" },
       { text: "Sold", value: "sold" },
       { text: "Cancelled", value: "cancelled" },
       { text: "Rejected", value: "rejected" },
@@ -242,23 +309,20 @@ const ConsignmentManagement = () => {
       sorter: {
         compare: (a, b) => a.consignmentId - b.consignmentId,
       },
+      defaultSortOrder: "descend",
     },
-    {
-      title: "User ID",
-      dataIndex: "userId",
-      key: "userId",
-    },
+
     {
       title: "User Name",
       dataIndex: "userName",
       key: "userName",
       ...getColumnSearchProps("userName"),
     },
-    {
-      title: "Koi Type ID",
-      dataIndex: "koiTypeId",
-      key: "koiTypeId",
-    },
+    // {
+    //   title: "Koi Type ID",
+    //   dataIndex: "koiTypeId",
+    //   key: "koiTypeId",
+    // },
     {
       title: "Koi ID",
       dataIndex: "koiId",
@@ -283,56 +347,15 @@ const ConsignmentManagement = () => {
       title: "Consignment Date From",
       dataIndex: "consignmentDateFrom",
       key: "consignmentDateFrom",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
     {
       title: "Consignment Date To",
       dataIndex: "consignmentDateTo",
       key: "consignmentDateTo",
-      render: (date) => moment(date).format("YYYY-MM-DD HH:mm:ss"),
+      render: (date) => moment(date).format("DD-MM-YYYY HH:mm:ss"),
     },
-    {
-      title: "Sale Price",
-      dataIndex: "consignmentPrice",
-      key: "consignmentPrice",
-      render: (money) =>
-        money === undefined || money === 0
-          ? "None"
-          : `${money.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}`,
-    },
-    {
-      title: "Care Price",
-      dataIndex: "takeCareFee",
-      key: "takeCareFee",
-      render: (money) =>
-        money === undefined || money === 0
-          ? "None"
-          : `${money.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}`,
-    },
-    {
-      title: "Consignment Title",
-      dataIndex: "consignmentTitle",
-      key: "consignmentTitle",
-    },
-    {
-      title: "Consignment Detail",
-      dataIndex: "consignmentDetail",
-      key: "consignmentDetail",
-      render: (text) =>
-        isValidUrl(text) ? (
-          <a href={text} target="_blank" rel="noopener noreferrer">
-            View Detail
-          </a>
-        ) : (
-          text
-        ),
-    },
+
     {
       title: "Action",
       key: "action",
@@ -347,135 +370,104 @@ const ConsignmentManagement = () => {
 
   return (
     <div>
-      <Button
-        type="primary"
-        onClick={() => handleOpenModal(null)}
-        style={{ marginBottom: 16 }}
-      >
-        Add Consignment
-      </Button>
+      <Typography.Title level={2}>Consignment Management</Typography.Title>
       <Table
         columns={columns}
         dataSource={consignments}
         loading={loading}
         rowKey="consignmentId"
-        scroll={{ x: 2000, y: 600 }}
+        scroll={{ x: 500, y: 600 }}
       />
       <Modal
         title={currentConsignment ? "Edit Consignment" : "Add Consignment"}
         visible={isModalVisible}
         onCancel={handleCloseModal}
-        footer={null}
+        footer={[
+          <Button key="cancel" onClick={handleCloseModal}>
+            Cancel
+          </Button>,
+          <Button
+            key="update"
+            type="primary"
+            onClick={() => form.submit()}
+            loading={loading}
+          >
+            {currentConsignment ? "Update" : "Add"}
+          </Button>,
+        ]}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveConsignment}>
-          <Form.Item
-            label="User ID"
-            name="userId"
-            rules={[{ required: true, message: "Please input the user ID!" }]}
+        <Spin spinning={loading}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleUpdateConsignment}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Koi ID"
-            name="koiId"
-            rules={[{ required: true, message: "Please input the koi ID!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Consignment Type"
-            name="consignmentType"
-            rules={[
-              {
-                required: true,
-                message: "Please select the consignment type!",
-              },
-            ]}
-          >
-            <Select>
-              <Option value="online">Online</Option>
-              <Option value="offline">Offline</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[{ required: true, message: "Please select the status!" }]}
-          >
-            <Select>
-              <Option value="awaiting inspection">Awaiting Inspection</Option>
-              <Option value="consigned">Consigned</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Consignment Price"
-            name="consignmentPrice"
-            rules={[
-              {
-                required: true,
-                message: "Please input the consignment price!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Consignment Date From"
-            name="consignmentDateFrom"
-            rules={[
-              {
-                required: true,
-                message: "Please input the consignment date from!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Consignment Date To"
-            name="consignmentDateTo"
-            rules={[
-              {
-                required: true,
-                message: "Please input the consignment date to!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Consignment Title"
-            name="consignmentTitle"
-            rules={[
-              {
-                required: true,
-                message: "Please input the consignment title!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Consignment Detail"
-            name="consignmentDetail"
-            rules={[
-              {
-                required: true,
-                message: "Please input the consignment detail!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              {currentConsignment ? "Update" : "Add"}
-            </Button>
-          </Form.Item>
-        </Form>
+            {currentConsignment?.consignmentType !== "offline" && (
+              <Form.Item
+                label="Consignment Price"
+                name="consignmentPrice"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the consignment price!",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 1) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input placeholder="Consignment Price" />
+              </Form.Item>
+            )}
+            <Form.Item
+              label="Consignment Title"
+              name="consignmentTitle"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the consignment title!",
+                },
+              ]}
+            >
+              <Input placeholder="Consignment Title" />
+            </Form.Item>
+            <Form.Item
+              label="Consignment Detail"
+              name="consignmentDetail"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload the consignment detail!",
+                },
+              ]}
+            >
+              <UploadImage
+                fileList={fileList}
+                setFileList={setFileList}
+                setUrl={(url) =>
+                  form.setFieldsValue({ consignmentDetail: url })
+                }
+                maxCount={1}
+                accept=".docx"
+              />
+            </Form.Item>
+          </Form>
+        </Spin>
       </Modal>
       <Modal
-        title="Koi Details"
+        title="Consignment Details"
         visible={isDetailModalVisible}
         onCancel={handleCloseDetailModal}
         width={1200} // Set the width of the modal
@@ -485,56 +477,128 @@ const ConsignmentManagement = () => {
           </Button>,
         ]}
       >
-        {currentConsignment && currentConsignment.koi && (
+        {currentConsignment && (
           <Card bordered={false}>
-            <Row gutter={[16, 16]}>
-              <Col span={8}>
-                <Image
-                  width={200}
-                  src={currentConsignment.koi.imageKoi}
-                  alt={currentConsignment.koi.name}
-                />
-              </Col>
-              <Col span={16}>
-                <Descriptions bordered>
-                  <Descriptions.Item label="Koi ID">
-                    {currentConsignment.koi.koiId}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Name">
-                    {currentConsignment.koi.name}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Origin">
-                    {currentConsignment.koi.origin}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Gender">
-                    {currentConsignment.koi.gender}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Age">
-                    {currentConsignment.koi.age}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Size">
-                    {currentConsignment.koi.size}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Breed">
-                    {currentConsignment.koi.breed}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Personality">
-                    {currentConsignment.koi.personality}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Health Status">
-                    {currentConsignment.koi.healthStatus}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Price">
-                    {currentConsignment.koi.price
-                      ? currentConsignment.koi.price.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : "N/A"}
-                  </Descriptions.Item>
-                </Descriptions>
-              </Col>
-            </Row>
+            <Descriptions bordered>
+              <Descriptions.Item label="Consignment ID">
+                {currentConsignment.consignmentId}
+              </Descriptions.Item>
+              <Descriptions.Item label="User ID">
+                {currentConsignment.userId}
+              </Descriptions.Item>
+              <Descriptions.Item label="Koi Type ID">
+                {currentConsignment.koiTypeId}
+              </Descriptions.Item>
+              <Descriptions.Item label="Koi ID">
+                {currentConsignment.koiId}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Type">
+                {currentConsignment.consignmentType}
+              </Descriptions.Item>
+              <Descriptions.Item label="Status">
+                {currentConsignment.status}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Price">
+                {currentConsignment.consignmentPrice != null
+                  ? currentConsignment.consignmentPrice.toLocaleString(
+                      "vi-VN",
+                      {
+                        style: "currency",
+                        currency: "VND",
+                      }
+                    )
+                  : "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Date From">
+                {moment(currentConsignment.consignmentDateFrom).format(
+                  "DD-MM-YYYY HH:mm:ss"
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Date To">
+                {moment(currentConsignment.consignmentDateTo).format(
+                  "DD-MM-YYYY HH:mm:ss"
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Title">
+                {currentConsignment.consignmentTitle}
+              </Descriptions.Item>
+              <Descriptions.Item label="Consignment Detail">
+                <a
+                  href={currentConsignment.consignmentDetail}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Detail <DownloadOutlined />
+                </a>
+              </Descriptions.Item>
+              <Descriptions.Item label="Take Care Fee">
+                {currentConsignment.takeCareFee != null
+                  ? currentConsignment.takeCareFee.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : "None"}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Title level={4} className="mt-4">
+              Koi Details
+            </Title>
+            {currentConsignment.koi && (
+              <Card bordered={false}>
+                <Row gutter={[16, 16]}>
+                  <Col span={8}>
+                    <Image
+                      width={200}
+                      src={currentConsignment.koi.imageKoi}
+                      alt={currentConsignment.koi.name}
+                    />
+                  </Col>
+                  <Col span={16}>
+                    <Descriptions bordered>
+                      <Descriptions.Item label="Koi ID">
+                        {currentConsignment.koi.koiId}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Name">
+                        {currentConsignment.koi.name}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Origin">
+                        {currentConsignment.koi.origin}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Gender">
+                        {currentConsignment.koi.gender}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Age">
+                        {currentConsignment.koi.age}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Size">
+                        {currentConsignment.koi.size}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Breed">
+                        {currentConsignment.koi.breed}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Personality">
+                        {currentConsignment.koi.personality}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Health Status">
+                        {currentConsignment.koi.healthStatus}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Price">
+                        {currentConsignment.koi.price != null
+                          ? currentConsignment.koi.price.toLocaleString(
+                              "vi-VN",
+                              {
+                                style: "currency",
+                                currency: "VND",
+                              }
+                            )
+                          : "None"}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Col>
+                </Row>
+              </Card>
+            )}
           </Card>
         )}
       </Modal>

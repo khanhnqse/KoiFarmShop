@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Form, Input, Button } from "antd";
+import { Table, Modal, Form, Input, Button, Typography } from "antd";
 
 import { useAuth } from "../../../context/AuthContext";
 import { fetchKoiTypeData, saveKoiType } from "../../../services/sevice";
@@ -46,6 +46,8 @@ const KoiTypeManagement = () => {
       title: "KoiType ID",
       dataIndex: "koiTypeId",
       key: "koiTypeId",
+      sorter: (a, b) => a.koiTypeId - b.koiTypeId,
+      defaultSortOrder: "descend",
     },
     {
       title: "Name",
@@ -56,6 +58,7 @@ const KoiTypeManagement = () => {
 
   return (
     <div>
+      <Typography.Title level={2}>Koi Type Management</Typography.Title>
       <Button
         type="primary"
         onClick={handleOpenModal}
@@ -79,7 +82,20 @@ const KoiTypeManagement = () => {
           <Form.Item
             label="Name"
             name="name"
-            rules={[{ required: true, message: "Please input the name!" }]}
+            rules={[
+              { required: true, message: "Please input the name!" },
+              {
+                validator: (_, value) => {
+                  const regex = /^[A-Za-z\s]+$/;
+                  if (!value || regex.test(value)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    "Cannot contain numbers or special characters!"
+                  );
+                },
+              },
+            ]}
           >
             <Input />
           </Form.Item>

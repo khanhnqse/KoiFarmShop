@@ -17,8 +17,18 @@ export const MenuItems = [
     key: PATHS.ABOUT_US.INDEX,
   },
   {
-    label: "Products",
-    key: PATHS.PRODUCTS.INDEX,
+    label: "Product",
+    key: "SubMenu",
+    children: [
+      {
+        label: "Koi",
+        key: PATHS.PRODUCTS.INDEX,
+      },
+      {
+        label: "Fish container",
+        key: PATHS.FISH.INDEX,
+      },
+    ],
   },
   {
     label: "Contact",
@@ -67,7 +77,7 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
     sorter: {
       compare: (a, b) => a.koiId - b.koiId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
     fixed: "left",
   },
   {
@@ -83,6 +93,14 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
       <Tag color={isConsigned ? "green" : "blue"}>
         {isConsigned ? "Consign" : "None"}
       </Tag>
+    ),
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status) => (
+      <Tag color={status === "available" ? "green" : "red"}>{status}</Tag>
     ),
   },
   {
@@ -140,18 +158,18 @@ export const generalColumns = (handleOpenModal, handleDeleteFish) => [
     dataIndex: "quantityInStock",
     key: "quantityInStock",
   },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (status) => (
-      <Tag color={status === "available" ? "green" : "red"}>{status}</Tag>
-    ),
-  },
+
   {
     title: "Price",
     dataIndex: "price",
     key: "price",
+    render: (money) =>
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Action",
@@ -176,7 +194,7 @@ export const detailColumns = [
     sorter: {
       compare: (a, b) => a.koiId - b.koiId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "Image Koi",
@@ -238,6 +256,10 @@ export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
     title: "Fishes ID",
     dataIndex: "fishesId",
     key: "fishesId",
+    sorter: {
+      compare: (a, b) => a.fishesId - b.fishesId,
+    },
+    defaultSortOrder: "descend",
   },
   {
     title: "Name",
@@ -253,6 +275,9 @@ export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
     title: "Status",
     dataIndex: "status",
     key: "status",
+    render: (status) => (
+      <Tag color={status === "available" ? "green" : "red"}>{status}</Tag>
+    ),
   },
   {
     title: "Price",
@@ -279,11 +304,15 @@ export const koiColumns = (handleOpenModal, handleDeleteKoi) => [
     title: "Description",
     dataIndex: "description",
     key: "description",
+    render: (text) =>
+      text && text.length > 50 ? `${text.slice(0, 50)}...` : text,
   },
   {
     title: "Detail Description",
     dataIndex: "detailDescription",
     key: "detailDescription",
+    render: (text) =>
+      text && text.length > 50 ? `${text.slice(0, 50)}...` : text,
   },
   {
     title: "Action",
@@ -358,7 +387,7 @@ export const customerColumns = (
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "User Name",
@@ -479,7 +508,7 @@ export const staffColumns = (
     sorter: {
       compare: (a, b) => a.userId - b.userId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "User Name",
@@ -656,9 +685,6 @@ const feedbackMenu = (record, handleOpenModal, handleDeleteFeedback) => (
       handleFeedbackMenuClick(e, record, handleOpenModal, handleDeleteFeedback)
     }
   >
-    <Menu.Item key="edit" icon={<EditOutlined />}>
-      Edit
-    </Menu.Item>
     <Menu.Item key="delete" icon={<DeleteOutlined />}>
       Delete
     </Menu.Item>
@@ -675,7 +701,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     sorter: {
       compare: (a, b) => a.feedbackId - b.feedbackId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
   },
   {
     title: "User name",
@@ -686,6 +712,7 @@ export const feedbackColumns = (handleOpenModal, handleDeleteFeedback) => [
     title: "Koi name",
     dataIndex: "koiName",
     key: "koiName",
+    render: (text, record) => record.koiName || record.fishName || "Unnamed",
   },
   {
     title: "Rating",
@@ -735,7 +762,7 @@ export const purchaseHistoryColumns = () => [
     sorter: {
       compare: (a, b) => a.orderId - b.orderId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "descend",
     fixed: "left",
   },
   {
@@ -764,10 +791,12 @@ export const purchaseHistoryColumns = () => [
     dataIndex: "discountMoney",
     key: "discountMoney",
     render: (money) =>
-      `${money.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}`,
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Final Money",
@@ -833,10 +862,8 @@ const handleOrderMenuClick = (
   handleUpdateOrderStatus,
   handleShowDetails
 ) => {
-  if (e.key === "updateStatus") {
-    handleUpdateOrderStatus(record);
-  } else if (e.key === "details") {
-    handleShowDetails(record);
+  if (e.key === "details") {
+    handleShowDetails(record.orderId);
   }
 };
 
@@ -851,7 +878,6 @@ const orderMenu = (record, handleUpdateOrderStatus, handleShowDetails) => (
       )
     }
   >
-    <Menu.Item key="updateStatus">Update Status</Menu.Item>
     <Menu.Item key="details" icon={<EyeOutlined />}>
       View Details
     </Menu.Item>
@@ -866,7 +892,7 @@ export const orderColumns = (handleUpdateOrderStatus, handleShowDetails) => [
     sorter: {
       compare: (a, b) => a.orderId - b.orderId,
     },
-    defaultSortOrder: "ascend",
+    defaultSortOrder: "decend",
   },
   {
     title: "User ID",
@@ -904,10 +930,12 @@ export const orderColumns = (handleUpdateOrderStatus, handleShowDetails) => [
     dataIndex: "discountMoney",
     key: "discountMoney",
     render: (money) =>
-      `${money.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}`,
+      money === undefined || money === 0
+        ? "None"
+        : `${money.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}`,
   },
   {
     title: "Earned Points",

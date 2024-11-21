@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Divider, Input, Rate, notification } from "antd";
+import { Button, Divider, Input, Rate, notification, Tag } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +20,19 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
 
+    if (!quantity || quantity < 1 || quantity > fish.quantityInStock) {
+      notification.error({
+        message: "Invalid Quantity",
+        description: `Please enter a valid quantity between 1 and ${fish.quantityInStock}.`,
+        placement: "bottomRight",
+      });
+      return;
+    }
+
     const existingFishIndex = cart.findIndex(
-      (item) => item.id === fish.fishesId
+      (item) => item.fishesId === fish.fishesId
     );
+    //modify in cart
 
     if (existingFishIndex !== -1) {
       const newCart = [...cart];
@@ -42,7 +52,6 @@ const FishInfo = ({ fish, averageRating }) => {
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     }
-
     notification.success({
       message: "Added to Cart",
       description: `${fish.name} has been added to your cart.`,
@@ -62,13 +71,22 @@ const FishInfo = ({ fish, averageRating }) => {
       return;
     }
 
-    const existingProductIndex = cart.findIndex(
-      (item) => item.id === fish.fishesId
+    if (!quantity || quantity < 1 || quantity > fish.quantityInStock) {
+      notification.error({
+        message: "Invalid Quantity",
+        description: `Please enter a valid quantity between 1 and ${fish.quantityInStock}.`,
+        placement: "bottomRight",
+      });
+      return;
+    }
+
+    const existingFishIndex = cart.findIndex(
+      (item) => item.fishesId === fish.fishesId
     );
 
-    if (existingProductIndex !== -1) {
+    if (existingFishIndex !== -1) {
       const newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
+      newCart[existingFishIndex].quantity += quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
@@ -108,18 +126,20 @@ const FishInfo = ({ fish, averageRating }) => {
         {formatPrice(fish.price)}
       </p>
 
+      <p className="text-gray-600 mb-6">{fish.description}</p>
+
       <Divider />
 
       <div className="grid grid-cols-2 gap-6">
         <div>
           <div className="mb-4">
-            <p className="font-semibold">Quantity:</p>
-            <p>{fish.quantity}</p>
+            <p className="font-semibold">Fish ID:</p>
+            <p>FL{fish.koiTypeId}</p>
           </div>
 
           <div className="mb-4">
-            <p className="font-semibold">Koi Type ID:</p>
-            <p>{fish.koiTypeId}</p>
+            <p className="font-semibold">Quantity:</p>
+            <p>{fish.quantity}</p>
           </div>
 
           <div className="mb-4">
@@ -131,7 +151,9 @@ const FishInfo = ({ fish, averageRating }) => {
         <div>
           <div className="mb-4">
             <p className="font-semibold">Status:</p>
-            <p>{fish.status}</p>
+            <Tag color={fish.status === "available" ? "green" : "red"}>
+              {fish.status}
+            </Tag>
           </div>
 
           <div className="mb-4">
@@ -155,6 +177,7 @@ const FishInfo = ({ fish, averageRating }) => {
           value={quantity}
           onChange={(e) => setQuantity(parseInt(e.target.value))}
           min={1}
+          max={fish.quantityInStock}
         />
       </div>
 

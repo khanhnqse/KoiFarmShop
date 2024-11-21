@@ -37,7 +37,6 @@ const NewsPage = () => {
     navigate(`/article/${id}`, { state: { article } });
   };
 
-  // Extract unique tags
   const uniqueTags = [
     "All",
     ...new Set(news.flatMap((article) => article.tags)),

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import {
   Input,
@@ -22,17 +23,18 @@ const ConsignmentInside = () => {
   const [productInfo, setProductInfo] = useState({
     koiID: "",
     koiTypeID: "",
-    consignmentType: "", // Remove default value
+    consignmentType: "",
     consignmentDateTo: "",
     consignmentTitle: "",
     consignmentDetail: "",
-    consignmentPrice: "", // Add consignmentPrice field
+    consignmentPrice: "",
   });
   const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [koiOptions, setKoiOptions] = useState([]);
   const [koiTypeOptions, setKoiTypeOptions] = useState([]);
+  const [selectedKoiName, setSelectedKoiName] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -102,7 +104,10 @@ const ConsignmentInside = () => {
   const handleSubmit = async () => {
     try {
       await form.validateFields();
-      // eslint-disable-next-line no-unused-vars
+      if (fileList.length === 0) {
+        message.error("Please upload the consignment contract.");
+        return;
+      }
     } catch (error) {
       message.error("Please fill in all required fields.");
       return;
@@ -151,10 +156,10 @@ const ConsignmentInside = () => {
     <div
       className="consignment-background"
       style={{
-        backgroundImage: "url('')", // Change the path to your image
+        backgroundImage: "url('')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "50px", // Adjust the padding as needed
+        padding: "50px",
       }}
     >
       <div
@@ -182,7 +187,15 @@ const ConsignmentInside = () => {
                 <Select
                   placeholder="Select Koi ID"
                   value={productInfo.koiID}
-                  onChange={(value) => handleSelectChange(value, "koiID")}
+                  onChange={(value) => {
+                    handleSelectChange(value, "koiID");
+                    const selectedKoi = koiOptions.find(
+                      (koi) => koi.koiId === value
+                    );
+                    if (selectedKoi) {
+                      setSelectedKoiName(selectedKoi.name);
+                    }
+                  }}
                   className="input-field"
                 >
                   {koiOptions.map((koi) => (
@@ -201,6 +214,24 @@ const ConsignmentInside = () => {
                 name="koiTypeID"
                 rules={[
                   { required: true, message: "Please select the Koi Type!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const selectedType = koiTypeOptions.find(
+                        (type) => type.koiTypeId === value
+                      );
+                      if (
+                        selectedType &&
+                        selectedType.name !== selectedKoiName
+                      ) {
+                        return Promise.reject(
+                          new Error(
+                            `Koi Type name should be the same as ${selectedKoiName}`
+                          )
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <Select
@@ -278,7 +309,6 @@ const ConsignmentInside = () => {
                     className="input-field"
                     disabledDate={(current) => {
                       const today = new Date();
-                      // Disable past dates and dates within 7 days from today
                       return (
                         current &&
                         (current < today.setHours(0, 0, 0, 0) ||
@@ -297,6 +327,10 @@ const ConsignmentInside = () => {
                     required: true,
                     message: "Please input the consignment title!",
                   },
+                  {
+                    pattern: /^[A-Za-z\s]+$/,
+                    message: "Can only contain letters and spaces!",
+                  },
                 ]}
               >
                 <Input
@@ -308,18 +342,32 @@ const ConsignmentInside = () => {
                 />
               </Form.Item>
 
-              <UploadImage
-                label="Consignment Detail"
-                fileList={fileList}
-                setFileList={setFileList}
-                setUrl={(url) =>
-                  handleInputChange({
-                    target: { name: "consignmentDetail", value: url },
-                  })
-                }
-                maxCount={1}
-                accept=".docx"
-              />
+              <Form.Item
+                label="Consignment Contract"
+                name="consignmentDetail"
+                rules={[
+                  {
+                    validator: (_, value) =>
+                      fileList.length > 0
+                        ? Promise.resolve()
+                        : Promise.reject(
+                            new Error("Please upload the consignment contract!")
+                          ),
+                  },
+                ]}
+              >
+                <UploadImage
+                  fileList={fileList}
+                  setFileList={setFileList}
+                  setUrl={(url) =>
+                    handleInputChange({
+                      target: { name: "consignmentDetail", value: url },
+                    })
+                  }
+                  maxCount={1}
+                  accept=".docx"
+                />
+              </Form.Item>
 
               <Form.Item>
                 <Button

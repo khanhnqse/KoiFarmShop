@@ -10,6 +10,7 @@ import {
   Image,
   Row,
   Col,
+  Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
@@ -36,6 +37,7 @@ const KoiManagement = () => {
   const [fileListKoi, setFileListKoi] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const [searchFishesId, setSearchFishesId] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,19 +148,32 @@ const KoiManagement = () => {
     setKois(data);
     setLoading(false);
   };
+  const filteredFishData = kois.filter((koi) => {
+    return searchFishesId
+      ? koi.fishesId.toString().includes(searchFishesId)
+      : true;
+  });
 
   return (
     <div>
+      <Typography.Title level={2}>Fish Management</Typography.Title>
+      <Input
+        className="mr-4"
+        placeholder="Search by Fishes ID"
+        value={searchFishesId}
+        onChange={(e) => setSearchFishesId(e.target.value)}
+        style={{ width: "30%" }}
+      />
       <Button
         type="primary"
         onClick={() => handleOpenModal(null)}
         style={{ marginBottom: 16 }}
       >
-        Add Fish
+        <PlusOutlined /> Add Fish
       </Button>
       <Table
         columns={koiColumns(handleOpenModal, handleDeleteKoi)}
-        dataSource={kois}
+        dataSource={filteredFishData}
         loading={loading}
         rowKey="fishesId"
       />
@@ -172,16 +187,7 @@ const KoiManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Name"
-                name="name"
-                rules={[{ required: true, message: "Please input the name!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Koi Type ID"
+                label="Koi Type"
                 name="koiTypeId"
                 rules={[
                   { required: true, message: "Please input the Koi Type ID!" },
@@ -194,6 +200,32 @@ const KoiManagement = () => {
                     </Option>
                   ))}
                 </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Name"
+                name="name"
+                rules={[
+                  { required: true, message: "Please input the name!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const selectedType = koiTypes.find(
+                        (type) => type.koiTypeId === getFieldValue("koiTypeId")
+                      );
+                      if (selectedType && value !== selectedType.name) {
+                        return Promise.reject(
+                          new Error(
+                            `Name should be the same as ${selectedType.name}`
+                          )
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <Input />
               </Form.Item>
             </Col>
           </Row>
@@ -214,9 +246,10 @@ const KoiManagement = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Price"
                 name="price"
-                rules={[{ required: true, message: "Please input the price!" },
+                label="Price"
+                rules={[
+                  { required: true, message: "Please input the price!" },
                   {
                     validator: (_, value) => {
                       if (
@@ -226,7 +259,7 @@ const KoiManagement = () => {
                       ) {
                         return Promise.reject("Price must be a valid number!");
                       }
-                      if (value < 0) {
+                      if (value < 1) {
                         return Promise.reject("Price cannot be negative!");
                       }
                       return Promise.resolve();
@@ -252,10 +285,14 @@ const KoiManagement = () => {
                         value === null ||
                         isNaN(value)
                       ) {
-                        return Promise.reject("Quantity must be a valid number!");
+                        return Promise.reject(
+                          "Quantity in stock must be a valid number!"
+                        );
                       }
-                      if (value < 0) {
-                        return Promise.reject("Quantity cannot be negative!");
+                      if (value < 1) {
+                        return Promise.reject(
+                          "Quantity in stock should be more than 1!"
+                        );
                       }
                       return Promise.resolve();
                     },
@@ -328,7 +365,7 @@ const KoiManagement = () => {
                   { required: true, message: "Please input the description!" },
                 ]}
               >
-                <Input />
+                <Input.TextArea />
               </Form.Item>
             </Col>
           </Row>

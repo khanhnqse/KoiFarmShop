@@ -25,6 +25,10 @@ const CheckoutTabs = () => {
   const [loading, setLoading] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [usedPoints, setUsedPoints] = useState(0);
+  const [addresses, setAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState("");
+  const [showNewAddressInput, setShowNewAddressInput] = useState(false);
+  const [selectedAddressID, setSelectedAddressID] = useState(null);
   const location = useLocation();
   const { cart } = location.state;
   const navigate = useNavigate();
@@ -58,13 +62,15 @@ const CheckoutTabs = () => {
           fullname: userData.userName,
           phone: userData.phoneNumber || "",
           address: userData.address || "",
-          paymentMethod: "VN Pay", // Set default payment method
+          paymentMethod: "VN Pay",
         });
-        setTotalPoints(userData.totalPoints); // Set total points
+        setTotalPoints(userData.totalPoints);
       } catch (error) {
         notification.error({
           message: "Failed to fetch user data",
-          description: "There was an error fetching your user data.",
+          description:
+            error.response?.data ||
+            "There was an error fetching your user data.",
         });
         console.error("Error fetching user data:", error);
       } finally {
@@ -72,8 +78,119 @@ const CheckoutTabs = () => {
       }
     };
 
+    const fetchAddresses = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
+        );
+        const addressesData = response.data;
+        setAddresses(addressesData);
+        const defaultAddress = addressesData.find(
+          (address) => address.isDefault
+        );
+        if (defaultAddress) {
+          setSelectedAddressID(defaultAddress.addressID);
+          form.setFieldsValue({
+            address: defaultAddress.address,
+          });
+        } else if (addressesData.length > 0) {
+          setSelectedAddressID(addressesData[0].addressID);
+          form.setFieldsValue({
+            address: addressesData[0].address,
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Failed to fetch addresses",
+          description:
+            error.response?.data ||
+            "There was an error fetching your addresses.",
+        });
+        console.error("Error fetching addresses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserData();
+    fetchAddresses();
   }, [user, form]);
+
+  const handleAddressChange = (value) => {
+    if (value === "new") {
+      setShowNewAddressInput(true);
+      setSelectedAddressID(null);
+    } else {
+      setShowNewAddressInput(false);
+      const selectedAddress = addresses.find(
+        (address) => address.addressID === value
+      );
+      form.setFieldsValue({
+        address: selectedAddress.address,
+      });
+      setSelectedAddressID(value);
+    }
+  };
+
+  const fetchAddresses = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://localhost:7285/api/User/getAddressesByUserId/${user.userId}`
+      );
+      const addressesData = response.data;
+      setAddresses(addressesData);
+    } catch (error) {
+      notification.error({
+        message: "Failed to fetch addresses",
+        description:
+          error.response?.data || "There was an error fetching your addresses.",
+      });
+      console.error("Error fetching addresses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddNewAddress = async () => {
+    try {
+      setLoading(true);
+      const values = form.getFieldsValue();
+      const response = await axios.put(
+        `https://localhost:7285/api/User/updateProfile${user.userId}`,
+        {
+          email: values.email,
+          userName: values.fullname,
+          phoneNumber: values.phone,
+          address: newAddress,
+        }
+      );
+      notification.success({
+        message: "Address Added",
+        description: "Your new address has been added successfully.",
+      });
+      const newAddressData = response.data;
+      setNewAddress("");
+      setShowNewAddressInput(false);
+      fetchAddresses();
+      setSelectedAddressID(newAddressData.addressID);
+      form.setFieldsValue({
+        address: newAddressData.address,
+      });
+    } catch (error) {
+      notification.error({
+        message: "Failed to Add Address",
+        description:
+          error.response?.data || "There was an error adding your new address.",
+      });
+      console.error("Error adding new address:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (values) => {
     console.log("Form data:", values);
@@ -81,7 +198,6 @@ const CheckoutTabs = () => {
     if (activeTabKey === "1") {
       setActiveTabKey("2");
     } else if (activeTabKey === "2") {
-      // Prepare the request body
       const orderFishes = cart
         .filter((item) => item.fishesId && item.quantity)
         .map((item) => ({
@@ -99,15 +215,19 @@ const CheckoutTabs = () => {
       console.log("orderKois", orderKois);
       const requestBody = {
         userId: user.userId,
+        email: values.email,
+        userName: values.fullname,
+        phoneNumber: values.phone,
+        address: values.address,
+        addressId: selectedAddressID,
         paymentMethod: paymentMethod,
         promotionId: selectedPromotion?.promotionId,
-        usedPoints: usedPoints, // Add usedPoints to the request body
+        usedPoints: usedPoints,
         ...(orderFishes.length > 0 && { orderFishes }),
         ...(orderKois.length > 0 && { orderKois }),
       };
 
       try {
-        // Send the request to the API endpoint
         const response = await axios.post(
           "https://localhost:7285/api/Order",
           requestBody
@@ -120,12 +240,13 @@ const CheckoutTabs = () => {
         // Clear the cart
         setCart([]);
         localStorage.removeItem("cart");
-        navigate("/orders"); // Redirect to the orders page
+        navigate("/orders");
       } catch (error) {
         console.error("Failed to create order:", error);
         notification.error({
           message: "Order Creation Failed",
           description:
+            error.response?.data ||
             "There was an error creating your order. Please try again.",
         });
       }
@@ -159,43 +280,57 @@ const CheckoutTabs = () => {
           onFinish={handleSubmit}
           form={form}
           initialValues={{
-            paymentMethod: "VN Pay", // Set default payment method
+            paymentMethod: "VN Pay",
           }}
         >
-          <Form.Item
-            label="Email address"
-            name="email"
-            rules={[{ required: true, message: "Please input your email!" }]}
-          >
-            <Input placeholder="youremail@gmail.com" />
+          <Form.Item label="Email address" name="email">
+            <Input placeholder="youremail@gmail.com" readOnly />
           </Form.Item>
           <div className="flex space-x-4">
-            <Form.Item
-              label="Full Name"
-              name="fullname"
-              className="flex-1"
-              rules={[
-                { required: true, message: "Please input your full name!" },
-              ]}
-            >
-              <Input placeholder="Full name" />
+            <Form.Item label="Full Name" name="fullname" className="flex-1">
+              <Input placeholder="Full name" readOnly />
             </Form.Item>
           </div>
-          <Form.Item
-            label="Phone Number"
-            name="phone"
-            rules={[
-              { required: true, message: "Please input your phone number!" },
-            ]}
-          >
-            <Input placeholder="Phone Number" />
+          <Form.Item label="Phone Number" name="phone">
+            <Input placeholder="Phone Number" readOnly />
           </Form.Item>
           <Form.Item
             label="Street address"
             name="address"
             rules={[{ required: true, message: "Please input your address!" }]}
           >
-            <Input placeholder="Street Address" />
+            {showNewAddressInput ? (
+              <div>
+                <Input
+                  value={newAddress}
+                  placeholder="Enter new address"
+                  onChange={(e) => setNewAddress(e.target.value)}
+                />
+                <Button
+                  type="primary"
+                  onClick={handleAddNewAddress}
+                  style={{ marginTop: "10px" }}
+                >
+                  Add Address
+                </Button>
+              </div>
+            ) : (
+              <Select
+                placeholder="Select an address"
+                onChange={handleAddressChange}
+                style={{ width: "100%" }}
+                value={selectedAddressID}
+              >
+                {addresses.map((address) => (
+                  <Option key={address.addressID} value={address.addressID}>
+                    {address.address}
+                  </Option>
+                ))}
+                <Option className="bg-cyan-200" value="new">
+                  Enter new address
+                </Option>
+              </Select>
+            )}
           </Form.Item>
 
           <Button type="primary" htmlType="submit" block>
@@ -213,7 +348,7 @@ const CheckoutTabs = () => {
           onFinish={handleSubmit}
           form={form}
           initialValues={{
-            paymentMethod: "VN Pay", // Set default payment method
+            paymentMethod: "VN Pay",
           }}
         >
           <Form.Item

@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Spin, Pagination } from "antd";
+import { Spin, Pagination, Slider, Radio, Select } from "antd";
 import FishGrid from "../../components/FishGrid/FishGrid";
+
+const { Option } = Select;
 
 const FishProductPage = () => {
   const [fishes, setFishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
+  const [priceRange, setPriceRange] = useState([0, 10000000]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const [sortOption, setSortOption] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
   const fishApi = "https://localhost:7285/api/Fish";
 
   const fetchFishes = async () => {
@@ -31,30 +38,134 @@ const FishProductPage = () => {
     setPageSize(pageSize);
   };
 
-  const paginatedFishes = fishes.slice(
+  const handlePriceChange = (value) => {
+    setPriceRange(value);
+  };
+
+  const handleCategoryChange = (e) => {
+    const value = e.target.value;
+    setSelectedCategory(value === "All" ? null : value);
+  };
+
+  const handleSortChange = (value) => {
+    setSortOption(value);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredFishes = fishes.filter((fish) => {
+    return (
+      fish.status.toLowerCase() !== "unavailable" &&
+      fish.price >= priceRange[0] &&
+      fish.price <= priceRange[1] &&
+      (selectedCategory ? fish.name === selectedCategory : true) &&
+      (searchQuery
+        ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true)
+    );
+  });
+
+  const sortedFishes = [...filteredFishes].sort((a, b) => {
+    if (sortOption === "newest") {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    } else if (sortOption === "oldest") {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    } else if (sortOption === "priceHigh") {
+      return b.price - a.price;
+    } else if (sortOption === "priceLow") {
+      return a.price - b.price;
+    }
+    return 0;
+  });
+
+  const paginatedFishes = sortedFishes.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
+  const uniqueCategories = [...new Set(fishes.map((fish) => fish.name))];
+
   return (
-    <div className="container mx-auto p-10">
-      <h1 className="text-3xl font-bold mb-6">Fish Products</h1>
-      {loading ? (
-        <div className="flex justify-center items-center h-full">
-          <Spin size="large" />
+    <div className="flex flex-col px-10 py-5">
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-1/4 pr-10">
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div className="mb-6">
+            <h2 className="font-semibold">FILTER BY PRICE</h2>
+            <Slider
+              range
+              defaultValue={[0, 10000000]}
+              max={10000000}
+              onChange={handlePriceChange}
+            />
+          </div>
+          <div className="mb-6">
+            <h2 className="font-semibold">CATEGORIES</h2>
+            <Radio.Group onChange={handleCategoryChange}>
+              <Radio value="All">All</Radio>
+              {uniqueCategories.map((name) => (
+                <Radio key={name} value={name}>
+                  {name}
+                </Radio>
+              ))}
+            </Radio.Group>
+          </div>
         </div>
-      ) : (
-        <>
-          <FishGrid fishes={paginatedFishes} />
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={fishes.length}
-            onChange={handlePageChange}
-            className="mt-6 text-center"
-          />
-        </>
-      )}
+
+        {/* Product List */}
+        <div className="w-3/4">
+          <div className="flex justify-between mb-6">
+            <Select
+              defaultValue="priceLow"
+              className="w-1/4"
+              onChange={handleSortChange}
+            >
+              <Option value="priceHigh">Price: High to Low</Option>
+              <Option value="priceLow">Price: Low to High</Option>
+            </Select>
+
+            <Select
+              defaultValue="12 Products Per Page"
+              className="w-1/4"
+              onChange={(value) => setPageSize(value)}
+            >
+              <Option value="3">3 Products Per Page</Option>
+              <Option value="6">6 Products Per Page</Option>
+              <Option value="12">12 Products Per Page</Option>
+              <Option value="20">20 Products Per Page</Option>
+            </Select>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <>
+              <FishGrid fishes={paginatedFishes} />
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredFishes.length}
+                onChange={handlePageChange}
+                className="mt-6 text-center"
+              />
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

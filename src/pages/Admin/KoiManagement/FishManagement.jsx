@@ -23,6 +23,8 @@ import {
   saveFish,
 } from "../../../services/sevice";
 
+const { Option } = Select;
+
 const FishManagement = () => {
   const [fishData, setFishData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,10 @@ const FishManagement = () => {
   const [fileListCertificate, setFileListCertificate] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchKoiId, setSearchKoiId] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState(null);
 
   useEffect(() => {
     loadFishData();
@@ -121,10 +127,10 @@ const FishManagement = () => {
     }
 
     if (isUpdateMode && currentFish) {
-      values.koiId = currentFish.koiId; // Ensure koiId is set
+      values.koiId = currentFish.koiId;
     }
 
-    console.log("Fish data to be saved:", values); // Log the fish object
+    console.log("Fish data to be saved:", values);
 
     setLoading(true);
     await saveFish(values, isUpdateMode);
@@ -189,9 +195,45 @@ const FishManagement = () => {
     setLoading(false);
   };
 
+  const filteredFishData = fishData.filter((fish) => {
+    return (
+      (searchQuery
+        ? fish.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true) &&
+      (searchKoiId ? fish.koiId.toString().includes(searchKoiId) : true) &&
+      (statusFilter ? fish.status === statusFilter : true)
+    );
+  });
+
   return (
     <div>
       <Typography.Title level={2}>Koi Management</Typography.Title>
+      <div className="justify-between mb-4 ">
+        <Input
+          className="mr-4"
+          placeholder="Search by Koi ID"
+          value={searchKoiId}
+          onChange={(e) => setSearchKoiId(e.target.value)}
+          style={{ width: "30%" }}
+        />
+        <Input
+          className="mr-4"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ width: "30%" }}
+        />
+
+        <Select
+          placeholder="Filter by Status"
+          onChange={(value) => setStatusFilter(value)}
+          style={{ width: "30%" }}
+          allowClear
+        >
+          <Option value="available">Available</Option>
+          <Option value="unavailable">Unavailable</Option>
+        </Select>
+      </div>
       <Button
         type="primary"
         onClick={() => handleOpenModal()}
@@ -201,7 +243,7 @@ const FishManagement = () => {
       </Button>
       <Table
         columns={generalColumns(handleOpenModal, handleDeleteFish)}
-        dataSource={fishData}
+        dataSource={filteredFishData}
         loading={loading}
         rowKey="koiId"
         scroll={{ x: 2000, y: 600 }}
@@ -209,7 +251,7 @@ const FishManagement = () => {
       />
       <Table
         columns={detailColumns}
-        dataSource={fishData}
+        dataSource={filteredFishData}
         loading={loading}
         rowKey="koiId"
         scroll={{ x: 1500, y: 450 }}
@@ -225,9 +267,43 @@ const FishManagement = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
+                name="koiTypeId"
+                label="Koi Type ID"
+                rules={[
+                  { required: true, message: "Please select the koi type ID!" },
+                ]}
+              >
+                <Select>
+                  {koiTypes.map((type) => (
+                    <Select.Option key={type.koiTypeId} value={type.koiTypeId}>
+                      {type.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
                 name="name"
                 label="Name"
-                rules={[{ required: true, message: "Please input the name!" }]}
+                rules={[
+                  { required: true, message: "Please input the name!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const selectedType = koiTypes.find(
+                        (type) => type.koiTypeId === getFieldValue("koiTypeId")
+                      );
+                      if (selectedType && value !== selectedType.name) {
+                        return Promise.reject(
+                          new Error(
+                            `Name should be the same as ${selectedType.name}`
+                          )
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
               >
                 <Input />
               </Form.Item>
@@ -244,6 +320,7 @@ const FishManagement = () => {
               </Form.Item>
             </Col>
           </Row>
+
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
@@ -256,6 +333,7 @@ const FishManagement = () => {
                 <Select>
                   <Select.Option value="Male">Male</Select.Option>
                   <Select.Option value="Female">Female</Select.Option>
+                  <Select.Option value="Bisexual">Bisexual</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -266,19 +344,15 @@ const FishManagement = () => {
                 rules={[
                   { required: true, message: "Please input the age!" },
                   {
-                    validator: (_, value) => {
-                      if (
-                        value === undefined ||
-                        value === null ||
-                        isNaN(value)
-                      ) {
-                        return Promise.reject("Age must be a valid number!");
-                      }
-                      if (value < 0) {
-                        return Promise.reject("Age cannot be negative!");
-                      }
-                      return Promise.resolve();
-                    },
+                    type: "number",
+                    min: 1,
+                    max: 100,
+                    message: "Age must be a positive integer!",
+                    transform: (value) => Number(value),
+                  },
+                  {
+                    pattern: /^[0-9]+$/,
+                    message: "Age must be a positive integer!",
                   },
                 ]}
               >
@@ -304,6 +378,9 @@ const FishManagement = () => {
                       }
                       if (value < 0) {
                         return Promise.reject("Size cannot be negative!");
+                      }
+                      if (value > 1000) {
+                        return Promise.reject("Size cannot be more than 1000!");
                       }
                       return Promise.resolve();
                     },
@@ -333,6 +410,17 @@ const FishManagement = () => {
                 label="Personality"
                 rules={[
                   { required: true, message: "Please input the personality!" },
+                  {
+                    validator: (_, value) => {
+                      const regex = /^[A-Za-z\s]+$/;
+                      if (!value || regex.test(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        "Personality cannot contain numbers or special characters!"
+                      );
+                    },
+                  },
                 ]}
               >
                 <Input />
@@ -410,7 +498,18 @@ const FishManagement = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input the health status!",
+                    message: "Please input the Health Status!",
+                  },
+                  {
+                    validator: (_, value) => {
+                      const regex = /^[A-Za-z\s]+$/;
+                      if (!value || regex.test(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        "Health Status cannot contain numbers or special characters!"
+                      );
+                    },
                   },
                 ]}
               >
@@ -431,8 +530,8 @@ const FishManagement = () => {
                 ]}
               >
                 <Select>
-                  <Select.Option value="Yes">Yes</Select.Option>
-                  <Select.Option value="No">No</Select.Option>
+                  <Select.Option value="yes">Yes</Select.Option>
+                  <Select.Option value="no">No</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -467,7 +566,7 @@ const FishManagement = () => {
                       ) {
                         return Promise.reject("Price must be a valid number!");
                       }
-                      if (value < 0) {
+                      if (value < 1) {
                         return Promise.reject("Price cannot be negative!");
                       }
                       return Promise.resolve();
@@ -495,9 +594,9 @@ const FishManagement = () => {
                           "Quantity in stock must be a valid number!"
                         );
                       }
-                      if (value < 0) {
+                      if (value < 1) {
                         return Promise.reject(
-                          "Quantity in stock cannot be negative!"
+                          "Quantity in stock should be more than 1!"
                         );
                       }
                       return Promise.resolve();
@@ -509,25 +608,7 @@ const FishManagement = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="koiTypeId"
-                label="Koi Type ID"
-                rules={[
-                  { required: true, message: "Please select the koi type ID!" },
-                ]}
-              >
-                <Select>
-                  {koiTypes.map((type) => (
-                    <Select.Option key={type.koiTypeId} value={type.koiTypeId}>
-                      {type.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Row gutter={16}></Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
@@ -576,10 +657,25 @@ const FishManagement = () => {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="description" label="Description">
+              <Form.Item
+                name="description"
+                label="Description"
+                rules={[
+                  { required: true, message: "Please input the description!" },
+                ]}
+              >
                 <Input.TextArea />
               </Form.Item>
-              <Form.Item name="detailDescription" label="Detail Description">
+              <Form.Item
+                name="detailDescription"
+                label="Detail Description"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the detail description!",
+                  },
+                ]}
+              >
                 <Input.TextArea />
               </Form.Item>
             </Col>

@@ -4,6 +4,7 @@ import ConsignmentOutside from "./ConsignmentOutside";
 import ConsignmentInside from "./ConsignmentInside";
 import "./Consignment.css";
 import Policy from "../../components/Policy/Policy";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -26,7 +27,7 @@ const Consignment = () => {
   const handleDownloadAgreement = () => {
     const link = document.createElement("a");
     link.href =
-      "https://firebasestorage.googleapis.com/v0/b/student-management-c2fb4.appspot.com/o/HỢP ĐỒNG KÝ GỬI CÁ KOI.docx?alt=media";
+      "https://firebasestorage.googleapis.com/v0/b/student-management-c2fb4.appspot.com/o/H%E1%BB%A2P%20%C4%90%E1%BB%92NG%20K%C3%9D%20G%E1%BB%ACI%20C%C3%81%20KOI.docx?alt=media&token=6155ff35-1061-42d0-91f2-7438db8e1100";
     link.download = "Consignment_Agreement.docx";
     document.body.appendChild(link);
     link.click();
@@ -41,7 +42,7 @@ const Consignment = () => {
           "url('https://images.unsplash.com/reserve/SeDltunFRnuGnH2lxTKQ_14554993045_1ce7788ca8_o.jpg?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')", // Change the path to your image
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "50px", // Adjust the padding as needed
+        padding: "50px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -54,16 +55,16 @@ const Consignment = () => {
           backgroundColor: "rgba(255, 255, 255, 0.8)",
           padding: "20px",
           borderRadius: "8px",
-          maxWidth: "1000px", // Set the maximum width of the form
+          maxWidth: "1000px",
           width: "100%",
         }}
       >
         <div className="mt-4 text-right">
           <Button type="default" onClick={handleDownloadAgreement}>
-            Download Contract
+            Download Contract <DownloadOutlined />
           </Button>
           <Button
-            type="default"
+            type="primary"
             onClick={showPolicyModal}
             style={{ marginLeft: "10px" }}
           >
@@ -90,7 +91,7 @@ const Consignment = () => {
         visible={isPolicyModalVisible}
         onOk={handlePolicyModalOk}
         onCancel={handlePolicyModalCancel}
-        width={800} // Set the width of the modal
+        width={800}
         footer={[
           <Button key="ok" type="primary" onClick={handlePolicyModalOk}>
             OK

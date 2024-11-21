@@ -11,22 +11,29 @@ import {
   Typography,
   notification,
   Spin,
-  Select,
+  Descriptions,
+  Input,
 } from "antd";
 import { orderColumns } from "../../../constant/menu-data";
 import { useAuth } from "../../../context/AuthContext";
-import { fetchOrderData, updateOrderStatus } from "../../../services/sevice";
 
-const { Option } = Select;
+import moment from "moment";
+import {
+  fetchOrderData,
+  fetchOrderDetails,
+  updateOrderStatus,
+} from "../../../services/sevice";
+
 const { Title } = Typography;
+const { Search } = Input;
 
 const OrderKoiManagement = () => {
   const { token } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(null);
+  const [searchOrderId, setSearchOrderId] = useState("");
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -40,26 +47,28 @@ const OrderKoiManagement = () => {
     fetchData();
   }, [token]);
 
-  const handleOpenModal = (order) => {
-    setCurrentOrder(order);
-    form.setFieldsValue(order);
-    setIsModalVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-    setCurrentOrder(null);
-    form.resetFields();
-  };
-
-  const handleShowDetails = (order) => {
-    setCurrentOrder(order);
-    setIsDetailModalVisible(true);
+  const handleShowDetails = async (orderId) => {
+    setLoading(true);
+    try {
+      const orderDetails = await fetchOrderDetails(orderId, token);
+      setCurrentOrder(orderDetails);
+      form.setFieldsValue(orderDetails);
+      setIsDetailModalVisible(true);
+    } catch (error) {
+      console.error("Failed to fetch order details:", error);
+      notification.error({
+        message: "Failed to fetch order details",
+        description: "There was an error fetching the order details.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseDetailModal = () => {
     setIsDetailModalVisible(false);
     setCurrentOrder(null);
+    form.resetFields();
   };
 
   const handleUpdateOrderStatus = async (values) => {
@@ -70,7 +79,7 @@ const OrderKoiManagement = () => {
 
       const data = await fetchOrderData(token);
       setOrders(data);
-      handleCloseModal();
+      handleCloseDetailModal();
     } catch (error) {
       console.error("Failed to update order status:", error);
       notification.error({
@@ -84,9 +93,10 @@ const OrderKoiManagement = () => {
   };
 
   const filteredOrders = orders.filter(
-    (order) => order.orderStatus !== "completed"
+    (order) =>
+      order.orderStatus !== "completed" &&
+      order.orderId.toString().includes(searchOrderId)
   );
-
   return (
     <div>
       <Row justify="center">
@@ -95,11 +105,16 @@ const OrderKoiManagement = () => {
             <Title className="text-center" level={2}>
               Order Koi Management
             </Title>
+            <Search
+              placeholder="Search by Order ID"
+              onSearch={(value) => setSearchOrderId(value)}
+              style={{ width: 300, marginBottom: 20 }}
+            />
             {loading ? (
               <Spin size="large" />
             ) : (
               <Table
-                columns={orderColumns(handleOpenModal, handleShowDetails)}
+                columns={orderColumns(null, handleShowDetails)}
                 dataSource={filteredOrders}
                 rowKey="orderId"
                 pagination={{ pageSize: 10 }}
@@ -112,97 +127,191 @@ const OrderKoiManagement = () => {
       </Row>
 
       <Modal
-        title="Update Order Status"
-        visible={isModalVisible}
-        onCancel={handleCloseModal}
+        title="Order Item Details"
+        visible={isDetailModalVisible}
+        onCancel={handleCloseDetailModal}
+        width={900}
         footer={[
-          <Button key="cancel" onClick={handleCloseModal}>
-            Cancel
+          <Button key="close" type="primary" onClick={handleCloseDetailModal}>
+            Close
           </Button>,
           <Button
             key="update"
             type="primary"
-            onClick={() => form.submit()}
+            onClick={() =>
+              handleUpdateOrderStatus({ orderStatus: "delivering" })
+            }
             loading={loading}
           >
             Update Status
           </Button>,
         ]}
       >
-        <Spin spinning={loading}>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleUpdateOrderStatus}
-          >
-            <Form.Item
-              label="Order Status"
-              name="orderStatus"
-              rules={[
-                { required: true, message: "Please select the order status!" },
-              ]}
-            >
-              <Select placeholder="Select Order Status">
-                <Option value="delivering">Delivering</Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        </Spin>
-      </Modal>
-
-      <Modal
-        title="Order Item Details"
-        visible={isDetailModalVisible}
-        onCancel={handleCloseDetailModal}
-        footer={null}
-      >
         {currentOrder && (
-          <>
-            <h3>Order Kois</h3>
-            <Row gutter={[16, 16]}>
-              {currentOrder.orderKois.map((koi) => (
-                <Col span={12} key={koi.koiId}>
-                  <Card hoverable>
-                    <Image src={koi.koiDetails.imageKoi} width={100} />
+          <div>
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Order ID">
+                {currentOrder.orderId}
+              </Descriptions.Item>
+              <Descriptions.Item label="User Name">
+                {currentOrder.userName || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {currentOrder.email || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Phone Number">
+                {currentOrder.phoneNumber || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Address">
+                {currentOrder.address || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Promotion">
+                {currentOrder.promotion || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Order Date">
+                {currentOrder.orderDate
+                  ? moment(currentOrder.orderDate).format("DD-MM-YYYY")
+                  : "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Total Money">
+                {currentOrder.totalMoney
+                  ? currentOrder.totalMoney.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Final Money">
+                {currentOrder.finalMoney
+                  ? currentOrder.finalMoney.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Discount Money">
+                {currentOrder.discountMoney
+                  ? currentOrder.discountMoney.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Used Points">
+                {currentOrder.usedPoints || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Earned Points">
+                {currentOrder.earnedPoints || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Order Status">
+                {currentOrder.orderStatus}
+              </Descriptions.Item>
+              <Descriptions.Item label="Payment Method">
+                {currentOrder.paymentMethod || "None"}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Title level={4} className="mt-4">
+              Point Transactions
+            </Title>
+            <Table
+              columns={[
+                {
+                  title: "Transaction ID",
+                  dataIndex: "transactionId",
+                  key: "transactionId",
+                },
+                {
+                  title: "Transaction Type",
+                  dataIndex: "transactionType",
+                  key: "transactionType",
+                },
+                {
+                  title: "Transaction Date",
+                  dataIndex: "transactionDate",
+                  key: "transactionDate",
+                  render: (date) => moment(date).format("DD-MM-YYYY"),
+                },
+                {
+                  title: "Points Changed",
+                  dataIndex: "pointsChanged",
+                  key: "pointsChanged",
+                },
+                {
+                  title: "New Total Points",
+                  dataIndex: "newTotalPoints",
+                  key: "newTotalPoints",
+                },
+              ]}
+              dataSource={currentOrder.point_transaction || []}
+              rowKey="transactionId"
+              pagination={false}
+            />
+
+            <Title level={4} className="mt-4">
+              Fishes
+            </Title>
+            <Row gutter={16}>
+              {(currentOrder.fishes || []).map((fish) => (
+                <Col span={12} key={fish.fishesId}>
+                  <Card>
+                    <Image src={fish.imageFishes} width={100} height={100} />
                     <p>
-                      <strong>Name:</strong> {koi.koiDetails.name}
+                      <strong>ID:</strong> {fish.fishesId}
                     </p>
                     <p>
-                      <strong>Gender:</strong> {koi.koiDetails.gender}
+                      <strong>Name:</strong> {fish.name}
                     </p>
                     <p>
-                      <strong>Price:</strong> ${koi.koiDetails.price}
+                      <strong>Quantity:</strong> {fish.quantity}
                     </p>
                     <p>
-                      <strong>Size:</strong> {koi.koiDetails.size} cm
-                    </p>
-                    <p>
-                      <strong>Quantity:</strong> {koi.quantity}
+                      <strong>Price:</strong>{" "}
+                      {fish.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                     </p>
                   </Card>
                 </Col>
               ))}
             </Row>
-            <h3>Order Fishes</h3>
-            <Row gutter={[16, 16]}>
-              {currentOrder.orderFishes.length > 0 ? (
-                currentOrder.orderFishes.map((fish) => (
-                  <Col span={12} key={fish.fishId}>
-                    <Card hoverable>
-                      <p>
-                        <strong>Fish ID:</strong> {fish.fishId}
-                      </p>
-                      <p>
-                        <strong>Quantity:</strong> {fish.quantity}
-                      </p>
-                    </Card>
-                  </Col>
-                ))
-              ) : (
-                <p>No fishes in this order.</p>
-              )}
+
+            <Title level={4} className="mt-4">
+              Koi
+            </Title>
+            <Row gutter={16}>
+              {(currentOrder.kois || []).map((koi) => (
+                <Col span={12} key={koi.koiId}>
+                  <Card>
+                    <Image src={koi.imageKoi} width={100} height={100} />
+                    <p>
+                      <strong>ID:</strong> {koi.koiId}
+                    </p>
+                    <p>
+                      <strong>Name:</strong> {koi.name}
+                    </p>
+                    <p>
+                      <strong>Gender:</strong> {koi.gender}
+                    </p>
+                    <p>
+                      <strong>Quantity:</strong> {koi.quantity}
+                    </p>
+                    <p>
+                      <strong>Size:</strong> {koi.size} cm
+                    </p>
+                    <p>
+                      <strong>Price:</strong>{" "}
+                      {koi.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </p>
+                  </Card>
+                </Col>
+              ))}
             </Row>
-          </>
+          </div>
         )}
       </Modal>
     </div>

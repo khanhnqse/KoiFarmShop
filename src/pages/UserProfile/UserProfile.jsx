@@ -5,7 +5,6 @@ import axios from "axios";
 
 const { Option } = Select;
 
-// Step 1: Define the data object
 const defaultUserData = {
   userName: "",
   email: "",
@@ -28,7 +27,6 @@ const UserProfile = () => {
   const [newAddress, setNewAddress] = useState("");
   const [showNewAddressInput, setShowNewAddressInput] = useState(false);
 
-  // Step 2: Fetch user data from the API
   const fetchUserData = async () => {
     if (!user) return;
     setLoading(true);
@@ -52,7 +50,6 @@ const UserProfile = () => {
     }
   };
 
-  // Fetch addresses from the API
   const fetchAddresses = async () => {
     if (!user) return;
     setLoading(true);
@@ -69,7 +66,6 @@ const UserProfile = () => {
     }
   };
 
-  // Step 3: Use useEffect to fetch data on mount and when user changes
   useEffect(() => {
     fetchUserData();
     fetchAddresses();
@@ -155,18 +151,13 @@ const UserProfile = () => {
     }));
     setShowNewAddressInput(false);
     setNewAddress("");
-    handleSave(); // Call handleSave to update the profile
+    handleSave();
   };
 
   return (
     <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg w-1/2">
       {/* User Info */}
       <div className="flex items-center">
-        <img
-          src={"https://via.placeholder.com/100"}
-          alt="User"
-          className="w-24 h-24 rounded-full"
-        />
         <div className="ml-4">
           <h2 className="text-xl font-semibold">{formData.userName}</h2>
           <p className="text-gray-600">{formData.email}</p>

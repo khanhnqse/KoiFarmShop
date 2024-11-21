@@ -26,21 +26,19 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         const { token, user } = response.data;
-        // Handle successful login
+
         message.success("Login successful!");
-        login(token, user); // Update auth context with token and user info
+        login(token, user);
         console.log("Logged in user:", user);
-        // Redirect based on user role
+
         if (user.role === "manager") {
           navigate(PATHS.DASHBOARD.CHILDREN.OVERVIEW);
-        }
-        if (user.role === "staff") {
+        } else if (user.role === "staff") {
           navigate(PATHS.DASHBOARD.CHILDREN.KOI);
         } else {
-          navigate(PATHS.HOME); // Navigate to home page for other users
+          navigate(PATHS.HOME);
         }
       } else {
-        // Handle login failure
         message.error("Login failed. Please check your credentials.");
       }
     } catch (error) {
@@ -57,28 +55,23 @@ const LoginPage = () => {
         className="bg-white shadow-lg rounded-lg flex overflow-hidden"
         style={{ width: "900px" }}
       >
-        {/* Left section (Login form) */}
         <div className="w-2/3 p-10">
           <div className="text-left mb-8">
             <img src={logo} alt="Logo" className="h-12 mb-4" />{" "}
-            {/* Replace with your logo */}
             <h2 className="text-3xl font-bold mb-2">Login to Buy your Koi</h2>
             <p className="text-gray-500">Login using social networks</p>
           </div>
 
-          {/* Social login buttons */}
           <div className="flex space-x-4 mb-6">
-            <LoginWithGoogle /> {/* Add the LoginWithGoogle component */}
+            <LoginWithGoogle />
           </div>
 
-          {/* OR Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-t border-gray-300" />
             <span className="mx-2 text-gray-400">OR</span>
             <hr className="flex-grow border-t border-gray-300" />
           </div>
 
-          {/* Email and Password Input */}
           <Form
             name="login"
             layout="vertical"
@@ -108,7 +101,6 @@ const LoginPage = () => {
               />
             </Form.Item>
 
-            {/* Sign In Button */}
             <Form.Item>
               <Button
                 type="primary"
@@ -123,7 +115,6 @@ const LoginPage = () => {
           </Form>
         </div>
 
-        {/* Right section (Sign up prompt) */}
         <div
           className="w-1/3 p-10 text-white text-center flex flex-col justify-center"
           style={{
