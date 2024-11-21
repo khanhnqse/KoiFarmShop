@@ -85,7 +85,15 @@ const CheckoutTabs = () => {
         );
         const addressesData = response.data;
         setAddresses(addressesData);
-        if (addressesData.length > 0) {
+        const defaultAddress = addressesData.find(
+          (address) => address.isDefault
+        );
+        if (defaultAddress) {
+          setSelectedAddressID(defaultAddress.addressID);
+          form.setFieldsValue({
+            address: defaultAddress.address,
+          });
+        } else if (addressesData.length > 0) {
           setSelectedAddressID(addressesData[0].addressID);
           form.setFieldsValue({
             address: addressesData[0].address,
