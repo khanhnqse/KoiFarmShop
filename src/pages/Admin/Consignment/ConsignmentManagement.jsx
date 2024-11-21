@@ -208,14 +208,7 @@ const ConsignmentManagement = () => {
         >
           Approved
         </Menu.Item>
-        <Menu.Item
-          key="pending payment"
-          onClick={() =>
-            handleUpdateStatus(record.consignmentId, "pending payment")
-          }
-        >
-          Pending Payment
-        </Menu.Item>
+
         <Menu.Item
           key="sold"
           onClick={() => handleUpdateStatus(record.consignmentId, "sold")}
@@ -300,7 +293,6 @@ const ConsignmentManagement = () => {
   const getStatusFilterProps = () => ({
     filters: [
       { text: "Approved", value: "approved" },
-      { text: "Pending Payment", value: "pending payment" },
       { text: "Sold", value: "sold" },
       { text: "Cancelled", value: "cancelled" },
       { text: "Rejected", value: "rejected" },
@@ -418,6 +410,21 @@ const ConsignmentManagement = () => {
                   {
                     required: true,
                     message: "Please input the consignment price!",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (
+                        value === undefined ||
+                        value === null ||
+                        isNaN(value)
+                      ) {
+                        return Promise.reject("Price must be a valid number!");
+                      }
+                      if (value < 1) {
+                        return Promise.reject("Price cannot be negative!");
+                      }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >

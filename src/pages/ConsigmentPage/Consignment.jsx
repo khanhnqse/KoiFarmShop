@@ -64,7 +64,7 @@ const Consignment = () => {
             Download Contract <DownloadOutlined />
           </Button>
           <Button
-            type="default"
+            type="primary"
             onClick={showPolicyModal}
             style={{ marginLeft: "10px" }}
           >

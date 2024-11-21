@@ -292,8 +292,8 @@ const OrdersPage = () => {
             <Button
               style={{
                 marginLeft: "10px",
-                background: "#52c41a",
-                borderColor: "#52c41a",
+                background: "#befa91",
+                borderColor: "#befa91",
               }}
               type="default"
               onClick={() => handleReceived(record.orderId)}

@@ -10,11 +10,14 @@ import {
   updateCustomerStatus,
 } from "../../../services/sevice";
 
+const { Search } = Input;
+
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -83,6 +86,14 @@ const CustomerManagement = () => {
     setLoading(false);
   };
 
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+  };
+
+  const filteredCustomers = customers.filter((customer) =>
+    customer.userName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <Typography.Title level={2}>Customer Management</Typography.Title>
@@ -93,13 +104,18 @@ const CustomerManagement = () => {
       >
         <PlusOutlined /> Add Customer
       </Button>
+      <Search
+        placeholder="Search by User Name"
+        onSearch={handleSearch}
+        style={{ width: 300, marginBottom: 20, paddingLeft: 20 }}
+      />
       <Table
         columns={customerColumns(
           handleOpenModal,
           handleDeleteCustomer,
           handleUpdateCustomerStatus
         )}
-        dataSource={customers}
+        dataSource={filteredCustomers}
         loading={loading}
         rowKey="userId"
         scroll={{ x: 1500, y: 450 }}
@@ -120,7 +136,7 @@ const CustomerManagement = () => {
                   { required: true, message: "Please input the user name!" },
                 ]}
               >
-                <Input readOnly />
+                <Input readOnly={isUpdateMode} />
               </Form.Item>
             </Col>
             <Col span={12}>

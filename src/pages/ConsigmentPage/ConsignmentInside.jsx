@@ -34,6 +34,7 @@ const ConsignmentInside = () => {
   const [loading, setLoading] = useState(false);
   const [koiOptions, setKoiOptions] = useState([]);
   const [koiTypeOptions, setKoiTypeOptions] = useState([]);
+  const [selectedKoiName, setSelectedKoiName] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -186,7 +187,15 @@ const ConsignmentInside = () => {
                 <Select
                   placeholder="Select Koi ID"
                   value={productInfo.koiID}
-                  onChange={(value) => handleSelectChange(value, "koiID")}
+                  onChange={(value) => {
+                    handleSelectChange(value, "koiID");
+                    const selectedKoi = koiOptions.find(
+                      (koi) => koi.koiId === value
+                    );
+                    if (selectedKoi) {
+                      setSelectedKoiName(selectedKoi.name);
+                    }
+                  }}
                   className="input-field"
                 >
                   {koiOptions.map((koi) => (
@@ -205,6 +214,24 @@ const ConsignmentInside = () => {
                 name="koiTypeID"
                 rules={[
                   { required: true, message: "Please select the Koi Type!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const selectedType = koiTypeOptions.find(
+                        (type) => type.koiTypeId === value
+                      );
+                      if (
+                        selectedType &&
+                        selectedType.name !== selectedKoiName
+                      ) {
+                        return Promise.reject(
+                          new Error(
+                            `Koi Type name should be the same as ${selectedKoiName}`
+                          )
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <Select
@@ -299,6 +326,10 @@ const ConsignmentInside = () => {
                   {
                     required: true,
                     message: "Please input the consignment title!",
+                  },
+                  {
+                    pattern: /^[A-Za-z\s]+$/,
+                    message: "Can only contain letters and spaces!",
                   },
                 ]}
               >

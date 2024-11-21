@@ -306,9 +306,9 @@ const ConsignmentOutside = () => {
                   { required: true, message: "Please input the age!" },
                   {
                     type: "number",
-                    min: 0,
+                    min: 1,
                     max: 100,
-                    message: "Age must be a positive integer!",
+                    message: "Age must be >= 1!",
                     transform: (value) => Number(value),
                   },
                   {
@@ -390,8 +390,8 @@ const ConsignmentOutside = () => {
                   },
                   {
                     type: "number",
-                    min: 0,
-                    message: "Feeding Amount must be a positive integer!",
+                    min: 1,
+                    message: "Feeding Amount not valid!",
                     transform: (value) => Number(value),
                   },
                   {
@@ -416,8 +416,8 @@ const ConsignmentOutside = () => {
                   { required: true, message: "Please input the filter rate!" },
                   {
                     type: "number",
-                    min: 0,
-                    message: "Filter Rate must be a positive integer!",
+                    min: 1,
+                    message: "Filter Rate not valid!",
                     transform: (value) => Number(value),
                   },
                   {

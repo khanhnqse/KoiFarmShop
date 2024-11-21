@@ -3,14 +3,13 @@ import "antd/dist/reset.css";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useEffect, useState } from "react";
 import axios from "axios";
-// import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const ProductPage = () => {
   const [fishs, setFishs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(20);
   const [priceRange, setPriceRange] = useState([0, 999999]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedBreeder, setSelectedBreeder] = useState(null);
@@ -20,7 +19,6 @@ const ProductPage = () => {
   const [sortOption, setSortOption] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const api = "https://localhost:7285/api/Koi";
-  // const navigate = useNavigate();
 
   const fetchFishs = async () => {
     setLoading(true);
@@ -238,23 +236,16 @@ const ProductPage = () => {
               onChange={handleAgeChange}
             >
               <Option value="All">All</Option>
-              {uniqueAges.map((age) => (
-                <Option key={age} value={age}>
-                  {age}
-                </Option>
-              ))}
+              {uniqueAges
+                .slice()
+                .sort((a, b) => a - b)
+                .map((age) => (
+                  <Option key={age} value={age}>
+                    {age}
+                  </Option>
+                ))}
             </Select>
           </div>
-
-          {/* <div className="mb-6">
-            <Button
-              type="primary"
-              onClick={handleViewFishProducts}
-              className="w-full"
-            >
-              View Fish Products
-            </Button>
-          </div> */}
         </div>
 
         {/* Product List */}
@@ -270,7 +261,7 @@ const ProductPage = () => {
             </Select>
 
             <Select
-              defaultValue="3 Products Per Page"
+              defaultValue="20 Products Per Page"
               className="w-1/4"
               onChange={(value) => setPageSize(value)}
             >
